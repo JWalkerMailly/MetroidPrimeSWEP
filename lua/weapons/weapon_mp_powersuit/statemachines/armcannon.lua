@@ -119,58 +119,58 @@ function sm_ArmCannon:SetupDataTables()
 
 	local weapon = self.Weapon;
 
-	WGL.AddProperty(weapon, "LoadSaveFile",          "Bool", { KeyName = "loadfile",   Edit = { order =  1, category = "Save File", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam1Enabled",          "Bool", { KeyName = "beam1",      Edit = { order = 17, category = "Weapons",   type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam2Enabled",          "Bool", { KeyName = "beam2",      Edit = { order = 18, category = "Weapons",   type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam3Enabled",          "Bool", { KeyName = "beam3",      Edit = { order = 19, category = "Weapons",   type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam4Enabled",          "Bool", { KeyName = "beam4",      Edit = { order = 20, category = "Weapons",   type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam1ComboEnabled",     "Bool", { KeyName = "beamcombo1", Edit = { order = 21, category = "Combos",    type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam2ComboEnabled",     "Bool", { KeyName = "beamcombo2", Edit = { order = 22, category = "Combos",    type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam3ComboEnabled",     "Bool", { KeyName = "beamcombo3", Edit = { order = 23, category = "Combos",    type = "Boolean" } });
-	WGL.AddProperty(weapon, "Beam4ComboEnabled",     "Bool", { KeyName = "beamcombo4", Edit = { order = 24, category = "Combos",    type = "Boolean" } });
-	WGL.AddProperty(weapon, "ChargeBeamEnabled",     "Bool", { KeyName = "chargebeam", Edit = { order = 16, category = "Weapons",   type = "Boolean" } });
+	weapon:NetworkVar("Bool",   0, "LoadSaveFile",      { KeyName = "loadfile",   Edit = { order =  1, category = "Save File", type = "Boolean" } });
+	weapon:NetworkVar("Bool",   1, "Beam1Enabled",      { KeyName = "beam1",      Edit = { order = 17, category = "Weapons",   type = "Boolean" } });
+	weapon:NetworkVar("Bool",   2, "Beam2Enabled",      { KeyName = "beam2",      Edit = { order = 18, category = "Weapons",   type = "Boolean" } });
+	weapon:NetworkVar("Bool",   3, "Beam3Enabled",      { KeyName = "beam3",      Edit = { order = 19, category = "Weapons",   type = "Boolean" } });
+	weapon:NetworkVar("Bool",   4, "Beam4Enabled",      { KeyName = "beam4",      Edit = { order = 20, category = "Weapons",   type = "Boolean" } });
+	weapon:NetworkVar("Bool",   5, "Beam1ComboEnabled", { KeyName = "beamcombo1", Edit = { order = 21, category = "Combos",    type = "Boolean" } });
+	weapon:NetworkVar("Bool",   6, "Beam2ComboEnabled", { KeyName = "beamcombo2", Edit = { order = 22, category = "Combos",    type = "Boolean" } });
+	weapon:NetworkVar("Bool",   7, "Beam3ComboEnabled", { KeyName = "beamcombo3", Edit = { order = 23, category = "Combos",    type = "Boolean" } });
+	weapon:NetworkVar("Bool",   8, "Beam4ComboEnabled", { KeyName = "beamcombo4", Edit = { order = 24, category = "Combos",    type = "Boolean" } });
+	weapon:NetworkVar("Bool",   9, "ChargeBeamEnabled", { KeyName = "chargebeam", Edit = { order = 16, category = "Weapons",   type = "Boolean" } });
 
-	WGL.AddProperty(weapon, "BeamType",              "Int");
-	WGL.AddProperty(weapon, "BeamRoll",              "Int");
-	WGL.AddProperty(weapon, "BeamBusy",              "Bool");
-	WGL.AddProperty(weapon, "NextBeamChange",        "Float");
+	weapon:NetworkVar("Int",    0, "BeamType");
+	weapon:NetworkVar("Int",    1, "BeamRoll");
+	weapon:NetworkVar("Bool",  10, "BeamBusy");
+	weapon:NetworkVar("Float",  0, "NextBeamChange");
 
-	WGL.AddProperty(weapon, "NextBeamMuzzle",        "Float");
-	WGL.AddProperty(weapon, "NextChargeMuzzle",      "Float");
-	WGL.AddProperty(weapon, "NextComboMuzzle",       "Float");
-	WGL.AddProperty(weapon, "NextComboLoopMuzzle",   "Float");
-	WGL.AddProperty(weapon, "NextBeamOpen",          "Float");
-	WGL.AddProperty(weapon, "NextBeamOpenAnim",      "Float");
-	WGL.AddProperty(weapon, "NextBeamClose",         "Float");
-	WGL.AddProperty(weapon, "NextBeamFidget",        "Float");
+	weapon:NetworkVar("Float",  1, "NextBeamMuzzle");
+	weapon:NetworkVar("Float",  2, "NextChargeMuzzle");
+	weapon:NetworkVar("Float",  3, "NextComboMuzzle");
+	weapon:NetworkVar("Float",  4, "NextComboLoopMuzzle");
+	weapon:NetworkVar("Float",  5, "NextBeamOpen");
+	weapon:NetworkVar("Float",  6, "NextBeamOpenAnim");
+	weapon:NetworkVar("Float",  7, "NextBeamClose");
+	weapon:NetworkVar("Float",  8, "NextBeamFidget");
 
-	WGL.AddProperty(weapon, "ChargeStart",           "Float");
-	WGL.AddProperty(weapon, "ChargeStarted",         "Bool");
-	WGL.AddProperty(weapon, "ChargeTime",            "Float");
-	WGL.AddProperty(weapon, "ChargeMax",             "Bool");
-	WGL.AddProperty(weapon, "ChargeViewPunch",       "Float");
-	WGL.AddProperty(weapon, "NextViewPunch",         "Float");
+	weapon:NetworkVar("Float",  9, "ChargeStart");
+	weapon:NetworkVar("Bool",  11, "ChargeStarted");
+	weapon:NetworkVar("Float", 10, "ChargeTime");
+	weapon:NetworkVar("Bool",  12, "ChargeMax");
+	weapon:NetworkVar("Float", 11, "ChargeViewPunch");
+	weapon:NetworkVar("Float", 12, "NextViewPunch");
 
-	WGL.AddProperty(weapon, "NextMissile",           "Float");
-	WGL.AddProperty(weapon, "NextMissileReload",     "Float");
+	weapon:NetworkVar("Float", 13, "NextMissile");
+	weapon:NetworkVar("Float", 14, "NextMissileReload");
 
-	WGL.AddProperty(weapon, "MissileCombo",          "Entity");
-	WGL.AddProperty(weapon, "MissileComboBusy",      "Bool");
-	WGL.AddProperty(weapon, "MissileComboLoop",      "Bool");
-	WGL.AddProperty(weapon, "NextMissileCombo",      "Float");
-	WGL.AddProperty(weapon, "NextMissileComboReset", "Float");
-	WGL.AddProperty(weapon, "NextMissileComboDrain", "Float");
+	weapon:NetworkVar("Entity", 0, "MissileCombo");
+	weapon:NetworkVar("Bool",  13, "MissileComboBusy");
+	weapon:NetworkVar("Bool",  14, "MissileComboLoop");
+	weapon:NetworkVar("Float", 15, "NextMissileCombo");
+	weapon:NetworkVar("Float", 16, "NextMissileComboReset");
+	weapon:NetworkVar("Float", 17, "NextMissileComboDrain");
 
-	WGL.AddProperty(weapon, "Beam1Ammo",             "Int");
-	WGL.AddProperty(weapon, "Beam1MaxAmmo",          "Int");
-	WGL.AddProperty(weapon, "Beam2Ammo",             "Int");
-	WGL.AddProperty(weapon, "Beam2MaxAmmo",          "Int");
-	WGL.AddProperty(weapon, "Beam3Ammo",             "Int");
-	WGL.AddProperty(weapon, "Beam3MaxAmmo",          "Int");
-	WGL.AddProperty(weapon, "Beam4Ammo",             "Int");
-	WGL.AddProperty(weapon, "Beam4MaxAmmo",          "Int");
-	WGL.AddProperty(weapon, "MissileAmmo",           "Int", { KeyName = "missiles",    Edit = { order = 15, category = "Weapons", type = "Int", min = 0, max = 250 } });
-	WGL.AddProperty(weapon, "MissileMaxAmmo",        "Int", { KeyName = "maxmissiles", Edit = { order = 14, category = "Weapons", type = "Int", min = 0, max = 250 } });
+	weapon:NetworkVar("Int",    2, "Beam1Ammo");
+	weapon:NetworkVar("Int",    3, "Beam1MaxAmmo");
+	weapon:NetworkVar("Int",    4, "Beam2Ammo");
+	weapon:NetworkVar("Int",    5, "Beam2MaxAmmo");
+	weapon:NetworkVar("Int",    6, "Beam3Ammo");
+	weapon:NetworkVar("Int",    7, "Beam3MaxAmmo");
+	weapon:NetworkVar("Int",    8, "Beam4Ammo");
+	weapon:NetworkVar("Int",    9, "Beam4MaxAmmo");
+	weapon:NetworkVar("Int",   10, "MissileAmmo",    { KeyName = "missiles",    Edit = { order = 15, category = "Weapons", type = "Int", min = 0, max = 250 } });
+	weapon:NetworkVar("Int",   11, "MissileMaxAmmo", { KeyName = "maxmissiles", Edit = { order = 14, category = "Weapons", type = "Int", min = 0, max = 250 } });
 
 	if (SERVER) then self:LoadState(); end
 end

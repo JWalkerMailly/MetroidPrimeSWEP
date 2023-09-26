@@ -69,11 +69,11 @@ PROJECTILE.OscillationOffset   = 0;
 PROJECTILE.Sounds              = {};
 
 function PROJECTILE:SetupDataTables()
-	WGL.AddProperty(self, "Weapon",          "Entity");
-	WGL.AddProperty(self, "CollisionPos",    "Vector");
-	WGL.AddProperty(self, "CollisionNormal", "Vector");
-	WGL.AddProperty(self, "CollisionRan",    "Bool");
-	WGL.AddProperty(self, "Collided",        "Bool");
+	self:NetworkVar("Entity", 0, "Weapon");
+	self:NetworkVar("Vector", 0, "CollisionPos");
+	self:NetworkVar("Vector", 1, "CollisionNormal");
+	self:NetworkVar("Bool",   0, "CollisionRan");
+	self:NetworkVar("Bool",   1, "Collided");
 end
 
 function PROJECTILE:Initialize()

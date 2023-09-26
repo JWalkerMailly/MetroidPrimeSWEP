@@ -57,19 +57,19 @@ function sm_Helmet:SetupDataTables()
 
 	local weapon = self.Weapon;
 
-	WGL.AddProperty(weapon, "Visor1Enabled", "Bool", { KeyName = "visor1", Edit = { order = 4, category = "Visors", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Visor2Enabled", "Bool", { KeyName = "visor2", Edit = { order = 5, category = "Visors", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Visor3Enabled", "Bool", { KeyName = "visor3", Edit = { order = 6, category = "Visors", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Visor4Enabled", "Bool", { KeyName = "visor4", Edit = { order = 7, category = "Visors", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  15, "Visor1Enabled", { KeyName = "visor1", Edit = { order = 4, category = "Visors", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  16, "Visor2Enabled", { KeyName = "visor2", Edit = { order = 5, category = "Visors", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  17, "Visor3Enabled", { KeyName = "visor3", Edit = { order = 6, category = "Visors", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  18, "Visor4Enabled", { KeyName = "visor4", Edit = { order = 7, category = "Visors", type = "Boolean" } });
 
-	WGL.AddProperty(weapon, "Energy",        "Int", { KeyName = "energytanks",    Edit = { order = 3, category = "General", type = "Int", min = 0, max = 14 } });
-	WGL.AddProperty(weapon, "MaxEnergy",     "Int", { KeyName = "maxenergytanks", Edit = { order = 2, category = "General", type = "Int", min = 0, max = 14 } });
+	weapon:NetworkVar("Int",   12, "Energy",    { KeyName = "energytanks",    Edit = { order = 3, category = "General", type = "Int", min = 0, max = 14 } });
+	weapon:NetworkVar("Int",   13, "MaxEnergy", { KeyName = "maxenergytanks", Edit = { order = 2, category = "General", type = "Int", min = 0, max = 14 } });
 
-	WGL.AddProperty(weapon, "VisorType",     "Int");
-	WGL.AddProperty(weapon, "VisorLoop",     "Bool");
+	weapon:NetworkVar("Int",   14, "VisorType");
+	weapon:NetworkVar("Bool",  19, "VisorLoop");
 
-	WGL.AddProperty(weapon, "Target",        "Entity");
-	WGL.AddProperty(weapon, "LockAngle",     "Angle");
+	weapon:NetworkVar("Entity", 1, "Target");
+	weapon:NetworkVar("Angle",  0, "LockAngle");
 
 	if (SERVER) then self:LoadState(); end
 end

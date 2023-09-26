@@ -34,7 +34,7 @@ BOMB.Blast3DEffect   = nil;
 BOMB.ExplosionEffect = nil;
 
 function BOMB:SetupDataTables()
-	WGL.AddProperty(self, "SpawnTime", "Float");
+	self:NetworkVar("Float", 0, "SpawnTime");
 end
 
 function BOMB:Initialize()

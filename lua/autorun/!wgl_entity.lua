@@ -18,28 +18,6 @@ function WGL.IsAlive(ent)
 	return ent:IsPlayer() || ent:IsNPC() || ent:IsNextBot() || string.find(ent:GetClass(), "*npc*");
 end
 
-function WGL.AddProperty(ent, name, type, editable)
-
-	-- Build a list of network property indices for easier management.
-	ent.__wgl_NWProperties = ent.__wgl_NWProperties || {};
-	if ((ent.__wgl_NWProperties[type] || 0) + 1 >= WGL.DTSlots[type]) then
-		return ErrorNoHaltWithStack("Max DTVar reached for type: ", type, ", on: ", ent);
-	end
-
-	if (ent.__wgl_NWProperties[type] == nil) then ent.__wgl_NWProperties[type] = 0;
-	else ent.__wgl_NWProperties[type] = ent.__wgl_NWProperties[type] + 1; end
-
-	if (editable) then ent:NetworkVar(type, ent.__wgl_NWProperties[type], name, editable);
-	else ent:NetworkVar(type, ent.__wgl_NWProperties[type], name); end
-
-	-- Add live debugging of property if required.
-	if (SERVER && GetConVar("developer"):GetInt() > 0) then
-		ent:NetworkVarNotify(name, function(_ent, _name, _old, _new)
-			print("[" .. _name .. "]", tostring(_old), "->", tostring(_new));
-		end);
-	end
-end
-
 CreateClientConVar("wgl_enable_dynamiclighting", "1", true, false, "Enable or disable DLights.", 0, 1);
 function WGL.EmitLight(entity, pos, color, decay, size, dietime, style, noModels, noWorld)
 

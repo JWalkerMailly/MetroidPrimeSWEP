@@ -60,27 +60,27 @@ function sm_MorphBall:SetupDataTables()
 
 	local weapon = self.Weapon;
 
-	WGL.AddProperty(weapon, "MorphEnabled",     "Bool", { KeyName = "morphball",      Edit = { order = 27, category = "Morph Ball", type = "Boolean" } });
-	WGL.AddProperty(weapon, "BombsEnabled",     "Bool", { KeyName = "morphballbombs", Edit = { order = 28, category = "Morph Ball", type = "Boolean" } });
-	WGL.AddProperty(weapon, "BoostEnabled",     "Bool", { KeyName = "boostball",      Edit = { order = 29, category = "Morph Ball", type = "Boolean" } });
-	WGL.AddProperty(weapon, "SpiderEnabled",    "Bool", { KeyName = "spiderball",     Edit = { order = 30, category = "Morph Ball", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  20, "MorphEnabled",  { KeyName = "morphball",      Edit = { order = 27, category = "Morph Ball", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  21, "BombsEnabled",  { KeyName = "morphballbombs", Edit = { order = 28, category = "Morph Ball", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  22, "BoostEnabled",  { KeyName = "boostball",      Edit = { order = 29, category = "Morph Ball", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  23, "SpiderEnabled", { KeyName = "spiderball",     Edit = { order = 30, category = "Morph Ball", type = "Boolean" } });
 
-	WGL.AddProperty(weapon, "MorphBall",        "Entity");
-	WGL.AddProperty(weapon, "NextMorph",        "Float");
-	WGL.AddProperty(weapon, "LastViewAngles",   "Angle");
-	WGL.AddProperty(weapon, "LastViewPos",      "Vector");
+	weapon:NetworkVar("Entity", 2, "MorphBall");
+	weapon:NetworkVar("Float", 18, "NextMorph");
+	weapon:NetworkVar("Angle",  1, "LastViewAngles");
+	weapon:NetworkVar("Vector", 0, "LastViewPos");
 
-	WGL.AddProperty(weapon, "Boost",            "Float");
-	WGL.AddProperty(weapon, "BoostCharge",      "Float");
-	WGL.AddProperty(weapon, "BoostChargeStart", "Float");
+	weapon:NetworkVar("Float", 19, "Boost");
+	weapon:NetworkVar("Float", 20, "BoostCharge");
+	weapon:NetworkVar("Float", 21, "BoostChargeStart");
 
-	WGL.AddProperty(weapon, "Bomb1",            "Float");
-	WGL.AddProperty(weapon, "Bomb2",            "Float");
-	WGL.AddProperty(weapon, "Bomb3",            "Float");
+	weapon:NetworkVar("Float", 22, "Bomb1");
+	weapon:NetworkVar("Float", 23, "Bomb2");
+	weapon:NetworkVar("Float", 24, "Bomb3");
 
-	WGL.AddProperty(weapon, "PowerBombAmmo",    "Int", { KeyName = "powerbombs",    Edit = { order = 26, category = "Morph Ball", type = "Int", min = 0, max = 8 } });
-	WGL.AddProperty(weapon, "PowerBombMaxAmmo", "Int", { KeyName = "maxpowerbombs", Edit = { order = 25, category = "Morph Ball", type = "Int", min = 0, max = 8 } });
-	WGL.AddProperty(weapon, "NextPowerBomb",    "Float");
+	weapon:NetworkVar("Int",   15, "PowerBombAmmo",    { KeyName = "powerbombs",    Edit = { order = 26, category = "Morph Ball", type = "Int", min = 0, max = 8 } });
+	weapon:NetworkVar("Int",   16, "PowerBombMaxAmmo", { KeyName = "maxpowerbombs", Edit = { order = 25, category = "Morph Ball", type = "Int", min = 0, max = 8 } });
+	weapon:NetworkVar("Float", 25, "NextPowerBomb");
 
 	if (SERVER) then self:LoadState(); end
 end

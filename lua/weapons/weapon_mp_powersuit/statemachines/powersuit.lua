@@ -72,16 +72,16 @@ function sm_PowerSuit:SetupDataTables()
 
 	local weapon = self.Weapon;
 
-	WGL.AddProperty(weapon, "Suit1",        "Bool", { KeyName = "suit1",       Edit = { order = 10, category = "Suits", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Suit2",        "Bool", { KeyName = "suit2",       Edit = { order = 11, category = "Suits", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Suit3",        "Bool", { KeyName = "suit3",       Edit = { order = 12, category = "Suits", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Suit4",        "Bool", { KeyName = "suit4",       Edit = { order = 13, category = "Suits", type = "Boolean" } });
-	WGL.AddProperty(weapon, "SpaceJump",    "Bool", { KeyName = "spacejump",   Edit = { order = 8, category = "General", type = "Boolean" } });
-	WGL.AddProperty(weapon, "Grapple",      "Bool", { KeyName = "grapplebeam", Edit = { order = 9, category = "General", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  24, "Suit1",     { KeyName = "suit1",       Edit = { order = 10, category = "Suits", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  25, "Suit2",     { KeyName = "suit2",       Edit = { order = 11, category = "Suits", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  26, "Suit3",     { KeyName = "suit3",       Edit = { order = 12, category = "Suits", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  27, "Suit4",     { KeyName = "suit4",       Edit = { order = 13, category = "Suits", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  28, "SpaceJump", { KeyName = "spacejump",   Edit = { order = 8, category = "General", type = "Boolean" } });
+	weapon:NetworkVar("Bool",  29, "Grapple",   { KeyName = "grapplebeam", Edit = { order = 9, category = "General", type = "Boolean" } });
 
-	WGL.AddProperty(weapon, "Grappling",    "Bool");
-	WGL.AddProperty(weapon, "Grappled",     "Bool");
-	WGL.AddProperty(weapon, "GrappleRatio", "Float");
+	weapon:NetworkVar("Bool",  30, "Grappling");
+	weapon:NetworkVar("Bool",  31, "Grappled");
+	weapon:NetworkVar("Float", 26, "GrappleRatio");
 
 	if (SERVER) then self:LoadState(); end
 end

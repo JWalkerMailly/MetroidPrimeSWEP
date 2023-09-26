@@ -14,15 +14,15 @@ function MORPHBALL:SetupDataTables()
 
 	-- Initialization flag used for camera hook.
 	self.Initialized = true;
-	WGL.AddProperty(self, "PowerSuit",       "Entity");
-	WGL.AddProperty(self, "VelocityFix",     "Vector");
-	WGL.AddProperty(self, "VehicleViewPos",  "Vector");
-	WGL.AddProperty(self, "SurfaceNormal",   "Vector");
-	WGL.AddProperty(self, "SurfaceParent",   "Entity");
-	WGL.AddProperty(self, "SurfaceVelocity", "Vector");
-	WGL.AddProperty(self, "OnGround",        "Bool");
-	WGL.AddProperty(self, "Spider",          "Bool");
-	WGL.AddProperty(self, "BombJumpTime",    "Float");
+	self:NetworkVar("Entity", 0, "PowerSuit");
+	self:NetworkVar("Entity", 1, "SurfaceParent");
+	self:NetworkVar("Vector", 0, "VelocityFix");
+	self:NetworkVar("Vector", 1, "VehicleViewPos");
+	self:NetworkVar("Vector", 2, "SurfaceNormal");
+	self:NetworkVar("Vector", 3, "SurfaceVelocity");
+	self:NetworkVar("Bool",   0, "OnGround");
+	self:NetworkVar("Bool",   1, "Spider");
+	self:NetworkVar("Float",  0, "BombJumpTime");
 end
 
 function MORPHBALL:Think()
