@@ -1624,7 +1624,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 
 #### Team
 
-[WLKRE](https://steamcommunity.com/id/wlkre/) - Programming, Testing, Modeling, Rigging, Particle Effects
+[WLKRE](https://steamcommunity.com/id/wlkre/) - Programming, Testing, Source Particle Effects
 
 #### Contributors
 
