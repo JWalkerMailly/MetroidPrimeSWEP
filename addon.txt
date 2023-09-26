@@ -1,0 +1,10 @@
+"AddonInfo"
+{
+	"name"			"Metroid Prime Power Suit"
+	"version"		""
+	"up_date"		""
+	"author_name"	"WLKRE"
+	"author_email"	"wlkrstudios@hotmail.com"
+	"author_url"	""
+	"info"			""
+}

@@ -1,0 +1,12 @@
+{
+	"title"  : "Metroid Prime SWEP - Closed Beta",
+	"type"   : "Weapon",
+	"tags"   : [ "roleplay", "realism" ],
+	"ignore" :
+	[
+		"*.git*",
+		"*.gitignore*",
+		"*addon.txt*",
+		"*readme*"
+	]
+}
