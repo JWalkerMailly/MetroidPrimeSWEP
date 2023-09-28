@@ -1,5 +1,6 @@
 
 function MORPHBALL:SurfaceValid(surfaceProps)
+	if (!surfaceProps) then return false; end
 	return game.MetroidPrimeSpiderSurfaces.Cache[util.GetSurfaceData(surfaceProps).name];
 end
 
