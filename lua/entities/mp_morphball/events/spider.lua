@@ -24,14 +24,15 @@ function MORPHBALL:SpiderGroundTrace(owner, boosting, bombJumping)
 	local traceLength   = self.Radius * 3;
 	local surfaceNormal = self:GetSurfaceNormal();
 
-	-- If we are freefalling, change spider trace to use eye angles.
-	if (!self:GetOnGround() && !boosting) then velAngle = owner:EyeAngles(); end
-
 	-- Setup spider ball ground trace data. This will drive the ground normal.
 	local groundDir     = !bombJumping && (surfaceNormal * traceLength) || -(WGL.UpVec * traceLength);
 	local groundEndPos  = origin - groundDir;
 	local groundTrace   = util.TraceLine({ start = origin, endpos = groundEndPos, filter = { owner, self } });
 	debugoverlay.Line(origin, groundEndPos, FrameTime() * 2, Color(0, 255, 0));
+
+	-- If we are freefalling, change spider trace to use eye angles.
+	local groundValid   = groundTrace.Hit && self:SurfaceValid(groundTrace.SurfaceProps);
+	if (!groundValid && !boosting) then velAngle = owner:EyeAngles(); end
 
 	-- Setup spider ball wall trace data. This will scan for walls in front of us. It is important
 	-- to not normalize this vector. Velocity will play an important role when we are boosting or bomb
@@ -46,17 +47,16 @@ function MORPHBALL:SpiderGroundTrace(owner, boosting, bombJumping)
 	local cornerDir     = (wallDir - groundDir):GetNormalized() * traceLength;
 	local cornerEndPos  = origin + cornerDir;
 	local cornerTrace   = util.TraceLine({ start = origin, endpos = cornerEndPos, filter = { owner, self } });
-	local groundValid   = groundTrace.Hit && self:SurfaceValid(groundTrace.SurfaceProps);
 	local wallValid     = wallTrace.Hit && self:SurfaceValid(wallTrace.SurfaceProps);
 	local cornerValid   = cornerTrace.Hit && self:SurfaceValid(cornerTrace.SurfaceProps);
 	debugoverlay.Line(origin, cornerEndPos, FrameTime() * 2, Color(0, 255, 255));
 
 	-- Calculate the new spider normal.
-	local normal        = surfaceNormal;
-	if (groundValid)    then normal = normal + groundTrace.HitNormal; end
-	if (wallValid)      then normal = normal + wallTrace.HitNormal; end
-	if (cornerValid)    then normal = normal + cornerTrace.HitNormal;
-	                    else normal = normal + wallDir:GetNormalized(); end
+	local normal = surfaceNormal;
+	if (groundValid)              then normal = normal + groundTrace.HitNormal; end
+	if (wallValid)                then normal = normal + wallTrace.HitNormal; end
+	if (cornerValid || wallValid) then normal = normal + cornerTrace.HitNormal;
+	                              else normal = normal + wallDir:GetNormalized(); end
 
 	-- We didn't hit anything, reset the spider normal to its default position.
 	if (!groundValid && !wallValid && !cornerValid) then normal = WGL.UpVec; end
