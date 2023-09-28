@@ -3,6 +3,8 @@ include("shared.lua");
 
 function MORPHBALL:Initialize()
 
+	self.SpawnTime = CurTime();
+
 	-- Make owner invisible while using the morphball.
 	local owner = self:GetOwner();
 	owner:SetNoDraw(true);

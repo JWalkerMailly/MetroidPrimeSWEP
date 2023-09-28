@@ -10,7 +10,7 @@ function MORPHBALL:ShouldUnfreeze(owner, morphball)
 end
 
 function MORPHBALL:ShouldUnmorph(owner)
-	return owner:KeyDown(IN_DUCK) && hook.Call("CanExitVehicle", nil, self.Vehicle, owner);
+	return (CurTime() - self.SpawnTime > 1) && owner:KeyDown(IN_DUCK) && hook.Call("CanExitVehicle", nil, self.Vehicle, owner);
 end
 
 function MORPHBALL:GetSlopeInfluence()
