@@ -62,7 +62,7 @@ function sm_Helmet:SetupDataTables()
 	weapon:NetworkVar("Bool",  17, "Visor3Enabled", { KeyName = "visor3", Edit = { order = 6, category = "Visors", type = "Boolean" } });
 	weapon:NetworkVar("Bool",  18, "Visor4Enabled", { KeyName = "visor4", Edit = { order = 7, category = "Visors", type = "Boolean" } });
 
-	weapon:NetworkVar("Int",   12, "Energy",    { KeyName = "energytanks",    Edit = { order = 3, category = "General", type = "Int", min = 0, max = 14 } });
+	weapon:NetworkVar("Float", 27, "Energy",    { KeyName = "energytanks",    Edit = { order = 3, category = "General", type = "Int", min = 0, max = 14 } });
 	weapon:NetworkVar("Int",   13, "MaxEnergy", { KeyName = "maxenergytanks", Edit = { order = 2, category = "General", type = "Int", min = 0, max = 14 } });
 
 	weapon:NetworkVar("Int",   14, "VisorType");
@@ -164,7 +164,7 @@ end
 
 function sm_Helmet:SetEnergy(amount)
 	local max = self:GetMaxEnergy();
-	local energy = math.Clamp(amount, 0, max)
+	local energy = math.Clamp(amount, -0.99, max)
 	self.Weapon:SetEnergy(energy);
 	return energy;
 end

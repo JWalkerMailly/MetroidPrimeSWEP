@@ -1,6 +1,6 @@
 
 function POWERSUIT:AutoSave()
-	if (GetConVar("mp_cheats_autosave"):GetBool()) then self:SaveState(); end
+	if (GetConVar("mp_cheats_autosave"):GetBool()) then self:SaveState(true); end
 end
 
 function POWERSUIT:LoadState(config)
@@ -59,14 +59,17 @@ function POWERSUIT:LoadState(config)
 	return true;
 end
 
-function POWERSUIT:SaveState()
+function POWERSUIT:SaveState(persistHealth)
 
 	-- Prevent saving state if identifier is invalid or if using another player's powersuit instance.
 	local owner = self:GetOwner();
 	if (!SERVER || self.StateIdentifier == nil || !IsValid(owner) || owner:SteamID64() != self.StateIdentifier) then return false; end
 
 	-- Prepare save state directories.
-	file.CreateDir("metroidprime/" .. self.StateIdentifier);
+	file.CreateDir(self.SavePath .. "/" .. self.StateIdentifier);
+
+	-- Persist health on auto saves.
+	if (persistHealth && owner:Health() > 0) then self.Helmet:SetEnergy((owner:Health() - 99) / 100); end
 
 	-- Push states to json file to persist.
 	local save     = {};
@@ -74,7 +77,7 @@ function POWERSUIT:SaveState()
 	save.PowerSuit = self.PowerSuit:SaveState();
 	save.ArmCannon = self.ArmCannon:SaveState();
 	save.MorphBall = self.MorphBall:SaveState();
-	file.Write("metroidprime/" .. self.StateIdentifier .. "/powersuit.json", util.TableToJSON(save, true));
+	file.Write(self.SavePath .. "/" .. self.StateIdentifier .. "/powersuit.json", util.TableToJSON(save, true));
 	hook.Run("MP.OnSaveState", self);
 	return true;
 end

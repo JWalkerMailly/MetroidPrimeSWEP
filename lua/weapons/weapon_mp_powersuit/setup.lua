@@ -81,6 +81,7 @@ if (SERVER) then
 	AddCSLuaFile("hooks/server/damage.lua");
 	AddCSLuaFile("hooks/server/vehicle.lua");
 	AddCSLuaFile("hooks/server/movement.lua");
+	AddCSLuaFile("hooks/server/spawn.lua");
 	AddCSLuaFile("hooks/client/camera.lua");
 	AddCSLuaFile("hooks/client/rendering.lua");
 	AddCSLuaFile("hooks/death.lua");
@@ -89,6 +90,7 @@ if (SERVER) then
 	include("hooks/server/damage.lua");
 	include("hooks/server/vehicle.lua");
 	include("hooks/server/movement.lua");
+	include("hooks/server/spawn.lua");
 end
 
 -- Client initialization files.

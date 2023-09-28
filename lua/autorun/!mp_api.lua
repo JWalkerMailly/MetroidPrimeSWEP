@@ -70,7 +70,7 @@ function _player:SavePowerSuitState()
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return false; end
-	return powersuit:SaveState();
+	return powersuit:SaveState(true);
 end
 
 -- lua_run print(Entity(1):LoadPowerSuitState("metroidprime/endgame.json"));
