@@ -19,7 +19,7 @@ end
 
 function POWERSUIT:HandleAirMovement(ply, movement)
 
-	if (self.PowerSuit:IsGrappling() || self.PowerSuit:Grappled()) then return; end
+	if (self.PowerSuit:IsGrappling() || self.PowerSuit:Grappled() || ply:IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)) then return; end
 
 	-- Prevent dashing from a grapple anchor unless using the Scan Visor.
 	local visor = self:GetVisor();
@@ -109,7 +109,7 @@ end
 function POWERSUIT:HandleMorphBall(ply, movement)
 
 	if (!self.MorphBall:IsMorphEnabled() || !self.MorphBall:CanMorph() || ply:InVehicle()) then return; end
-	if (movement:KeyPressed(IN_DUCK) && !self.ArmCannon:IsBusy())   then
+	if (movement:KeyPressed(IN_DUCK) && !self.ArmCannon:IsBusy() && !ply:IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)) then
 
 		-- Create morphball vehicle.
 		local morphball = ents.Create("mp_morphball");
@@ -141,10 +141,11 @@ function POWERSUIT:HandleGrapple(ply, movement)
 
 	local onGround   = ply:OnGround();
 	local visor      = self:GetVisor();
+	local barnacle   = ply:IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE);
 	local anchor, validAnchor, locked = self.Helmet:GetTarget(IN_SPEED);
 
 	-- Do nothing if grapple beam is not enabled or we do not have a valid anchor target.
-	if (!self.PowerSuit:IsGrappleEnabled() || visor.ShouldHideBeamMenu || !locked || !validAnchor || !anchor:IsGrappleAnchor()) then
+	if (!self.PowerSuit:IsGrappleEnabled() || visor.ShouldHideBeamMenu || !locked || !validAnchor || !anchor:IsGrappleAnchor() || barnacle) then
 		if (self.GrappleStartTime != nil || self.PowerSuit:Grappled()) then self:ResetGrapple(visor.ShouldHideBeamMenu, onGround); end
 		return;
 	end
