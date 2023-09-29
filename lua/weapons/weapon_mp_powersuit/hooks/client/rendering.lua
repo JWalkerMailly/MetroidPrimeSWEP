@@ -154,3 +154,16 @@ hook.Add("PreDrawEffects", "POWERSUIT.DrawViewModelEffects", function()
 	-- We also can't use the viewmodel rendering hooks as they conflict with the visor material swaps.
 	WGL.ViewModelProjection(false, weapon.ViewModelFOV, weapon.DrawViewModelEffects, weapon);
 end);
+
+hook.Add("HUDPaintBackground", "POWERSUIT.PersistHUD", function()
+
+	-- Do nothing if we do not persist HUD, or if the power suit is in use.
+	local owner = LocalPlayer();
+	if (!GetConVar("mp_options_keephud"):GetBool() || owner:UsingPowerSuit()) then return; end
+
+	local powersuit = owner:GetPowerSuit();
+	if (!powersuit) then return; end
+
+	-- Call to HUD renderer.
+	powersuit:DrawHUDBackground();
+end);

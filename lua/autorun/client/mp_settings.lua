@@ -40,6 +40,9 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
 		panel:CheckBox("Face Reflection", "mp_options_facereflection");
 		panel:ControlHelp("\nEnable or disable Samus' face reflection on combat visor.");
+
+		panel:CheckBox("Keep HUD", "mp_options_keephud");
+		panel:ControlHelp("\nDisplay HUD even when the Power Suit is not in use as long as it is in inventory. Can cause conflicts with other addons.");
 	end);
 
 	-- Create Display options menu.
