@@ -26,6 +26,9 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
 		panel:Clear();
 
+		panel:CheckBox("Auto Aim", "mp_options_autoaim");
+		panel:ControlHelp("\nEnable or disable auto aim feature.");
+
 		panel:NumSlider("Visor Opacity", "mp_options_visoropacity", 0, 100, 0);
 		panel:ControlHelp("\nAdjusts the transparency of all UI elements except for health.");
 

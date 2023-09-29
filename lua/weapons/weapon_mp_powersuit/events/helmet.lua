@@ -34,13 +34,15 @@ function POWERSUIT:GetDangerRatio()
 	return WGL.Clamp(1 - (closestDanger / maxDistance));
 end
 
-function POWERSUIT:GetAimVector(shootPos, aimVector, target, autoTarget)
+function POWERSUIT:GetAimVector(owner, shootPos, aimVector, target, autoTarget)
 
 	-- Auto targeting is a special feature used primarily for the wavebuster.
 	if (autoTarget) then return (target:WorldSpaceCenter() - shootPos):GetNormalized(); end
 
+	local shouldAutoAim = tobool(owner:GetInfo("mp_options_autoaim"));
+
 	-- Regular aim assist works by establishing a maximal aim angle vector and predicting a set number of frames in advance.
-	local autoAimVector = ((target:WorldSpaceCenter() + target:GetVelocity() * FrameTime() * self.Helmet.Constants.Visor.AimAssistFrames) - shootPos):GetNormalized();
+	local autoAimVector = shouldAutoAim && ((target:WorldSpaceCenter() + target:GetVelocity() * FrameTime() * self.Helmet.Constants.Visor.AimAssistFrames) - shootPos):GetNormalized() || aimVector;
 	if (autoAimVector:Dot(aimVector) > self.Helmet:GetAimAssistAngle()) then return autoAimVector; end
 	return aimVector;
 end
@@ -54,7 +56,7 @@ function POWERSUIT:GetAimData(aimAssist, autoTarget)
 	local target, targetValid, lockedOn = self.Helmet:GetTarget(IN_SPEED);
 	if (targetValid) then
 		validTarget = !target:IsGrappleAnchor();
-		if (aimAssist && validTarget) then aimVector = self:GetAimVector(shootPos, aimVector, target, autoTarget); end
+		if (aimAssist && validTarget) then aimVector = self:GetAimVector(owner, shootPos, aimVector, target, autoTarget); end
 	end
 
 	return {

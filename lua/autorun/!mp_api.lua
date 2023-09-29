@@ -18,6 +18,7 @@ CreateClientConVar("mp_options_helmetopacity", "100", true, false, "", 0, 100);
 CreateClientConVar("mp_options_hudlag",          "1", true, false);
 CreateClientConVar("mp_options_facereflection",  "1", true, false);
 CreateClientConVar("mp_options_playermodel",     "1", true, true);
+CreateClientConVar("mp_options_autoaim",         "1", true, true);
 if (CLIENT) then concommand.Add("mp_options_playermodel_get", function(ply) gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=2701609725"); end); end
 
 -- ----------------------------------------------
