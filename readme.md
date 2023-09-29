@@ -59,12 +59,14 @@ The following commands are all accessible from the options menu:
 The following commands are all accessible from the options menu:
 | Command | Values | Description |
 | ------ | ------ | ------ |
+| mp_options_autoaim | 0 / 1 | Enables or disables auto-aim. |
 | mp_options_viewmodelfov | 54 - 76 | Changes viewmodel FOV. |
 | mp_options_widescreenfix | 0 / 1 | Stretches HUD to fill widescreen displays. |
 | mp_options_visoropacity | 0 - 100 | Opacity of heads-up-display. |
 | mp_options_helmetopacity | 0 - 100 | Opacity of Samus' helmet. |
 | mp_options_hudlag | 0 / 1 | Enables or disables HUD lag. |
 | mp_options_facereflection | 0 / 1 | Enables or disables Samus' face reflection on Combat Visor. |
+| mp_options_keephud | 0 / 1 | Enables or disables HUD display even when the Power Suit is not in use. Must be in inventory. |
 </details>
 
 <details>
