@@ -151,9 +151,7 @@ function PROJECTILE:GetBlastKnockBack()
 end
 
 function PROJECTILE:SetTarget(target)
-
 	if (!IsValid(target)) then return; end
-	self.HomingOffset = Vector(0, 0, target:OBBCenter()[3]);
 	self.HomingTarget = target;
 end
 

@@ -125,15 +125,11 @@ function PROJECTILE:ApplyRotation(phys)
 	phys:SetAngles(self.LastAngles);
 end
 
-function PROJECTILE:GetHomingAngle(target)
-
-	local position       = self:GetPos();
-	local targetPos      = target:GetPos() + self.HomingOffset;
-	local distance       = (targetPos - position):Length();
+function PROJECTILE:GetHomingAngle(pos, target, targetPos, targetDirection)
+	local distance       = targetDirection:Length();
 	local targetVelocity = target:GetVelocity() / distance;
 	local time           = distance / self.Speed;
-
-	return (targetPos + targetVelocity * time - position):Angle();
+	return (targetPos + targetVelocity * time - pos):Angle();
 end
 
 function PROJECTILE:Home(phys)
@@ -143,15 +139,17 @@ function PROJECTILE:Home(phys)
 	if (!IsValid(target)) then return; end
 
 	-- Stop homing if we have gone past the target.
-	local direction = phys:GetVelocity():GetNormalized();
-	local targetDirection = (self.HomingTarget:GetPos() - self:GetPos()):GetNormalized();
-	if (direction:Dot(targetDirection) < 0) then
+	local pos             = self:GetPos();
+	local direction       = phys:GetVelocity():GetNormalized();
+	local targetPos       = target:GetLockOnPosition();
+	local targetDirection = targetPos - pos;
+	if (direction:Dot(targetDirection:GetNormalized()) < 0) then
 		self.Homing = false;
 		return;
 	end
 
 	-- Point projectile towards target and apply lag.
-	local homingAngle = LerpAngle(self.HomingLag * FrameTime(), self.LastAngles, self:GetHomingAngle(target));
+	local homingAngle = LerpAngle(self.HomingLag * FrameTime(), self.LastAngles, self:GetHomingAngle(pos, target, targetPos, targetDirection));
 	self:SetAngles(homingAngle);
 	self.LastAngles = homingAngle;
 end

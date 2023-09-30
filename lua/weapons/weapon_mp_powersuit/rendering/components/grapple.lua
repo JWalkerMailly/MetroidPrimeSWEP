@@ -31,13 +31,14 @@ function GrapplePoints:Draw(weapon)
 			end
 
 			-- Render grapple anchor sprite.
-			local dir      = (EyePos() - y:GetPos());
+			local pos      = y:GetLockOnPosition();
+			local dir      = (EyePos() - pos);
 			local forward  = dir:GetNormalized();
 			local distance = dir:Length() / weapon.PowerSuit.Constants.Grapple.MaxDistance;
 			local size     = math.Clamp(y.GrappleUISize * distance, 0, 86);
 			local color    = y.GrappleUIColor;
 			render.SetMaterial(self.Anchor);
-			render.DrawSprite(y:GetPos() + forward * size, size, size, color);
+			render.DrawSprite(pos + forward * size, size, size, color);
 		end
 	end
 end

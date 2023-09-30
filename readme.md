@@ -215,6 +215,29 @@ game.MetroidPrimeSpiderSurfaces.Add("surface_prop_name")
 ```
 </details>
 
+<details>
+<summary><h4>Adding Lock-On Support</h4></summary>
+
+By default, the weapon will use the world space center of an entity to lock on. The API offers a way to define a lock-on attachment. The first method declares the attachment in your Initialize hook. The second approach makes use of an autorun script to register your attachment into the game. If you are the author of the entity you wish to add support for, the first approach is recommended. If you are not the author, your only option will be the second method. Attachments are dynamic, you can change the attachment at any time in your logic as long as it is called server-side. See API section for all available functions in the **Entity** section.
+
+**Method 1**\
+In your **Initialize** hook:
+```lua
+function ENT:Initialize()
+
+	-- Code.
+
+	if (self.SetLockOnAttachment) then self:SetLockOnAttachment("your_attachment_name") end
+end
+```
+
+**Method 2**\
+In your autorun script, add the following stub and change the values to your needs:
+```lua
+game.MetroidPrimeLockOn.Add("entity_class_name", "your_attachment_name")
+```
+</details>
+
 </br>
 
 ## Architecture Overview
@@ -1067,6 +1090,39 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 > Determines if an entity is marked as *cold* or *hot* on the X-Ray Visor.
 ###### Returns
 > <code>1. Boolean</code> True if has signature, False otherwise.
+---
+</details>
+
+<details>
+<summary><img src="readme/shared.png"/> <code>Vector</code> <code>_entity:GetLockOnPosition()</code></summary>
+
+###### Description
+> Get the lock-on position of an entity.
+###### Returns
+> <code>1. Vector</code> Lock-on position.
+---
+</details>
+
+<details>
+<summary><img src="readme/shared.png"/> <code>Number</code> <code>_entity:GetLockOnAttachment()</code></summary>
+
+###### Description
+> Get the lock-on attachment ID.
+> ```
+> This function returns 0 if the attachment does not exist and -1 if the model is invalid.
+> ```
+###### Returns
+> <code>1. Number</code> Lock-on attachment ID.
+---
+</details>
+
+<details>
+<summary><img src="readme/server.png"/> <code>_player:SetLockOnAttachment(name)</code></summary>
+
+###### Description
+> Defines the entity's lock-on attachment.
+###### Arguments
+> <code>1. String</code> <code>**name**</code> The name of the attachment to use for lock-on.
 ---
 </details>
 

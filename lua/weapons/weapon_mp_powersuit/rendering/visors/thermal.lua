@@ -220,7 +220,7 @@ function ThermalVisor:DrawReticle(weapon, w, h, visorOpacity)
 		-- Last reticle movement is compounded every frame onto the screen position
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && validTarget) then
-			local targetPosLocal     = nextTarget:WorldSpaceCenter():ToScreen();
+			local targetPosLocal     = nextTarget:GetLockOnPosition():ToScreen();
 			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
 			alpha                    = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
 			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);

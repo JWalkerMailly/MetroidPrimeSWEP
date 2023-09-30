@@ -3,7 +3,7 @@ function POWERSUIT:IsBoundingBoxVisible(entity, maxDistance)
 
 	local owner  = self:GetOwner();
 	local eyePos = owner:EyePos();
-	local endPos = eyePos + (entity:WorldSpaceCenter() - eyePos):GetNormalized() * (maxDistance + 50);
+	local endPos = eyePos + (entity:GetLockOnPosition() - eyePos):GetNormalized() * (maxDistance + 50);
 	local trace  = util.TraceHull({
 		start    = eyePos,
 		endpos   = endPos,
@@ -37,12 +37,12 @@ end
 function POWERSUIT:GetAimVector(owner, shootPos, aimVector, target, autoTarget, lockedOn)
 
 	-- Auto targeting is a special feature used primarily for the wavebuster.
-	if (autoTarget) then return (target:WorldSpaceCenter() - shootPos):GetNormalized(); end
+	if (autoTarget) then return (target:GetLockOnPosition() - shootPos):GetNormalized(); end
 
 	local shouldAutoAim = tobool(owner:GetInfo("mp_options_autoaim")) || lockedOn;
 
 	-- Regular aim assist works by establishing a maximal aim angle vector and predicting a set number of frames in advance.
-	local autoAimVector = shouldAutoAim && ((target:WorldSpaceCenter() + target:GetVelocity() * FrameTime() * self.Helmet.Constants.Visor.AimAssistFrames) - shootPos):GetNormalized() || aimVector;
+	local autoAimVector = shouldAutoAim && ((target:GetLockOnPosition() + target:GetVelocity() * FrameTime() * self.Helmet.Constants.Visor.AimAssistFrames) - shootPos):GetNormalized() || aimVector;
 	if (autoAimVector:Dot(aimVector) > self.Helmet:GetAimAssistAngle()) then return autoAimVector; end
 	return aimVector;
 end
@@ -77,7 +77,7 @@ function POWERSUIT:CanBeLockedOn(visor, entity, maxDistance)
 	local owner = self:GetOwner();
 	if (!IsValid(entity) || entity == owner || entity == self) then return false, NULL, false; end
 
-	local targetPos = entity:WorldSpaceCenter();
+	local targetPos = entity:GetLockOnPosition();
 	local isAnchor  = entity:IsGrappleAnchor();
 	if (!visor.AllowLockAll) then
 

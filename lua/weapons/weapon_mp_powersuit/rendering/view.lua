@@ -56,7 +56,7 @@ function POWERSUIT:LockView(ply)
 
 		-- Handle lock on here in order to sync up with server. Don't update the view if we are locked onto a grapple anchor.
 		local grappling = self.PowerSuit:IsGrappling() || self.PowerSuit:Grappled();
-		local lockAngle = (!grappling || !target:IsGrappleAnchor()) && (target:WorldSpaceCenter() - ply:EyePos()):Angle() || self.Helmet:GetLockAngle();
+		local lockAngle = (!grappling || !target:IsGrappleAnchor()) && (target:GetLockOnPosition() - ply:EyePos()):Angle() || self.Helmet:GetLockAngle();
 		ply:SetEyeAngles(lockAngle);
 
 		return lockAngle;

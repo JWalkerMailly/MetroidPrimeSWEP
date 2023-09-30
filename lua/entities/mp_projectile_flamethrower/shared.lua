@@ -28,7 +28,7 @@ function PROJECTILE:HitScanThink(weapon, shoot)
 	local maxDist = weapon.Helmet.Constants.Visor.LockOnDistance / 2;
 	local aimPos  = shoot.ShootPos + shoot.AimVector * maxDist;
 	if (shoot.Locked && shoot.ValidTarget && shoot.Target:GetPos():DistToSqr(shoot.Owner:GetPos()) < (maxDist * maxDist)) then
-		aimPos = shoot.Target:WorldSpaceCenter();
+		aimPos = shoot.Target:GetLockOnPosition();
 	end
 
 	-- Lerp aim position for swaying effect.

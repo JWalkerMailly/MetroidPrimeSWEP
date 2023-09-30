@@ -17,7 +17,7 @@ function ScanPoints:Draw(weapon)
 		if (!IsValid(v) || v:GetOwner() == weapon:GetOwner()) then continue; end
 
 		-- Render scan point sprite.
-		local pos      = v:WorldSpaceCenter();
+		local pos      = v:GetLockOnPosition();
 		local dir      = (EyePos() - pos);
 		local forward  = dir:GetNormalized();
 		local distance = dir:Length() / weapon.Helmet.Constants.Visor.LockOnDistance;

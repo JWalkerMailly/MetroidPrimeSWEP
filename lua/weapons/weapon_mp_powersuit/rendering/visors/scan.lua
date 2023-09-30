@@ -267,7 +267,7 @@ function ScanVisor:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV)
 		-- Last reticle movement is compounded every frame onto the screen position
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && nextTargetValid) then
-			local targetPosLocal     = WGL.ToScreenFOV(nextTarget:WorldSpaceCenter(), scanFOV, viewFOV, w, h);
+			local targetPosLocal     = WGL.ToScreenFOV(nextTarget:GetLockOnPosition(), scanFOV, viewFOV, w, h);
 			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
 			alpha                    = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
 			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);

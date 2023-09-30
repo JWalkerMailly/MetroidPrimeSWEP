@@ -160,7 +160,7 @@ function POWERSUIT:HandleGrapple(ply, movement)
 	-- Setup grapple variables.
 	local ownerPos   = movement:GetOrigin();
 	local grapple    = self.PowerSuit.Constants.Grapple;
-	local anchorPos  = anchor:GetPos();
+	local anchorPos  = anchor:GetLockOnPosition();
 	local anchorAng  = (anchorPos - ownerPos):Angle();
 	local swingRatio = ply:GetForward():Dot(anchorAng:Forward());
 	if (self.GrappleStartTime == nil) then
@@ -209,7 +209,10 @@ function POWERSUIT:HandleGrapple(ply, movement)
 	end
 
 	-- Prevent default behavior.
-	if (hook.Run("MP.GrappleBeamThink", ply, self, anchor)) then return false; end
+	if (hook.Run("MP.GrappleBeamThink", ply, self, anchor)) then
+		self.Helmet:SetLockAngle((anchorPos - ply:EyePos()):Angle());
+		return false;
+	end
 
 	-- Apply swing rotational input.
 	local rotation = 0;

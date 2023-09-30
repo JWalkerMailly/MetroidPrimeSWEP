@@ -84,11 +84,11 @@ function _player:LoadPowerSuitState(json)
 end
 
 function _entity:SetIgnitable(ignitable)
-	self:SetNWBool("Ignitable", ignitable);
+	self:SetNWBool("MP.Ignitable", ignitable);
 end
 
 function _entity:IsIgnitable()
-	return self:GetNWBool("Ignitable", true);
+	return self:GetNWBool("MP.Ignitable", true);
 end
 
 -- ----------------------------------------------
@@ -335,6 +335,28 @@ function _entity:CanBeScanned()
 	return true;
 end
 
+game.MetroidPrimeLockOn = {};
+game.MetroidPrimeLockOn.Cache = {
+	["npc_monk"] = "anim_attachment_LH"
+};
+
+function game.MetroidPrimeLockOn.Add(class, attachment)
+	game.MetroidPrimeLockOn.Cache[class] = attachment;
+end
+
+function _entity:GetLockOnPosition()
+	local id = self:GetLockOnAttachment();
+	return id > 0 && self:GetAttachment(id).Pos || self:WorldSpaceCenter();
+end
+
+function _entity:GetLockOnAttachment()
+	return self:GetNWInt("MP.LockOnAttachment", 0);
+end
+
+function _entity:SetLockOnAttachment(name)
+	self:SetNWInt("MP.LockOnAttachment", self:LookupAttachment(name));
+end
+
 function _entity:GetLogBookData()
 
 	local logbook = self.LogBook;
@@ -432,53 +454,53 @@ end
 function _entity:SetXRayHot(hot)
 
 	if (!IsValid(self)) then return false; end
-	self:SetNWBool("XRayVisorHot", hot);
+	self:SetNWBool("MP.XRayVisorHot", hot);
 	return hot;
 end
 
 function _entity:SetXRayCold(cold)
 
 	if (!IsValid(self)) then return false; end
-	self:SetNWBool("XRayVisorCold", cold);
+	self:SetNWBool("MP.XRayVisorCold", cold);
 	return cold;
 end
 
 function _entity:IsXRayHot()
 
 	if (!IsValid(self)) then return false; end
-	return self:GetNWBool("XRayVisorHot", false);
+	return self:GetNWBool("MP.XRayVisorHot", false);
 end
 
 function _entity:IsXRayCold()
 
 	if (!IsValid(self)) then return false; end
-	return self:GetNWBool("XRayVisorCold", false);
+	return self:GetNWBool("MP.XRayVisorCold", false);
 end
 
 function _entity:SetThermalHot(hot)
 
 	if (!IsValid(self)) then return false; end
-	self:SetNWBool("ThermalVisorHot", hot);
+	self:SetNWBool("MP.ThermalVisorHot", hot);
 	return hot;
 end
 
 function _entity:SetThermalCold(cold)
 
 	if (!IsValid(self)) then return false; end
-	self:SetNWBool("ThermalVisorCold", cold);
+	self:SetNWBool("MP.ThermalVisorCold", cold);
 	return cold;
 end
 
 function _entity:IsThermalHot()
 
 	if (!IsValid(self)) then return false; end
-	return self:GetNWBool("ThermalVisorHot", false);
+	return self:GetNWBool("MP.ThermalVisorHot", false);
 end
 
 function _entity:IsThermalCold()
 
 	if (!IsValid(self)) then return false; end
-	return self:GetNWBool("ThermalVisorCold", false);
+	return self:GetNWBool("MP.ThermalVisorCold", false);
 end
 
 -- Prepare material swap table for faster lookups during rendering.

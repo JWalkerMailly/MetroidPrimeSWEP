@@ -29,7 +29,7 @@ function GrappleBeam:Draw(weapon)
 	if (!anchorValid) then return; end
 
 	local maxDistance         = weapon.PowerSuit.Constants.Grapple.MaxDistance;
-	local grappleEndPos       = LerpVector(grappleRatio, grappleStartPos, anchor:GetPos());
+	local grappleEndPos       = LerpVector(grappleRatio, grappleStartPos, anchor:GetLockOnPosition());
 	local grappleDirection    = grappleEndPos - grappleStartPos;
 	local grappleAngle        = grappleDirection:Angle();
 	local grappleUp           = grappleAngle:Up();

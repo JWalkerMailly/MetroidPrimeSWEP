@@ -200,7 +200,7 @@ function XRayVisor:DrawReticle(weapon, fovRatio)
 		-- Last reticle movement is compounded every frame onto the screen position
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && validTarget) then
-			local targetPosLocal     = nextTarget:WorldSpaceCenter():ToScreen();
+			local targetPosLocal     = nextTarget:GetLockOnPosition():ToScreen();
 			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
 			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);
 			self.LastReticleMovement = Lerp(FrameTime(), self.LastReticleMovement, 1);

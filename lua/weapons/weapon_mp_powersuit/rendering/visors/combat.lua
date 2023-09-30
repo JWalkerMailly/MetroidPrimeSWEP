@@ -296,7 +296,7 @@ function CombatVisor:DrawReticle(weapon, target, validTarget, locked, fovRatio)
 		-- Last reticle movement is compounded every frame onto the screen position
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && validTarget) then
-			local targetPosLocal     = target:WorldSpaceCenter():ToScreen();
+			local targetPosLocal     = target:GetLockOnPosition():ToScreen();
 			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
 			alpha                    = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
 			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);
