@@ -1,7 +1,9 @@
 <p align="center"><img src="readme/banner.png"/></p>
 
 # Metroid Prime SWEP
-Metroid Prime SWEP is a passion project "port" of the original Metroid Prime character controller for Garry's Mod with utmost fidelity in mind. The project also ships with a comprehensive API and a multitude of hooks for developers to integrate their own add-ons.
+Metroid Prime SWEP is a passion project recreation of the original Metroid Prime character controller for Garry's Mod with utmost fidelity in mind. The project also ships with a comprehensive API and a multitude of hooks for developers to integrate their own add-ons.
+
+[Workshop Link](https://steamcommunity.com/sharedfiles/filedetails/?id=3041333779)
 
 ---
 
@@ -1680,7 +1682,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 
 #### Team
 
-[WLKRE](https://steamcommunity.com/id/wlkre/) - Programming, Testing, Modeling, Rigging, Particle Effects
+[WLKRE](https://steamcommunity.com/id/wlkre/) - Programming, Testing, Source Particle Effects
 
 #### Contributors
 
@@ -1704,6 +1706,6 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 <p align="center"><img src="readme/super-metroid-samus.gif"/></p>
 
 ### Notice of Non-Affiliation and Disclaimer
-Metroid Prime SWEP is a passion project "port" of the original Metroid Prime character controller for Garry's Mod. It is not affiliated, associated, authorized, endorsed by, or in any way officially connected to Nintendo, or any of its subsidiaries or its affiliates.
+Metroid Prime SWEP is a passion project recreation of the original Metroid Prime character controller for Garry's Mod. It is not affiliated, associated, authorized, endorsed by, or in any way officially connected to Nintendo, or any of its subsidiaries or its affiliates.
 
 The names Metroid Prime as well as related names, marks, emblems and images are registered trademarks of their respective owners.
