@@ -132,6 +132,8 @@ POWERSUIT.Suits.Sounds = {
 	["morph"]          = Sound("entities/morphball/morph.wav")
 };
 
+POWERSUIT.MorphBallVehicle = "mp_morphball";
+
 POWERSUIT.JumpCount        = 0;
 POWERSUIT.JumpTime         = 0;
 POWERSUIT.Dashing          = false;

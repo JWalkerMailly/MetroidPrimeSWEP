@@ -130,7 +130,7 @@ end
 
 function POWERSUIT:Missile()
 
-	self:ShootProjectile("mp_projectile_missile");
+	self:ShootProjectile(self.MissileProjectile);
 
 	-- Statemachines.
 	self:SetNextFire(self.ArmCannon.Constants.Beam.Missile, self.ArmCannon.Constants.Missile.Close);

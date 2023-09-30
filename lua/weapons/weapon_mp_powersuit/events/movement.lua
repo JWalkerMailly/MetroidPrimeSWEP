@@ -112,7 +112,7 @@ function POWERSUIT:HandleMorphBall(ply, movement)
 	if (movement:KeyPressed(IN_DUCK) && !self.ArmCannon:IsBusy() && !ply:IsEFlagSet(EFL_IS_BEING_LIFTED_BY_BARNACLE)) then
 
 		-- Create morphball vehicle.
-		local morphball = ents.Create("mp_morphball");
+		local morphball = ents.Create(self.MorphBallVehicle);
 		morphball:SetOwner(ply);
 		morphball:SetPowerSuit(self);
 		morphball:SetPos(ply:GetPos() + Vector(0, 0, morphball.Radius));

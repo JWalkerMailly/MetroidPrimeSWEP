@@ -272,6 +272,8 @@ POWERSUIT.Beams.Sounds = {
 	["depleted"]      = Sound("weapons/missile/empty.wav")
 };
 
+POWERSUIT.MissileProjectile      = "mp_projectile_missile";
+
 POWERSUIT.ViewModelFOV           = 62;
 POWERSUIT.Weight                 = 1;
 POWERSUIT.AutoSwitchTo           = true;
