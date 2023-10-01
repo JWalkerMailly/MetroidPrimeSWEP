@@ -22,6 +22,13 @@ CreateClientConVar("mp_options_playermodel",     "1", true, true);
 CreateClientConVar("mp_options_autoaim",         "1", true, true);
 if (CLIENT) then concommand.Add("mp_options_playermodel_get", function(ply) gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=2701609725"); end); end
 
+CreateClientConVar("mp_controls_selectorlayer", "15", true, true);
+CreateClientConVar("mp_controls_selector1",     "88", true, true);
+CreateClientConVar("mp_controls_selector2",     "91", true, true);
+CreateClientConVar("mp_controls_selector3",     "90", true, true);
+CreateClientConVar("mp_controls_selector4",     "89", true, true);
+
+
 -- ----------------------------------------------
 -- ENUMS
 -- ----------------------------------------------

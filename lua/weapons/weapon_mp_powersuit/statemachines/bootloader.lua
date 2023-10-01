@@ -3,10 +3,26 @@ function POWERSUIT:AutoSave()
 	if (GetConVar("mp_cheats_autosave"):GetBool()) then self:SaveState(true); end
 end
 
+function POWERSUIT:LoadControls()
+	local owner = self:GetOwner();
+	self.SelectorLayerKey = owner:GetInfo("mp_controls_selectorlayer");
+	self.Beams[1].Key     = owner:GetInfo("mp_controls_selector1");
+	self.Beams[2].Key     = owner:GetInfo("mp_controls_selector2");
+	self.Beams[3].Key     = owner:GetInfo("mp_controls_selector3");
+	self.Beams[4].Key     = owner:GetInfo("mp_controls_selector4");
+	self.Visors[1].Key    = owner:GetInfo("mp_controls_selector1");
+	self.Visors[2].Key    = owner:GetInfo("mp_controls_selector4");
+	self.Visors[3].Key    = owner:GetInfo("mp_controls_selector3");
+	self.Visors[4].Key    = owner:GetInfo("mp_controls_selector2");
+end
+
 function POWERSUIT:LoadState(config)
 
 	-- We auto load state once per instance.
 	if (self.StateIdentifier != nil && config == nil) then return false; end
+
+	-- Reload controls.
+	self:LoadControls();
 
 	-- Bootloader identifier.
 	local owner = self:GetOwner();

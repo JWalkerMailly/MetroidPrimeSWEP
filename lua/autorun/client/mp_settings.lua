@@ -21,6 +21,18 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:Button("Open Workshop", "mp_options_playermodel_get");
 	end);
 
+	-- Create controls options menu.
+	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpControls", "Controls", "", "", function(panel)
+
+		panel:Clear();
+
+		WGL.KeyMap(panel, "Visor Layer Key",  "mp_controls_selectorlayer", "\nDefines the visor layer key to use when changing visors.");
+		WGL.KeyMap(panel, "Beam/Visor 1 Key", "mp_controls_selector1",     "\nDefines the key to use to swap to Beam/Visor 1.");
+		WGL.KeyMap(panel, "Beam/Visor 2 Key", "mp_controls_selector2",     "\nDefines the key to use to swap to Beam/Visor 2.");
+		WGL.KeyMap(panel, "Beam/Visor 3 Key", "mp_controls_selector3",     "\nDefines the key to use to swap to Beam/Visor 3.");
+		WGL.KeyMap(panel, "Beam/Visor 4 Key", "mp_controls_selector4",     "\nDefines the key to use to swap to Beam/Visor 4.");
+	end);
+
 	-- Create Visor options menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpVisor", "Visor", "", "", function(panel)
 

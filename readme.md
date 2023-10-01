@@ -54,6 +54,19 @@ The following commands are all accessible from the options menu:
 </details>
 
 <details>
+<summary><h4>Control Commands</h4></summary>
+
+**Warning**: Changing controls may have consequences and cause conflicts with other addons. Change at your own risk. Controls use the KEY enums, see the following link for a list of possible values: https://wiki.facepunch.com/gmod/Enums/KEY.
+| ConVar | Values | Description |
+| ------ | ------ | ------ |
+| mp_controls_selectorlayer | 0 - 159 | Defines the visor layer key to use when changing visors. |
+| mp_controls_selector1 | 0 - 159 | Defines the key to use to swap to Beam/Visor 1. |
+| mp_controls_selector2 | 0 - 159 | Defines the key to use to swap to Beam/Visor 2. |
+| mp_controls_selector3 | 0 - 159 | Defines the key to use to swap to Beam/Visor 3. |
+| mp_controls_selector4 | 0 - 159 | Defines the key to use to swap to Beam/Visor 4. |
+</details>
+
+<details>
 <summary><h4>Display Commands</h4></summary>
 
 The following commands are all accessible from the options menu:
