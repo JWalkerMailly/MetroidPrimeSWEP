@@ -21,6 +21,7 @@ PROJECTILE.DecalGlowEffect    = "powerbeam_glow_decal";
 PROJECTILE.DecalBurnEffect    = "beam_burn_decal";
 
 -- Properties
+PROJECTILE.Mask               = MASK_SHOT_PORTAL;
 PROJECTILE.Radius             = 2.5;
 PROJECTILE.Speed              = 3000;
 PROJECTILE.LifeTime           = 3;

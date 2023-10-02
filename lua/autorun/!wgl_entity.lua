@@ -59,7 +59,7 @@ function WGL.EmitTrail(entity, material, attachment, color, additive, size, endS
 	return trail;
 end
 
-function WGL.TraceCollision(ent, reset, filter, endPos)
+function WGL.TraceCollision(ent, reset, filter, endPos, mask)
 
 	-- Reset collision detection for dynamic checks.
 	if (reset) then ent.__wgl_LastPosition = nil; end
@@ -89,7 +89,7 @@ function WGL.TraceCollision(ent, reset, filter, endPos)
 		maxs   = max, mins = min,
 		filter = filter || { ent, owner, parent },
 		output = ent.__wgl_LastCollision,
-		mask   = MASK_PLAYERSOLID
+		mask   = mask || MASK_PLAYERSOLID
 	});
 
 	-- Debug collision prediction when using developer mode.

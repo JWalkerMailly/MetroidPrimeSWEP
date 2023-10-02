@@ -22,7 +22,7 @@ function PROJECTILE:PredictCollisions()
 	if (self.OscillatorParent) then return; end
 
 	-- Begin collision prediction for custom projectile.
-	local collision = WGL.TraceCollision(self, false, self.CollisionFilter, self.HitScanPos);
+	local collision = WGL.TraceCollision(self, false, self.CollisionFilter, self.HitScanPos, self.Mask);
 	if (self.HitScanPos) then
 		self:SetCollisionRan(true);
 		self:SetCollisionPos(collision.HitPos);

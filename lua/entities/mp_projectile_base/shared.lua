@@ -11,6 +11,7 @@ if (SERVER) then
 end
 
 -- Collision properties.
+PROJECTILE.Mask                = MASK_PLAYERSOLID;
 PROJECTILE.Radius              = 2.5;
 PROJECTILE.CollisionFilter     = nil;
 PROJECTILE.RemoveDelay         = nil;

@@ -11,6 +11,7 @@ DEFINE_BASECLASS("mp_projectile_base");
 PROJECTILE.RemoveOnCollide = false;
 
 -- Properties
+PROJECTILE.Mask            = MASK_SHOT_PORTAL;
 PROJECTILE.Radius          = 5;
 PROJECTILE.GlowColor       = Color(200, 83, 25, 1);
 PROJECTILE.GlowSize        = 300;
