@@ -19,9 +19,9 @@ function WGL.Perspective(widescreenFix, xPan, yPan, drawDelegate, ...)
 		if (ypan) then screenAng:RotateAroundAxis(screenAng:Forward(), yPan); end
 
 		-- Draw in perspective.
-		cam.Start3D2D(EyePos() - EyeAngles():Forward() * -1000, screenAng, 1 )
+		cam.Start3D2D(EyePos() - EyeAngles():Forward() * -1000, screenAng, 1);
 			drawDelegate(...);
-		cam.End3D2D()
+		cam.End3D2D();
 
 	DisableClipping(noclip);
 	cam.End3D();

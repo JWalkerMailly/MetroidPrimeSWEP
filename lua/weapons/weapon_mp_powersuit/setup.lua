@@ -123,13 +123,14 @@ end
 
 function POWERSUIT:Cleanup(autoSave)
 
+	self:StopParticles();
+
 	-- Prevent player from being stuck if frozen from morphball.
 	local owner = self:GetOwner();
-	if (SERVER && IsValid(owner)) then owner:Freeze(false); end
-
-	-- Suppress all particles.
-	if (IsValid(owner) && IsValid(owner:GetViewModel())) then owner:GetViewModel():StopParticles(); end
-	self:StopParticles();
+	if (IsValid(owner)) then
+		if (SERVER) then owner:Freeze(false); end
+		if (IsValid(owner:GetViewModel())) then owner:GetViewModel():StopParticles(); end
+	end
 
 	-- Reset statemachines.
 	if (autoSave) then self:AutoSave(); end
@@ -159,6 +160,7 @@ function POWERSUIT:Cleanup(autoSave)
 end
 
 function POWERSUIT:Deploy()
+	self:GetOwner():SetNWEntity("MP.PowerSuit", self);
 	return self:Cleanup();
 end
 

@@ -28,7 +28,6 @@ CreateClientConVar("mp_controls_selector2",     "91", true, true);
 CreateClientConVar("mp_controls_selector3",     "90", true, true);
 CreateClientConVar("mp_controls_selector4",     "89", true, true);
 
-
 -- ----------------------------------------------
 -- ENUMS
 -- ----------------------------------------------
@@ -46,16 +45,21 @@ DMG_MP_SPECIAL = 32;
 -- ----------------------------------------------
 
 function _player:GetPowerSuit()
-	local powersuit = self:GetWeapon("weapon_mp_powersuit");
-	if (powersuit == nil || powersuit.StateIdentifier == nil) then return nil; end
+	local powersuit = self:GetNWEntity("MP.PowerSuit", NULL);
+	if (!IsValid(powersuit) || powersuit.StateIdentifier == nil) then return nil; end
 	return powersuit;
 end
 
 -- lua_run print(Entity(1):UsingPowerSuit());
 function _player:UsingPowerSuit(ignoreState)
+
 	if (!IsValid(self)) then return false; end
+
 	local powersuit = self:GetActiveWeapon();
-	return IsValid(powersuit) && powersuit:GetClass() == "weapon_mp_powersuit" && (ignoreState || powersuit.StateIdentifier != nil), powersuit;
+	if (!IsValid(powersuit)) then return false; end
+
+	local isPowerSuit = powersuit:GetClass() == "weapon_mp_powersuit" || powersuit.Base == "weapon_mp_powersuit";
+	return isPowerSuit && (ignoreState || powersuit.StateIdentifier != nil), powersuit;
 end
 
 -- lua_run print(Entity(1):UsingMorphBall());
@@ -66,7 +70,7 @@ function _player:UsingMorphBall()
 end
 
 function _entity:IsMorphBall()
-	return IsValid(self) && self:GetClass() == "mp_morphball";
+	return IsValid(self) && (self:GetClass() == "mp_morphball" || self.Base == "mp_morphball");
 end
 
 function _entity:IsGrappleAnchor()
