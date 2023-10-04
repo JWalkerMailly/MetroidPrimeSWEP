@@ -89,6 +89,7 @@ The following commands are all accessible from the options menu:
 | Command | Args | Args | Description |
 | ------ | ------ | ------ | ------ |
 | mp_cheats_savestate | - | - | Save current session. |
+| mp_cheats_deletestate | - | - | Delete current session. |
 | mp_cheats_set_missileamount | 0 - 255 | - | Set current missile ammo count. |
 | mp_cheats_set_missilecapacity | 0 - 255 | - | Set missile max ammo count. |
 | mp_cheats_enable_powerbeam | 0 / 1 | - | Enables or disables Power Beam. |
@@ -1163,6 +1164,18 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 > <code>1. String</code> <code>**json**</code> String containing a valid JSON state for the Power Suit.
 ###### Returns
 > <code>1. Boolean</code> True if loaded successfully, False otherwise.
+---
+</details>
+
+<details>
+<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_player:DeletePowerSuitState(reload)</code></summary>
+
+###### Description
+> Deletes current Power Suit state from disk.
+###### Arguments
+> <code>1. Boolean</code> <code>**reload**</code> If True, will reset weapon now. If False, will reset weapon on next spawn. **Warning**: If 'Auto Save' is on and you are reloading weapon on next spawn, this function will basically do nothing.
+###### Returns
+> <code>1. Boolean</code> True if deleted successfully, False otherwise.
 ---
 </details>
 

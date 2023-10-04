@@ -100,6 +100,9 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
 		panel:Button("Save State", "mp_cheats_savestate");
 		panel:ControlHelp("\nWrite to save file. Current values will be loaded by default during next session.");
+
+		panel:Button("Delete State", "mp_cheats_deletestate");
+		panel:ControlHelp("\nOverwrite save file with a new one. All progress will be lost.");
 	end);
 
 	-- Create General cheats menu.

@@ -97,3 +97,26 @@ function POWERSUIT:SaveState(persistHealth)
 	hook.Run("MP.OnSaveState", self);
 	return true;
 end
+
+function POWERSUIT:DeleteState(reload)
+
+	-- Make sure the current state is valid.
+	local owner = self:GetOwner();
+	if (!SERVER || self.StateIdentifier == nil || !IsValid(owner) || owner:SteamID64() != self.StateIdentifier) then return false; end
+
+	-- Make sure the save file exists before attempting to delete it.
+	local savePath = self.SavePath .. "/" .. self.StateIdentifier;
+	local saveFile = savePath .. "/powersuit.json";
+	if (!file.Exists(saveFile, "DATA")) then return false; end
+
+	-- Delete save file.
+	file.Delete(saveFile);
+	if (!reload) then return true; end
+
+	-- Reload entire weapon state after deleting save file to create a new one.
+	local class = self:GetClass();
+	owner:StripWeapon(class);
+	owner:Give(class);
+	owner:SelectWeapon(class);
+	return true;
+end

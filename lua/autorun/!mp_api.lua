@@ -90,6 +90,14 @@ function _player:LoadPowerSuitState(json)
 	return powersuit:LoadState(util.JSONToTable(file.Read(json, "DATA")));
 end
 
+if (SERVER) then concommand.Add("mp_cheats_deletestate", function(ply, cmd, args) ply:DeletePowerSuitState(true); end, nil, nil, FCVAR_CHEAT); end
+function _player:DeletePowerSuitState(reload)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	return powersuit:DeleteState(reload);
+end
+
 function _entity:SetIgnitable(ignitable)
 	self:SetNWBool("MP.Ignitable", ignitable);
 end
