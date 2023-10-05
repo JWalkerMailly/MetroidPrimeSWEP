@@ -14,7 +14,10 @@ function WSL.IterateSounds(ent, container, lambda)
 
 		-- Initialize sound cache.
 		_container.SoundsCache = _container.SoundsCache || {};
-		for name,snd in pairs(v) do lambda(_container.SoundsCache, name, snd); end
+		for name,snd in pairs(v) do
+			if (name == "BaseClass") then continue; end
+			lambda(_container.SoundsCache, name, snd); 
+		end
 	end
 end
 
