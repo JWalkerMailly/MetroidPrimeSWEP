@@ -96,3 +96,31 @@ function POWERSUIT:MissileNotification(missiles, maxMissiles, drawDelegate, noti
 	local alpha = (math.sin(CurTime() * 12.25 + 3) / 2 + 0.5) * 100 * fadeOutRatio;
 	drawDelegate(sender, missiles, alpha, ...);
 end
+
+local lr, lg, lb, lfr, lfg, lfb = 0, 0, 0, 0, 0, 0;
+function POWERSUIT:MissileComboNotification(weapon, missiles, r, g, b, fr, fg, fb)
+
+	local beamData, beamID = weapon:GetBeam();
+	if (!weapon.ArmCannon:IsMissileComboEnabled(beamID)) then return r, g, b, fr, fg, fb; end
+
+	local charge = weapon.ArmCannon:GetChargeRatio();
+	if (charge > 0 && missiles < beamData.ComboCost) then
+		local fadeIn = charge * 1.5;
+		lr  = Lerp(fadeIn,  r, 150);
+		lg  = Lerp(fadeIn,  g,  75);
+		lb  = Lerp(fadeIn,  b,  75);
+		lfr = Lerp(fadeIn, fr,  95);
+		lfg = Lerp(fadeIn, fg,  35);
+		lfb = Lerp(fadeIn, fb,  35);
+	else
+		local fadeOut = FrameTime() * 10;
+		lr  = Lerp(fadeOut,  lr,  r);
+		lg  = Lerp(fadeOut,  lg,  g);
+		lb  = Lerp(fadeOut,  lb,  b);
+		lfr = Lerp(fadeOut, lfr, fr);
+		lfg = Lerp(fadeOut, lfg, fg);
+		lfb = Lerp(fadeOut, lfb, fb);
+	end
+
+	return lr, lg, lb, lfr, lfg, lfb;
+end

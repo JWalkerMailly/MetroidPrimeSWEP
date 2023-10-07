@@ -187,6 +187,9 @@ function CombatVisor:DrawMissiles(weapon, visorOpacity)
 		if (event == "decrease") then WGL.TextureRot(arrowNoticeMaterial, 842, 169 + barOffset, 32, 10, 180, 93, 123, 153, Lerp(fraction, baseAlpha, 0)); end
 	end):Unpack();
 
+	-- Missile combo notification will lerp the indicator colors to red if there are insufficient missiles while charging for missile combo.
+	r, g, b, fr, fg, fb = weapon:MissileComboNotification(weapon, missiles, r, g, b, fr, fg, fb);
+
 	-- Render missile bar.
 	WGL.Rect(886, 141, 6, 143, 45, 70, 95, baseAlpha);
 	WGL.Rect(886, 141 + barOffset, 6, 143 * missileRatio, 116, 194, 255, baseAlpha);

@@ -275,7 +275,11 @@ function PROJECTILE:Think()
 
 	-- Handle prethink routines for regular and hitscan projectiles.
 	if (self.RemoveOnCollide) then self:PreThink();
-	else self:HitScanPreThink(); end
+	else
+		local weapon = self:GetWeapon();
+		if (!IsValid(weapon) || !weapon.ArmCannon:IsMissileComboBusy()) then return self:Destroy(true); end
+		self:HitScanPreThink();
+	end
 
 	-- Handle collision prediction and oscillation.
 	if (!SERVER || self:GetCollided() || self:PredictCollisions()) then return; end

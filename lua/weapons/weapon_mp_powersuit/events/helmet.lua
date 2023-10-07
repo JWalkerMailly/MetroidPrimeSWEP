@@ -31,7 +31,7 @@ function POWERSUIT:GetDangerRatio()
 	end
 
 	-- Return threat ratio to closest entity.
-	return WGL.Clamp(1 - (closestDanger / maxDistance));
+	return WGL.Clamp(1 - math.Round(closestDanger / maxDistance, 3));
 end
 
 function POWERSUIT:GetAimVector(owner, shootPos, aimVector, target, autoTarget, lockedOn)

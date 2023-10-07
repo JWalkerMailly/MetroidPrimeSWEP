@@ -1,11 +1,9 @@
 
-sm_MorphBall = {};
-sm_MorphBall.__index = sm_MorphBall;
+POWERSUIT.MorphBall = {};
 
-function sm_MorphBall:New(weapon)
+function POWERSUIT.MorphBall:SetupDataTables(weapon)
 
-	local object = {};
-	object.Constants = {
+	self.Constants = {
 
 		Morph = {
 			Delay   = 1.0
@@ -26,7 +24,7 @@ function sm_MorphBall:New(weapon)
 		}
 	};
 
-	object.State = {
+	self.State = {
 
 		Morph = {
 			Enable  = false
@@ -50,16 +48,6 @@ function sm_MorphBall:New(weapon)
 		}
 	};
 
-	object.Weapon = weapon;
-	setmetatable(object, sm_MorphBall);
-	object:SetupDataTables();
-	return object;
-end
-
-function sm_MorphBall:SetupDataTables()
-
-	local weapon = self.Weapon;
-
 	weapon:NetworkVar("Bool",  20, "MorphEnabled",  { KeyName = "morphball",      Edit = { order = 27, category = "Morph Ball", type = "Boolean" } });
 	weapon:NetworkVar("Bool",  21, "BombsEnabled",  { KeyName = "morphballbombs", Edit = { order = 28, category = "Morph Ball", type = "Boolean" } });
 	weapon:NetworkVar("Bool",  22, "BoostEnabled",  { KeyName = "boostball",      Edit = { order = 29, category = "Morph Ball", type = "Boolean" } });
@@ -82,10 +70,11 @@ function sm_MorphBall:SetupDataTables()
 	weapon:NetworkVar("Int",   16, "PowerBombMaxAmmo", { KeyName = "maxpowerbombs", Edit = { order = 25, category = "Morph Ball", type = "Int", min = 0, max = 8 } });
 	weapon:NetworkVar("Float", 25, "NextPowerBomb");
 
+	self.Weapon = weapon;
 	if (SERVER) then self:LoadState(); end
 end
 
-function sm_MorphBall:SaveState()
+function POWERSUIT.MorphBall:SaveState()
 
 	-- Update local state cache with current network information.
 	local weapon = self.Weapon;
@@ -99,7 +88,7 @@ function sm_MorphBall:SaveState()
 	return self.State;
 end
 
-function sm_MorphBall:LoadState(state)
+function POWERSUIT.MorphBall:LoadState(state)
 
 	-- Assign state to current instance.
 	if (state) then self.State = state; end
@@ -114,40 +103,40 @@ function sm_MorphBall:LoadState(state)
 	weapon:SetPowerBombAmmo(self.State.PowerBomb.Ammo);
 end
 
-function sm_MorphBall:Reset()
+function POWERSUIT.MorphBall:Reset()
 	self.Weapon:SetBoostCharge(0);
 	self.Weapon:SetNextMorph(CurTime());
 end
 
-function sm_MorphBall:IsMorphEnabled()
+function POWERSUIT.MorphBall:IsMorphEnabled()
 	return self.Weapon:GetMorphEnabled();
 end
 
-function sm_MorphBall:EnableMorph(enable)
+function POWERSUIT.MorphBall:EnableMorph(enable)
 	self.Weapon:SetMorphEnabled(enable);
 end
 
-function sm_MorphBall:IsBombsEnabled()
+function POWERSUIT.MorphBall:IsBombsEnabled()
 	return self.Weapon:GetBombsEnabled();
 end
 
-function sm_MorphBall:EnableBombs(enable)
+function POWERSUIT.MorphBall:EnableBombs(enable)
 	self.Weapon:SetBombsEnabled(enable);
 end
 
-function sm_MorphBall:IsBoostEnabled()
+function POWERSUIT.MorphBall:IsBoostEnabled()
 	return self.Weapon:GetBoostEnabled();
 end
 
-function sm_MorphBall:EnableBoost(enable)
+function POWERSUIT.MorphBall:EnableBoost(enable)
 	self.Weapon:SetBoostEnabled(enable);
 end
 
-function sm_MorphBall:IsSpiderEnabled()
+function POWERSUIT.MorphBall:IsSpiderEnabled()
 	return self.Weapon:GetSpiderEnabled();
 end
 
-function sm_MorphBall:EnableSpider(enable)
+function POWERSUIT.MorphBall:EnableSpider(enable)
 	self.Weapon:SetSpiderEnabled(enable);
 end
 
@@ -155,19 +144,19 @@ end
 -- Morph Ball
 -- 
 
-function sm_MorphBall:GetNextMorphTime()
+function POWERSUIT.MorphBall:GetNextMorphTime()
 	return self.Weapon:GetNextMorph();
 end
 
-function sm_MorphBall:GetNextMorphTimeElapsed()
+function POWERSUIT.MorphBall:GetNextMorphTimeElapsed()
 	return CurTime() - self:GetNextMorphTime();
 end
 
-function sm_MorphBall:SetNextMorphTime(time)
+function POWERSUIT.MorphBall:SetNextMorphTime(time)
 	self.Weapon:SetNextMorph(time);
 end
 
-function sm_MorphBall:CanMorph()
+function POWERSUIT.MorphBall:CanMorph()
 	return self:GetNextMorphTimeElapsed() > self.Constants.Morph.Delay;
 end
 
@@ -175,67 +164,67 @@ end
 -- Boost Ball
 -- 
 
-function sm_MorphBall:GetBoostTime()
+function POWERSUIT.MorphBall:GetBoostTime()
 	return self.Weapon:GetBoost();
 end
 
-function sm_MorphBall:GetBoostTimeElapsed()
+function POWERSUIT.MorphBall:GetBoostTimeElapsed()
 	return CurTime() - self:GetBoostTime();
 end
 
-function sm_MorphBall:SetBoostTime(time)
+function POWERSUIT.MorphBall:SetBoostTime(time)
 	self.Weapon:SetBoost(time);
 end
 
-function sm_MorphBall:IsCharging()
+function POWERSUIT.MorphBall:IsCharging()
 	return self:GetBoostChargeTime() > 0;
 end
 
-function sm_MorphBall:ChargingStarted()
+function POWERSUIT.MorphBall:ChargingStarted()
 	return self:GetBoostChargeStartTime() > 0;
 end
 
-function sm_MorphBall:GetBoostChargeTime()
+function POWERSUIT.MorphBall:GetBoostChargeTime()
 	return self.Weapon:GetBoostCharge();
 end
 
-function sm_MorphBall:GetBoostChargeTimeElapsed()
+function POWERSUIT.MorphBall:GetBoostChargeTimeElapsed()
 	return CurTime() - self:GetBoostChargeTime();
 end
 
-function sm_MorphBall:SetBoostChargeTime(time)
+function POWERSUIT.MorphBall:SetBoostChargeTime(time)
 	self.Weapon:SetBoostCharge(time);
 end
 
-function sm_MorphBall:GetBoostChargeStartTime()
+function POWERSUIT.MorphBall:GetBoostChargeStartTime()
 	return self.Weapon:GetBoostChargeStart();
 end
 
-function sm_MorphBall:SetBoostChargeStartTime(time)
+function POWERSUIT.MorphBall:SetBoostChargeStartTime(time)
 	self.Weapon:SetBoostChargeStart(time);
 end
 
-function sm_MorphBall:Boosting()
+function POWERSUIT.MorphBall:Boosting()
 	return CurTime() < self:GetBoostTime() + self.Constants.Charge.Full;
 end
 
-function sm_MorphBall:ShouldChargeStart(input)
+function POWERSUIT.MorphBall:ShouldChargeStart(input)
 	return self.Weapon:GetOwner():KeyDown(input) && !self:ChargingStarted();
 end
 
-function sm_MorphBall:ShouldChargeLoop()
+function POWERSUIT.MorphBall:ShouldChargeLoop()
 	return self:ChargingStarted() && !self:IsCharging() && self:GetBoostChargeTimeElapsed() > self.Constants.Charge.Delay;
 end
 
-function sm_MorphBall:ShouldChargeBallFire(input)
+function POWERSUIT.MorphBall:ShouldChargeBallFire(input)
 	return !self.Weapon:GetOwner():KeyDown(input) && self:IsCharging();
 end
 
-function sm_MorphBall:ShouldChargeStop(input)
+function POWERSUIT.MorphBall:ShouldChargeStop(input)
 	return !self.Weapon:GetOwner():KeyDown(input) && self:ChargingStarted();
 end
 
-function sm_MorphBall:ChargingFull()
+function POWERSUIT.MorphBall:ChargingFull()
 	if (self:GetBoostChargeTime() == 0) then return false; end
 	return self:GetBoostChargeTimeElapsed() >= self.Constants.Charge.Full;
 end
@@ -244,19 +233,19 @@ end
 -- Morph Ball Bombs
 --
 
-function sm_MorphBall:GetNextBombTime(bomb)
+function POWERSUIT.MorphBall:GetNextBombTime(bomb)
 	return self.Weapon["GetBomb" .. bomb](self.Weapon, bomb);
 end
 
-function sm_MorphBall:GetNextBombTimeElapsed(bomb)
+function POWERSUIT.MorphBall:GetNextBombTimeElapsed(bomb)
 	return CurTime() - self:GetNextBombTime(bomb);
 end
 
-function sm_MorphBall:SetNextBombTime(bomb, time)
+function POWERSUIT.MorphBall:SetNextBombTime(bomb, time)
 	self.Weapon["SetBomb" .. bomb](self.Weapon, time);
 end
 
-function sm_MorphBall:RemainingBombs()
+function POWERSUIT.MorphBall:RemainingBombs()
 
 	local bombs = 0;
 	for i = 1, 3 do
@@ -266,12 +255,12 @@ function sm_MorphBall:RemainingBombs()
 	return bombs;
 end
 
-function sm_MorphBall:CanBomb(bomb)
+function POWERSUIT.MorphBall:CanBomb(bomb)
 	return self:GetNextBombTime(bomb) == 0
 		|| self:GetNextBombTimeElapsed(bomb) >= self.Constants.Bomb.Delay;
 end
 
-function sm_MorphBall:UseBomb()
+function POWERSUIT.MorphBall:UseBomb()
 
 	if (!self:IsMorphEnabled() || !self:IsBombsEnabled() || !self:CanPowerBomb()) then return false; end
 
@@ -289,19 +278,19 @@ end
 -- Power Bombs
 -- 
 
-function sm_MorphBall:GetNextPowerBombTime()
+function POWERSUIT.MorphBall:GetNextPowerBombTime()
 	return self.Weapon:GetNextPowerBomb();
 end
 
-function sm_MorphBall:GetNextPowerBombTimeElapsed()
+function POWERSUIT.MorphBall:GetNextPowerBombTimeElapsed()
 	return CurTime() - self:GetNextPowerBombTime();
 end
 
-function sm_MorphBall:SetNextPowerBombTime(time)
+function POWERSUIT.MorphBall:SetNextPowerBombTime(time)
 	self.Weapon:SetNextPowerBomb(time);
 end
 
-function sm_MorphBall:UsePowerBombAmmo(amount)
+function POWERSUIT.MorphBall:UsePowerBombAmmo(amount)
 
 	local current = self:GetPowerBombAmmo();
 	if (self:GetPowerBombMaxAmmo() <= 0 || current < amount) then return false; end
@@ -310,11 +299,11 @@ function sm_MorphBall:UsePowerBombAmmo(amount)
 	return true;
 end
 
-function sm_MorphBall:CanPowerBomb()
+function POWERSUIT.MorphBall:CanPowerBomb()
 	return self:GetNextPowerBombTimeElapsed() >= self.Constants.PowerBomb.Delay;
 end
 
-function sm_MorphBall:UsePowerBomb()
+function POWERSUIT.MorphBall:UsePowerBomb()
 
 	if (self:CanPowerBomb() && self:UsePowerBombAmmo(1)) then
 		self:SetNextPowerBombTime(CurTime());
@@ -328,32 +317,32 @@ end
 -- Morph Ball Ammo
 -- 
 
-function sm_MorphBall:GetPowerBombAmmo()
+function POWERSUIT.MorphBall:GetPowerBombAmmo()
 	return self.Weapon:GetPowerBombAmmo();
 end
 
-function sm_MorphBall:AddPowerBombAmmo(amount)
+function POWERSUIT.MorphBall:AddPowerBombAmmo(amount)
 	local current = self:GetPowerBombAmmo();
 	return self:SetPowerBombAmmo(current + amount);
 end
 
-function sm_MorphBall:SetPowerBombAmmo(amount)
+function POWERSUIT.MorphBall:SetPowerBombAmmo(amount)
 	local max = self:GetPowerBombMaxAmmo();
 	local ammo = math.Clamp(amount, 0, max);
 	self.Weapon:SetPowerBombAmmo(ammo);
 	return ammo;
 end
 
-function sm_MorphBall:GetPowerBombMaxAmmo()
+function POWERSUIT.MorphBall:GetPowerBombMaxAmmo()
 	return self.Weapon:GetPowerBombMaxAmmo();
 end
 
-function sm_MorphBall:AddPowerBombMaxAmmo(amount)
+function POWERSUIT.MorphBall:AddPowerBombMaxAmmo(amount)
 	local current = self:GetPowerBombMaxAmmo();
 	return self:SetPowerBombMaxAmmo(current + amount);
 end
 
-function sm_MorphBall:SetPowerBombMaxAmmo(amount)
+function POWERSUIT.MorphBall:SetPowerBombMaxAmmo(amount)
 	local limit = self.Constants.PowerBomb.Limit;
 	local maxAmmo = math.Clamp(amount, 0, limit);
 	self.Weapon:SetPowerBombMaxAmmo(maxAmmo);
@@ -362,5 +351,3 @@ function sm_MorphBall:SetPowerBombMaxAmmo(amount)
 	self.Weapon:SetPowerBombAmmo(ammo);
 	return ammo, maxAmmo;
 end
-
-setmetatable(sm_MorphBall, {__call = sm_MorphBall.New });

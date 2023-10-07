@@ -2,10 +2,10 @@
 include("setup.lua");
 
 function POWERSUIT:SetupDataTables()
-	self.Helmet    = sm_Helmet:New(self);
-	self.PowerSuit = sm_PowerSuit:New(self);
-	self.ArmCannon = sm_ArmCannon:New(self);
-	self.MorphBall = sm_MorphBall:New(self);
+	self.Helmet:SetupDataTables(self);
+	self.PowerSuit:SetupDataTables(self);
+	self.ArmCannon:SetupDataTables(self);
+	self.MorphBall:SetupDataTables(self);
 	if (CLIENT) then self:SetupMuzzleEffects(); end
 end
 

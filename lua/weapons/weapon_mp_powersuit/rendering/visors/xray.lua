@@ -155,9 +155,11 @@ function XRayVisor:DrawNotifications(weapon, health, maxHealth, alertRatio, miss
 	weapon:DangerNotification(alertRatio, 0.9, self.DrawAlertNotification, self.AlertNotificationCallback, self, visorOpacity, weapon);
 
 	-- Render missile count.
-	local fontColor = WGL.LerpColorEvent(Color(45, 70, 95, baseAlpha), Color(93, 123, 153, baseAlpha), missiles, 2, "change", self.MissileLerpFont);
-	draw.SimpleText(missiles, "Metroid Prime Visor UI Small", 867, 280, fontColor, TEXT_ALIGN_RIGHT);
-	WGL.TextureRot(missileMaterial, 790, 287, 32, 22, 0, 93, 123, 153, baseAlpha);
+	local r, g, b, a     = 93, 123, 153, baseAlpha;
+	local fr, fg, fb, fa = WGL.LerpColorEvent(Color(45, 70, 95, baseAlpha), Color(93, 123, 153, baseAlpha), missiles, 2, "change", self.MissileLerpFont):Unpack();
+	r, g, b, fr, fg, fb  = weapon:MissileComboNotification(weapon, missiles, r, g, b, fr, fg, fb);
+	draw.SimpleText(missiles, "Metroid Prime Visor UI Small", 867, 280, Color(fr, fg, fb, fa), TEXT_ALIGN_RIGHT);
+	WGL.TextureRot(missileMaterial, 790, 287, 32, 22, 0, r, g, b, a);
 	weapon:MissileNotification(missiles, maxMissiles, self.DrawMissileNotification, self.MissileNotificationCallback, self, visorOpacity, weapon);
 end
 

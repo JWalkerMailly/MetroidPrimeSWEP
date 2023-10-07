@@ -1,11 +1,9 @@
 
-sm_ArmCannon = {};
-sm_ArmCannon.__index = sm_ArmCannon;
+POWERSUIT.ArmCannon = {};
 
-function sm_ArmCannon:New(weapon)
+function POWERSUIT.ArmCannon:SetupDataTables(weapon)
 
-	local object = {};
-	object.Constants = {
+	self.Constants = {
 
 		Beam = {
 			Initial     = 1,
@@ -65,7 +63,7 @@ function sm_ArmCannon:New(weapon)
 		}
 	};
 
-	object.State = {
+	self.State = {
 
 		Beam = {
 			Initial     = 1
@@ -108,16 +106,6 @@ function sm_ArmCannon:New(weapon)
 			MaxAmmo     = 0
 		}
 	};
-
-	object.Weapon = weapon;
-	setmetatable(object, sm_ArmCannon);
-	object:SetupDataTables();
-	return object;
-end
-
-function sm_ArmCannon:SetupDataTables()
-
-	local weapon = self.Weapon;
 
 	weapon:NetworkVar("Bool",   0, "LoadSaveFile",      { KeyName = "loadfile",   Edit = { order =  1, category = "Save File", type = "Boolean" } });
 	weapon:NetworkVar("Bool",   1, "Beam1Enabled",      { KeyName = "beam1",      Edit = { order = 17, category = "Weapons",   type = "Boolean" } });
@@ -172,10 +160,11 @@ function sm_ArmCannon:SetupDataTables()
 	weapon:NetworkVar("Int",   10, "MissileAmmo",    { KeyName = "missiles",    Edit = { order = 15, category = "Weapons", type = "Int", min = 0, max = 250 } });
 	weapon:NetworkVar("Int",   11, "MissileMaxAmmo", { KeyName = "maxmissiles", Edit = { order = 14, category = "Weapons", type = "Int", min = 0, max = 250 } });
 
+	self.Weapon = weapon;
 	if (SERVER) then self:LoadState(); end
 end
 
-function sm_ArmCannon:SaveState()
+function POWERSUIT.ArmCannon:SaveState()
 
 	-- Update local state cache with current network information.
 	local weapon = self.Weapon;
@@ -203,7 +192,7 @@ function sm_ArmCannon:SaveState()
 	return self.State;
 end
 
-function sm_ArmCannon:LoadState(state)
+function POWERSUIT.ArmCannon:LoadState(state)
 
 	-- Assign state to current instance.
 	if (state) then self.State = state; end
@@ -233,39 +222,39 @@ function sm_ArmCannon:LoadState(state)
 	weapon:SetMissileAmmo(self.State.Missile.Ammo);
 end
 
-function sm_ArmCannon:GetBeam()
+function POWERSUIT.ArmCannon:GetBeam()
 	return self.Weapon:GetBeamType();
 end
 
-function sm_ArmCannon:SetBeam(beam)
+function POWERSUIT.ArmCannon:SetBeam(beam)
 	self.Weapon:SetBeamType(beam);
 end
 
-function sm_ArmCannon:IsBeamEnabled(index)
+function POWERSUIT.ArmCannon:IsBeamEnabled(index)
 	return self.Weapon["GetBeam" .. index .. "Enabled"](self.Weapon);
 end
 
-function sm_ArmCannon:EnableBeam(index, enable)
+function POWERSUIT.ArmCannon:EnableBeam(index, enable)
 	self.Weapon["SetBeam" .. index .. "Enabled"](self.Weapon, enable);
 end
 
-function sm_ArmCannon:IsChargeBeamEnabled()
+function POWERSUIT.ArmCannon:IsChargeBeamEnabled()
 	return self.Weapon:GetChargeBeamEnabled();
 end
 
-function sm_ArmCannon:EnableChargeBeam(enable)
+function POWERSUIT.ArmCannon:EnableChargeBeam(enable)
 	self.Weapon:SetChargeBeamEnabled(enable);
 end
 
-function sm_ArmCannon:IsMissileComboEnabled(index, enable)
-	return self.Weapon["GetBeam" .. index .. "ComboEnabled"](self.Weapon, enable);
+function POWERSUIT.ArmCannon:IsMissileComboEnabled(index)
+	return self.Weapon["GetBeam" .. index .. "ComboEnabled"](self.Weapon);
 end
 
-function sm_ArmCannon:EnableMissileCombo(index, enable)
+function POWERSUIT.ArmCannon:EnableMissileCombo(index, enable)
 	self.Weapon["SetBeam" .. index .. "ComboEnabled"](self.Weapon, enable);
 end
 
-function sm_ArmCannon:Waterlogged()
+function POWERSUIT.ArmCannon:Waterlogged()
 	return self.Weapon:GetOwner():WaterLevel() >= self.Constants.Beam.Waterlog;
 end
 
@@ -273,44 +262,44 @@ end
 -- Beam Animations
 --
 
-function sm_ArmCannon:GetBeamRoll()
+function POWERSUIT.ArmCannon:GetBeamRoll()
 	return self.Weapon:GetBeamRoll();
 end
 
-function sm_ArmCannon:SetBeamRoll(roll)
+function POWERSUIT.ArmCannon:SetBeamRoll(roll)
 	if (math.random(7) > 4) then self.Weapon:SetBeamRoll(roll); end
 end
 
-function sm_ArmCannon:GetNextBeamFidgetTime()
+function POWERSUIT.ArmCannon:GetNextBeamFidgetTime()
 	return self.Weapon:GetNextBeamFidget();
 end
 
-function sm_ArmCannon:GetNextBeamFidgetTimeElapsed()
+function POWERSUIT.ArmCannon:GetNextBeamFidgetTimeElapsed()
 	return CurTime() - self:GetNextBeamFidgetTime();
 end
 
-function sm_ArmCannon:SetNextBeamFidgetTime(time)
+function POWERSUIT.ArmCannon:SetNextBeamFidgetTime(time)
 	self.Weapon:SetNextBeamFidget(time);
 end
 
-function sm_ArmCannon:CanBeamFidget()
+function POWERSUIT.ArmCannon:CanBeamFidget()
 	return self:GetNextBeamFidgetTimeElapsed() > self.Constants.Fidget.Delay;
 end
 
-function sm_ArmCannon:GetViewPunch()
+function POWERSUIT.ArmCannon:GetViewPunch()
 	return self.Weapon:GetChargeViewPunch();
 end
 
-function sm_ArmCannon:SetViewPunch(punch)
+function POWERSUIT.ArmCannon:SetViewPunch(punch)
 	self.Weapon:SetChargeViewPunch(punch);
 end
 
-function sm_ArmCannon:ViewPunch(punch)
+function POWERSUIT.ArmCannon:ViewPunch(punch)
 	self.Weapon:SetNextViewPunch(CurTime() + self.Constants.ViewPunch.Reset);
 	self:SetViewPunch(punch);
 end
 
-function sm_ArmCannon:ShouldViewPunchReset()
+function POWERSUIT.ArmCannon:ShouldViewPunchReset()
 	return self:GetViewPunch() != 0 && CurTime() > self.Weapon:GetNextViewPunch();
 end
 
@@ -318,19 +307,19 @@ end
 -- Beam Muzzles
 -- 
 
-function sm_ArmCannon:SetNextBeamMuzzleTime(time)
+function POWERSUIT.ArmCannon:SetNextBeamMuzzleTime(time)
 	self.Weapon:SetNextBeamMuzzle(time);
 end
 
-function sm_ArmCannon:SetNextChargeMuzzleTime(time)
+function POWERSUIT.ArmCannon:SetNextChargeMuzzleTime(time)
 	self.Weapon:SetNextChargeMuzzle(time);
 end
 
-function sm_ArmCannon:SetNextComboMuzzleTime(time)
+function POWERSUIT.ArmCannon:SetNextComboMuzzleTime(time)
 	self.Weapon:SetNextComboMuzzle(time);
 end
 
-function sm_ArmCannon:SetNextComboLoopMuzzleTime(time)
+function POWERSUIT.ArmCannon:SetNextComboLoopMuzzleTime(time)
 	self.Weapon:SetNextComboLoopMuzzle(time);
 end
 
@@ -338,32 +327,32 @@ end
 -- Beam Busy States
 -- 
 
-function sm_ArmCannon:IsBeamOpen()
+function POWERSUIT.ArmCannon:IsBeamOpen()
 	return self:IsBeamBusy() || self:IsMissileBusy();
 end
 
-function sm_ArmCannon:IsBusy(ignoreOpenState)
+function POWERSUIT.ArmCannon:IsBusy(ignoreOpenState)
 	return self:IsCharging() || (!ignoreOpenState && self:IsBeamOpen()) || self:IsMissileComboBusy() || !self:CanBeamChange();
 end
 
-function sm_ArmCannon:IsBeamBusy()
+function POWERSUIT.ArmCannon:IsBeamBusy()
 	return self.Weapon:GetBeamBusy();
 end
 
-function sm_ArmCannon:SetBeamBusy(busy)
+function POWERSUIT.ArmCannon:SetBeamBusy(busy)
 	self.Weapon:SetBeamBusy(busy);
 end
 
-function sm_ArmCannon:IsMissileBusy()
+function POWERSUIT.ArmCannon:IsMissileBusy()
 	return !self:IsMissileComboBusy()
 		&& CurTime() < self:GetNextMissileTime();
 end
 
-function sm_ArmCannon:IsMissileComboBusy()
+function POWERSUIT.ArmCannon:IsMissileComboBusy()
 	return self.Weapon:GetMissileComboBusy();
 end
 
-function sm_ArmCannon:SetMissileComboBusy(busy)
+function POWERSUIT.ArmCannon:SetMissileComboBusy(busy)
 	if (!busy) then self:SetNextMissileComboResetTime(0); end
 	self.Weapon:SetMissileComboBusy(busy);
 end
@@ -372,24 +361,24 @@ end
 -- Beam Change
 --
 
-function sm_ArmCannon:GetNextBeamChangeTime()
+function POWERSUIT.ArmCannon:GetNextBeamChangeTime()
 	return self.Weapon:GetNextBeamChange();
 end
 
-function sm_ArmCannon:GetNextBeamChangeTimeElapsed()
+function POWERSUIT.ArmCannon:GetNextBeamChangeTimeElapsed()
 	return CurTime() - self:GetNextBeamChangeTime();
 end
 
-function sm_ArmCannon:SetNextBeamChangeTime(time)
+function POWERSUIT.ArmCannon:SetNextBeamChangeTime(time)
 	self.Weapon:SetNextBeamChange(time);
 end
 
-function sm_ArmCannon:CanBeamChange()
+function POWERSUIT.ArmCannon:CanBeamChange()
 	return !self:IsMissileComboBusy()
 		&& self:GetNextBeamChangeTimeElapsed() > self.Constants.Beam.Change;
 end
 
-function sm_ArmCannon:CanBeamChangeAnim()
+function POWERSUIT.ArmCannon:CanBeamChangeAnim()
 	return !self:IsMissileComboBusy()
 		&& self:GetNextBeamChangeTimeElapsed() > self.Constants.Beam.ChangeAnim;
 end
@@ -398,27 +387,27 @@ end
 -- Beam Open State
 --
 
-function sm_ArmCannon:GetNextBeamOpenTime()
+function POWERSUIT.ArmCannon:GetNextBeamOpenTime()
 	return self.Weapon:GetNextBeamOpen();
 end
 
-function sm_ArmCannon:GetNextBeamOpenAnimTime()
+function POWERSUIT.ArmCannon:GetNextBeamOpenAnimTime()
 	return self.Weapon:GetNextBeamOpenAnim();
 end
 
-function sm_ArmCannon:SetNextBeamOpenTime(time)
+function POWERSUIT.ArmCannon:SetNextBeamOpenTime(time)
 	self.Weapon:SetNextBeamOpen(time);
 end
 
-function sm_ArmCannon:SetNextBeamOpenAnimTime(time)
+function POWERSUIT.ArmCannon:SetNextBeamOpenAnimTime(time)
 	self.Weapon:SetNextBeamOpenAnim(time);
 end
 
-function sm_ArmCannon:GetNextBeamCloseTime()
+function POWERSUIT.ArmCannon:GetNextBeamCloseTime()
 	return self.Weapon:GetNextBeamClose();
 end
 
-function sm_ArmCannon:SetNextBeamCloseTime(time)
+function POWERSUIT.ArmCannon:SetNextBeamCloseTime(time)
 	self.Weapon:SetNextBeamClose(time);
 end
 
@@ -426,55 +415,55 @@ end
 -- Charge Beam
 -- 
 
-function sm_ArmCannon:IsMaxCharge()
+function POWERSUIT.ArmCannon:IsMaxCharge()
 	return self.Weapon:GetChargeMax();
 end
 
-function sm_ArmCannon:SetMaxCharge(max)
+function POWERSUIT.ArmCannon:SetMaxCharge(max)
 	self.Weapon:SetChargeMax(max);
 end
 
-function sm_ArmCannon:GetChargeStartTime()
+function POWERSUIT.ArmCannon:GetChargeStartTime()
 	return self.Weapon:GetChargeStart();
 end
 
-function sm_ArmCannon:GetChargeStartTimeElapsed()
+function POWERSUIT.ArmCannon:GetChargeStartTimeElapsed()
 	return CurTime() - self:GetChargeStartTime();
 end
 
-function sm_ArmCannon:ChargingStarted()
+function POWERSUIT.ArmCannon:ChargingStarted()
 	return self:GetChargeStartTime() > 0;
 end
 
-function sm_ArmCannon:SetNextChargeStartTime(time)
+function POWERSUIT.ArmCannon:SetNextChargeStartTime(time)
 	self.Weapon:SetChargeStart(time);
 end
 
-function sm_ArmCannon:ChargeStarted()
+function POWERSUIT.ArmCannon:ChargeStarted()
 	return self.Weapon:GetChargeStarted();
 end
 
-function sm_ArmCannon:SetChargeStarted(started)
+function POWERSUIT.ArmCannon:SetChargeStarted(started)
 	return self.Weapon:SetChargeStarted(started);
 end
 
-function sm_ArmCannon:GetChargeTime()
+function POWERSUIT.ArmCannon:GetChargeTime()
 	return self.Weapon:GetChargeTime();
 end
 
-function sm_ArmCannon:GetChargeTimeElapsed()
+function POWERSUIT.ArmCannon:GetChargeTimeElapsed()
 	return CurTime() - self:GetChargeTime();
 end
 
-function sm_ArmCannon:IsCharging()
+function POWERSUIT.ArmCannon:IsCharging()
 	return self:GetChargeTime() > 0;
 end
 
-function sm_ArmCannon:SetChargeTime(time)
+function POWERSUIT.ArmCannon:SetChargeTime(time)
 	self.Weapon:SetChargeTime(time);
 end
 
-function sm_ArmCannon:ShouldChargeBeamStart()
+function POWERSUIT.ArmCannon:ShouldChargeBeamStart()
 
 	return self:IsChargeBeamEnabled()
 		&& !self:IsCharging()
@@ -482,27 +471,27 @@ function sm_ArmCannon:ShouldChargeBeamStart()
 		&& self:GetChargeStartTimeElapsed() > self.Constants.Charge.Delay;
 end
 
-function sm_ArmCannon:GetChargeRatio()
+function POWERSUIT.ArmCannon:GetChargeRatio()
 	if (!self:ChargeStarted()) then return 0; end
 	return WGL.Clamp(self:GetChargeTimeElapsed() / self.Constants.Charge.Full);
 end
 
-function sm_ArmCannon:ChargingFull()
+function POWERSUIT.ArmCannon:ChargingFull()
 	if (self:GetChargeTime() == 0) then return false; end
 	return self:GetChargeTimeElapsed() >= self.Constants.Charge.Full;
 end
 
-function sm_ArmCannon:ShouldChargeBeamFire(input)
+function POWERSUIT.ArmCannon:ShouldChargeBeamFire(input)
 	return self:IsCharging()
 		&& self:GetChargeTimeElapsed() >= self.Constants.Charge.Weak
 		&& !self.Weapon:GetOwner():KeyDown(input);
 end
 
-function sm_ArmCannon:ShouldChargeBeamStop(input)
+function POWERSUIT.ArmCannon:ShouldChargeBeamStop(input)
 	return !self.Weapon:GetOwner():KeyDown(input) && self:ChargingStarted();
 end
 
-function sm_ArmCannon:StopCharging()
+function POWERSUIT.ArmCannon:StopCharging()
 	self:SetNextChargeStartTime(0);
 	self:SetChargeTime(0);
 end
@@ -511,15 +500,15 @@ end
 -- Missiles
 -- 
 
-function sm_ArmCannon:GetMissileAmmo()
+function POWERSUIT.ArmCannon:GetMissileAmmo()
 	return self.Weapon:GetMissileAmmo();
 end
 
-function sm_ArmCannon:GetMissileMaxAmmo()
+function POWERSUIT.ArmCannon:GetMissileMaxAmmo()
 	return self.Weapon:GetMissileMaxAmmo();
 end
 
-function sm_ArmCannon:UseMissileAmmo(amount)
+function POWERSUIT.ArmCannon:UseMissileAmmo(amount)
 
 	local current = self:GetMissileAmmo();
 	if (current < amount) then return false; end
@@ -528,42 +517,42 @@ function sm_ArmCannon:UseMissileAmmo(amount)
 	return true;
 end
 
-function sm_ArmCannon:CanMissileFire()
+function POWERSUIT.ArmCannon:CanMissileFire()
 	return self:GetNextMissileTimeElapsed() > self.Constants.Missile.Delay
 		&& self:GetMissileAmmo() > 0;
 end
 
-function sm_ArmCannon:GetNextMissileTime()
+function POWERSUIT.ArmCannon:GetNextMissileTime()
 	return self.Weapon:GetNextMissile();
 end
 
-function sm_ArmCannon:GetNextMissileTimeElapsed()
+function POWERSUIT.ArmCannon:GetNextMissileTimeElapsed()
 	return CurTime() - self:GetNextMissileTime();
 end
 
-function sm_ArmCannon:SetNextMissileTime(time)
+function POWERSUIT.ArmCannon:SetNextMissileTime(time)
 	self.Weapon:SetNextMissile(time);
 end
 
-function sm_ArmCannon:GetNextMissileReloadTime()
+function POWERSUIT.ArmCannon:GetNextMissileReloadTime()
 	return self.Weapon:GetNextMissileReload();
 end
 
-function sm_ArmCannon:SetNextMissileReloadTime(time)
+function POWERSUIT.ArmCannon:SetNextMissileReloadTime(time)
 	self.Weapon:SetNextMissileReload(time);
 end
 
-function sm_ArmCannon:ShouldMissileReload()
+function POWERSUIT.ArmCannon:ShouldMissileReload()
 	local nextReload = self:GetNextMissileReloadTime();
 	return nextReload > 0
 		&& CurTime() - nextReload >= self.Constants.Missile.Reload;
 end
 
-function sm_ArmCannon:IsMissileReloading()
+function POWERSUIT.ArmCannon:IsMissileReloading()
 	return self.Weapon:GetMissileMaxAmmo() > 0 && CurTime() > self:GetNextMissileTime() - self.Constants.Missile.Busy;
 end
 
-function sm_ArmCannon:ShouldMissileReset()
+function POWERSUIT.ArmCannon:ShouldMissileReset()
 	return self:IsBeamBusy()
 		&& CurTime() > self:GetNextMissileTime() + self.Constants.Missile.Auto;
 end
@@ -572,78 +561,78 @@ end
 -- Beam Combo
 -- 
 
-function sm_ArmCannon:GetNextMissileComboTime()
+function POWERSUIT.ArmCannon:GetNextMissileComboTime()
 	return self.Weapon:GetNextMissileCombo();
 end
 
-function sm_ArmCannon:GetNextMissileComboTimeElapsed()
+function POWERSUIT.ArmCannon:GetNextMissileComboTimeElapsed()
 	return CurTime() - self:GetNextMissileComboTime();
 end
 
-function sm_ArmCannon:SetNextMissileComboDrainTime(time)
+function POWERSUIT.ArmCannon:SetNextMissileComboDrainTime(time)
 	self.Weapon:SetNextMissileComboDrain(time);
 end
 
-function sm_ArmCannon:GetNextMissileComboDrainTime()
+function POWERSUIT.ArmCannon:GetNextMissileComboDrainTime()
 	return self.Weapon:GetNextMissileComboDrain();
 end
 
-function sm_ArmCannon:GetNextMissileComboDrainTimeElapsed()
+function POWERSUIT.ArmCannon:GetNextMissileComboDrainTimeElapsed()
 	return CurTime() - self:GetNextMissileComboDrainTime();
 end
 
-function sm_ArmCannon:GetNextMissileComboResetTime()
+function POWERSUIT.ArmCannon:GetNextMissileComboResetTime()
 	return self.Weapon:GetNextMissileComboReset();
 end
 
-function sm_ArmCannon:SetNextMissileComboResetTime(time)
+function POWERSUIT.ArmCannon:SetNextMissileComboResetTime(time)
 	if (time > 0) then self:SetNextMissileComboDrainTime(CurTime()); end
 	self.Weapon:SetNextMissileComboReset(time);
 end
 
-function sm_ArmCannon:CanMissileCombo(cost)
+function POWERSUIT.ArmCannon:CanMissileCombo(cost)
 	return self:IsMissileComboEnabled(self:GetBeam())
 		&& self:IsCharging()
 		&& self:ChargingFull()
 		&& self:GetMissileAmmo() >= cost;
 end
 
-function sm_ArmCannon:GetMissileComboStartRatio()
+function POWERSUIT.ArmCannon:GetMissileComboStartRatio()
 	return self:GetNextMissileComboTimeElapsed() / self.Constants.Combo.Delay;
 end
 
-function sm_ArmCannon:ShouldMissileCombo()
+function POWERSUIT.ArmCannon:ShouldMissileCombo()
 	return self:IsMissileComboBusy()
 		&& self:GetNextMissileComboTime() > 0
 		&& self:GetNextMissileComboTimeElapsed() >= self.Constants.Combo.Delay;
 end
 
-function sm_ArmCannon:ShouldMissileComboDrain(continuous)
+function POWERSUIT.ArmCannon:ShouldMissileComboDrain(continuous)
 	return continuous && self:IsMissileComboDraining()
 end
 
-function sm_ArmCannon:MissileComboDrain(continuous)
+function POWERSUIT.ArmCannon:MissileComboDrain(continuous)
 	self:SetNextMissileComboDrainTime(CurTime());
 	self:UseMissileAmmo(1);
 end
 
-function sm_ArmCannon:IsMissileComboDraining()
+function POWERSUIT.ArmCannon:IsMissileComboDraining()
 	return self:IsMissileComboBusy()
 		&& self:GetNextMissileComboTimeElapsed() > self.Constants.Combo.Delay
 		&& self:GetNextMissileComboDrainTimeElapsed() > self.Constants.Combo.Drain;
 end
 
-function sm_ArmCannon:ShouldMissileComboReset(input, loop, water)
+function POWERSUIT.ArmCannon:ShouldMissileComboReset(input, loop, water)
 	return self:GetNextMissileComboResetTime() > 0
 		&& CurTime() > self:GetNextMissileComboResetTime()
 		&& ((!loop || !self.Weapon:GetOwner():KeyDown(input)) || (!water && self:Waterlogged()) || !IsValid(self.Weapon:GetMissileCombo()));
 end
 
-function sm_ArmCannon:MissileComboLooping()
+function POWERSUIT.ArmCannon:MissileComboLooping()
 	return self.Weapon:GetMissileComboLoop();
 end
 
-function sm_ArmCannon:SetMissileComboLooping(loop)
+function POWERSUIT.ArmCannon:SetMissileComboLooping(loop)
 	self.Weapon:SetMissileComboLoop(loop);
 end
 
@@ -651,32 +640,32 @@ end
 -- Beam Ammo
 --
 
-function sm_ArmCannon:GetAmmo(type)
+function POWERSUIT.ArmCannon:GetAmmo(type)
 	return self.Weapon["Get" .. type .. "Ammo"](self.Weapon);
 end
 
-function sm_ArmCannon:AddAmmo(type, amount)
+function POWERSUIT.ArmCannon:AddAmmo(type, amount)
 	local ammo = self:GetAmmo(type);
 	return self:SetAmmo(type, ammo + amount);
 end
 
-function sm_ArmCannon:SetAmmo(type, amount)
+function POWERSUIT.ArmCannon:SetAmmo(type, amount)
 	local max = self:GetMaxAmmo(type);
 	local ammo = math.Clamp(amount, 0, max);
 	self.Weapon["Set" .. type .. "Ammo"](self.Weapon, ammo);
 	return ammo;
 end
 
-function sm_ArmCannon:GetMaxAmmo(type)
+function POWERSUIT.ArmCannon:GetMaxAmmo(type)
 	return self.Weapon["Get" .. type .. "MaxAmmo"](self.Weapon);
 end
 
-function sm_ArmCannon:AddMaxAmmo(type, amount)
+function POWERSUIT.ArmCannon:AddMaxAmmo(type, amount)
 	local ammo = self:GetMaxAmmo(type);
 	return self:SetMaxAmmo(type, ammo + amount);
 end
 
-function sm_ArmCannon:SetMaxAmmo(type, amount)
+function POWERSUIT.ArmCannon:SetMaxAmmo(type, amount)
 	local limit = self.Constants[type]["Limit"];
 	local maxAmmo = math.Clamp(amount, 0, limit);
 	self.Weapon["Set" .. type .. "MaxAmmo"](self.Weapon, maxAmmo);
@@ -690,47 +679,47 @@ end
 -- Events
 --
 
-function sm_ArmCannon:Reset()
+function POWERSUIT.ArmCannon:Reset()
 	self.Weapon:SetNextBeamOpen(0);
 	self.Weapon:SetNextBeamOpenAnim(0);
 	self.Weapon:SetNextBeamClose(0);
 end
 
-function sm_ArmCannon:StartBeamChange(beam)
+function POWERSUIT.ArmCannon:StartBeamChange(beam)
 	self:SetNextBeamOpenTime(0);
 	self:SetNextBeamCloseTime(0);
 	self:SetNextBeamChangeTime(CurTime());
 	return self:IsBeamEnabled(beam), self:IsBeamOpen();
 end
 
-function sm_ArmCannon:StartBeamOpen()
+function POWERSUIT.ArmCannon:StartBeamOpen()
 
 	local shouldStart = self:GetNextBeamOpenTime() != 0 && CurTime() > self:GetNextBeamOpenTime();
 	if (shouldStart) then self:SetNextBeamOpenTime(0); end
 	return shouldStart;
 end
 
-function sm_ArmCannon:StartBeamOpenAnim()
+function POWERSUIT.ArmCannon:StartBeamOpenAnim()
 
 	local shouldStart = self:GetNextBeamOpenAnimTime() != 0 && CurTime() > self:GetNextBeamOpenAnimTime();
 	if (shouldStart) then self:SetNextBeamOpenAnimTime(0); end
 	return shouldStart;
 end
 
-function sm_ArmCannon:StartBeamClose()
+function POWERSUIT.ArmCannon:StartBeamClose()
 
 	local shouldStart = self:GetNextBeamCloseTime() != 0 && CurTime() > self:GetNextBeamCloseTime();
 	if (shouldStart) then self:SetNextBeamCloseTime(0); end
 	return shouldStart;
 end
 
-function sm_ArmCannon:StartBeam()
+function POWERSUIT.ArmCannon:StartBeam()
 	self:SetNextBeamMuzzleTime(CurTime());
 	self:SetNextChargeStartTime(CurTime());
 	self:SetBeamRoll(math.Rand(-12.5, 12.5));
 end
 
-function sm_ArmCannon:StopBeam(silent, quickCharge, close)
+function POWERSUIT.ArmCannon:StopBeam(silent, quickCharge, close)
 
 	self:SetNextChargeStartTime(!quickCharge && 0 || CurTime());
 	self:SetNextMissileReloadTime(0);
@@ -742,7 +731,7 @@ function sm_ArmCannon:StopBeam(silent, quickCharge, close)
 	if (close) then self:SetNextBeamCloseTime(CurTime() + self.Constants.Missile.Close); end
 end
 
-function sm_ArmCannon:StartChargeBeam(quickCharge)
+function POWERSUIT.ArmCannon:StartChargeBeam(quickCharge)
 
 	self:SetChargeTime(CurTime());
 	self:SetChargeStarted(true);
@@ -752,7 +741,7 @@ function sm_ArmCannon:StartChargeBeam(quickCharge)
 	self:SetNextBeamCloseTime(0);
 end
 
-function sm_ArmCannon:StopChargeBeam(shoot, punch)
+function POWERSUIT.ArmCannon:StopChargeBeam(shoot, punch)
 
 	local full    = self:ChargingFull();
 	local started = self:ChargeStarted();
@@ -768,14 +757,14 @@ function sm_ArmCannon:StopChargeBeam(shoot, punch)
 	return started, full;
 end
 
-function sm_ArmCannon:StartMissile()
+function POWERSUIT.ArmCannon:StartMissile()
 	self:UseMissileAmmo(1);
 	self:SetBeamBusy(true);
 	self:SetNextMissileTime(CurTime());
 	self:SetNextMissileReloadTime(CurTime());
 end
 
-function sm_ArmCannon:StartMissileCombo(time, cost, reset, punch)
+function POWERSUIT.ArmCannon:StartMissileCombo(time, cost, reset, punch)
 
 	if (time > 0) then
 		self:SetNextComboMuzzleTime(CurTime());
@@ -793,11 +782,9 @@ function sm_ArmCannon:StartMissileCombo(time, cost, reset, punch)
 	self.Weapon:SetNextMissileCombo(time);
 end
 
-function sm_ArmCannon:StopMissileCombo()
+function POWERSUIT.ArmCannon:StopMissileCombo()
 	self:SetNextComboLoopMuzzleTime(0);
 	self:SetNextMissileComboResetTime(0);
 	self:SetMissileComboBusy(false);
 	self:SetMissileComboLooping(false);
 end
-
-setmetatable(sm_ArmCannon, {__call = sm_ArmCannon.New });

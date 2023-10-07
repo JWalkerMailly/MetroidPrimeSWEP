@@ -155,17 +155,19 @@ end
 
 function ThermalVisor:DrawMissiles(weapon, visorOpacity)
 
-	local missiles     = weapon.ArmCannon:GetMissileAmmo();
-	local maxMissiles  = weapon.ArmCannon:GetMissileMaxAmmo();
-	local baseAlpha    = 255 * visorOpacity;
-	local fontColor    = WGL.LerpColorEvent(Color(45, 70, 95, baseAlpha), Color(93, 123, 183, baseAlpha), missiles, 2, "change", self.MissileLerpFont);
-	local missileRatio = (missiles / math.Clamp(maxMissiles, 1, maxMissiles + 1));
+	local missiles       = weapon.ArmCannon:GetMissileAmmo();
+	local maxMissiles    = weapon.ArmCannon:GetMissileMaxAmmo();
+	local baseAlpha      = 255 * visorOpacity;
+	local missileRatio   = (missiles / math.Clamp(maxMissiles, 1, maxMissiles + 1));
+	local r, g, b, a     = 93, 123, 183, baseAlpha;
+	local fr, fg, fb, fa = WGL.LerpColorEvent(Color(45, 70, 95, baseAlpha), Color(93, 123, 183, baseAlpha), missiles, 2, "change", self.MissileLerpFont):Unpack();
+	r, g, b, fr, fg, fb  = weapon:MissileComboNotification(weapon, missiles, r, g, b, fr, fg, fb);
 
 	-- Render missile icon.
-	WGL.TextureRot(missileMaterial, 791, 306, 74, 50, -1.1225, 93, 123, 183, baseAlpha);
+	WGL.TextureRot(missileMaterial, 791, 306, 74, 50, -1.1225, r, g, b, a);
 
 	-- Render missile count.
-	draw.SimpleText(missiles, "Metroid Prime Visor UI Small", 732 - 86 * missileRatio, 272 - 112 * missileRatio, fontColor);
+	draw.SimpleText(missiles, "Metroid Prime Visor UI Small", 732 - 86 * missileRatio, 272 - 112 * missileRatio, Color(fr, fg, fb, fa));
 
 	-- Render missile bar.
 	WGL.TextureRot(arrowMaterial, 705 - 86 * missileRatio, 293 - 112 * missileRatio, 18, 20, 128.5, 93, 123, 183, baseAlpha);

@@ -1,11 +1,9 @@
 
-sm_PowerSuit = {};
-sm_PowerSuit.__index = sm_PowerSuit;
+POWERSUIT.PowerSuit = {};
 
-function sm_PowerSuit:New(weapon)
+function POWERSUIT.PowerSuit:SetupDataTables(weapon)
 
-	local object = {};
-	object.Constants = {
+	self.Constants = {
 
 		Movement = {
 			Gravity       = 1.2,
@@ -35,7 +33,7 @@ function sm_PowerSuit:New(weapon)
 		}
 	};
 
-	object.State = {
+	self.State = {
 
 		SpaceJump = {
 			Enable        = false
@@ -62,16 +60,6 @@ function sm_PowerSuit:New(weapon)
 		}
 	};
 
-	object.Weapon = weapon;
-	setmetatable(object, sm_PowerSuit);
-	object:SetupDataTables();
-	return object;
-end
-
-function sm_PowerSuit:SetupDataTables()
-
-	local weapon = self.Weapon;
-
 	weapon:NetworkVar("Bool",  24, "Suit1",     { KeyName = "suit1",       Edit = { order = 10, category = "Suits", type = "Boolean" } });
 	weapon:NetworkVar("Bool",  25, "Suit2",     { KeyName = "suit2",       Edit = { order = 11, category = "Suits", type = "Boolean" } });
 	weapon:NetworkVar("Bool",  26, "Suit3",     { KeyName = "suit3",       Edit = { order = 12, category = "Suits", type = "Boolean" } });
@@ -83,10 +71,11 @@ function sm_PowerSuit:SetupDataTables()
 	weapon:NetworkVar("Bool",  31, "Grappled");
 	weapon:NetworkVar("Float", 26, "GrappleRatio");
 
+	self.Weapon = weapon;
 	if (SERVER) then self:LoadState(); end
 end
 
-function sm_PowerSuit:SaveState()
+function POWERSUIT.PowerSuit:SaveState()
 
 	-- Update local state cache with current network information.
 	local weapon = self.Weapon;
@@ -100,7 +89,7 @@ function sm_PowerSuit:SaveState()
 	return self.State;
 end
 
-function sm_PowerSuit:LoadState(state)
+function POWERSUIT.PowerSuit:LoadState(state)
 
 	-- Assign state to current instance.
 	if (state) then self.State = state; end
@@ -115,12 +104,12 @@ function sm_PowerSuit:LoadState(state)
 	weapon:SetSuit4(self.State.Suit4.Enable);
 end
 
-function sm_PowerSuit:Reset()
+function POWERSUIT.PowerSuit:Reset()
 	self.Weapon:SetGrappling(false);
 	self.Weapon:SetGrappleRatio(0);
 end
 
-function sm_PowerSuit:GetSuit()
+function POWERSUIT.PowerSuit:GetSuit()
 
 	local weapon = self.Weapon;
 	if (weapon:GetSuit4())     then return 4;
@@ -132,27 +121,27 @@ function sm_PowerSuit:GetSuit()
 	return 1;
 end
 
-function sm_PowerSuit:IsSpaceJumpEnabled()
+function POWERSUIT.PowerSuit:IsSpaceJumpEnabled()
 	return self.Weapon:GetSpaceJump();
 end
 
-function sm_PowerSuit:EnableSpaceJump(enable)
+function POWERSUIT.PowerSuit:EnableSpaceJump(enable)
 	self.Weapon:SetSpaceJump(enable);
 end
 
-function sm_PowerSuit:IsGrappleEnabled()
+function POWERSUIT.PowerSuit:IsGrappleEnabled()
 	return self.Weapon:GetGrapple();
 end
 
-function sm_PowerSuit:EnableGrapple(enable)
+function POWERSUIT.PowerSuit:EnableGrapple(enable)
 	self.Weapon:SetGrapple(enable);
 end
 
-function sm_PowerSuit:IsSuitEnabled(suit)
+function POWERSUIT.PowerSuit:IsSuitEnabled(suit)
 	return self.Weapon["GetSuit" .. suit](self.Weapon);
 end
 
-function sm_PowerSuit:EnableSuit(suit, enable)
+function POWERSUIT.PowerSuit:EnableSuit(suit, enable)
 	self.Weapon["SetSuit" .. suit](self.Weapon, enable);
 end
 
@@ -160,28 +149,26 @@ end
 -- Grapple Beam
 -- 
 
-function sm_PowerSuit:IsGrappling()
+function POWERSUIT.PowerSuit:IsGrappling()
 	return self.Weapon:GetGrappling();
 end
 
-function sm_PowerSuit:Grappling(grappling)
+function POWERSUIT.PowerSuit:Grappling(grappling)
 	self.Weapon:SetGrappling(grappling);
 end
 
-function sm_PowerSuit:Grappled()
+function POWERSUIT.PowerSuit:Grappled()
 	return self.Weapon:GetGrappled();
 end
 
-function sm_PowerSuit:SetGrappled(grappled)
+function POWERSUIT.PowerSuit:SetGrappled(grappled)
 	self.Weapon:SetGrappled(grappled);
 end
 
-function sm_PowerSuit:GetGrappleRatio()
+function POWERSUIT.PowerSuit:GetGrappleRatio()
 	return self.Weapon:GetGrappleRatio();
 end
 
-function sm_PowerSuit:SetGrappleRatio(ratio)
+function POWERSUIT.PowerSuit:SetGrappleRatio(ratio)
 	self.Weapon:SetGrappleRatio(ratio);
 end
-
-setmetatable(sm_PowerSuit, {__call = sm_PowerSuit.New });

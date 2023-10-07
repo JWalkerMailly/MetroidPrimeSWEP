@@ -1,11 +1,9 @@
 
-sm_Helmet = {};
-sm_Helmet.__index = sm_Helmet;
+POWERSUIT.Helmet = {};
 
-function sm_Helmet:New(weapon)
+function POWERSUIT.Helmet:SetupDataTables(weapon)
 
-	local object = {};
-	object.Constants = {
+	self.Constants = {
 
 		Energy = {
 			Limit           = 14
@@ -23,7 +21,7 @@ function sm_Helmet:New(weapon)
 		}
 	};
 
-	object.State = {
+	self.State = {
 
 		Energy = {
 			Base            = 0,
@@ -47,16 +45,6 @@ function sm_Helmet:New(weapon)
 		}
 	};
 
-	object.Weapon = weapon;
-	setmetatable(object, sm_Helmet);
-	object:SetupDataTables();
-	return object;
-end
-
-function sm_Helmet:SetupDataTables()
-
-	local weapon = self.Weapon;
-
 	weapon:NetworkVar("Bool",  15, "Visor1Enabled", { KeyName = "visor1", Edit = { order = 4, category = "Visors", type = "Boolean" } });
 	weapon:NetworkVar("Bool",  16, "Visor2Enabled", { KeyName = "visor2", Edit = { order = 5, category = "Visors", type = "Boolean" } });
 	weapon:NetworkVar("Bool",  17, "Visor3Enabled", { KeyName = "visor3", Edit = { order = 6, category = "Visors", type = "Boolean" } });
@@ -71,10 +59,11 @@ function sm_Helmet:SetupDataTables()
 	weapon:NetworkVar("Entity", 1, "Target");
 	weapon:NetworkVar("Angle",  0, "LockAngle");
 
+	self.Weapon = weapon;
 	if (SERVER) then self:LoadState(); end
 end
 
-function sm_Helmet:SaveState()
+function POWERSUIT.Helmet:SaveState()
 
 	-- Update local state cache with current network information.
 	local weapon = self.Weapon;
@@ -88,7 +77,7 @@ function sm_Helmet:SaveState()
 	return self.State;
 end
 
-function sm_Helmet:LoadState(state)
+function POWERSUIT.Helmet:LoadState(state)
 
 	-- Assign state to current instance.
 	if (state) then self.State = state; end
@@ -104,36 +93,36 @@ function sm_Helmet:LoadState(state)
 	weapon:SetVisor4Enabled(self.State.Visor4.Enable);
 end
 
-function sm_Helmet:Reset(resetVisor)
+function POWERSUIT.Helmet:Reset(resetVisor)
 	if (resetVisor) then self.Weapon:SetVisorType(self.Constants.Visor.Initial); end
 	self.Weapon:SetTarget(NULL);
 end
 
-function sm_Helmet:GetVisor()
+function POWERSUIT.Helmet:GetVisor()
 	return self.Weapon:GetVisorType();
 end
 
-function sm_Helmet:SetVisor(visor)
+function POWERSUIT.Helmet:SetVisor(visor)
 	self.Weapon:SetVisorType(visor);
 end
 
-function sm_Helmet:GetAimAssistAngle()
+function POWERSUIT.Helmet:GetAimAssistAngle()
 	return self.Constants.Visor.AimAssistAngle;
 end
 
-function sm_Helmet:GetLockAngle()
+function POWERSUIT.Helmet:GetLockAngle()
 	return self.Weapon:GetLockAngle();
 end
 
-function sm_Helmet:SetLockAngle(angle)
+function POWERSUIT.Helmet:SetLockAngle(angle)
 	self.Weapon:SetLockAngle(angle);
 end
 
-function sm_Helmet:IsVisorEnabled(index)
+function POWERSUIT.Helmet:IsVisorEnabled(index)
 	return self.Weapon["GetVisor" .. index .. "Enabled"](self.Weapon);
 end
 
-function sm_Helmet:EnableVisor(index, enable)
+function POWERSUIT.Helmet:EnableVisor(index, enable)
 	self.Weapon["SetVisor" .. index .. "Enabled"](self.Weapon, enable);
 end
 
@@ -141,11 +130,11 @@ end
 -- Visor Animations
 -- 
 
-function sm_Helmet:IsVisorLooping()
+function POWERSUIT.Helmet:IsVisorLooping()
 	return self.Weapon:GetVisorLoop();
 end
 
-function sm_Helmet:StartVisorLoop(loop)
+function POWERSUIT.Helmet:StartVisorLoop(loop)
 	self.Weapon:SetVisorLoop(loop);
 end
 
@@ -153,32 +142,32 @@ end
 -- Energy Tanks
 -- 
 
-function sm_Helmet:GetEnergy()
+function POWERSUIT.Helmet:GetEnergy()
 	return self.Weapon:GetEnergy();
 end
 
-function sm_Helmet:AddEnergy(amount)
+function POWERSUIT.Helmet:AddEnergy(amount)
 	local current = self:GetEnergy();
 	return self:SetEnergy(current + amount);
 end
 
-function sm_Helmet:SetEnergy(amount)
+function POWERSUIT.Helmet:SetEnergy(amount)
 	local max = self:GetMaxEnergy();
 	local energy = math.Clamp(amount, -0.99, max)
 	self.Weapon:SetEnergy(energy);
 	return energy;
 end
 
-function sm_Helmet:GetMaxEnergy()
+function POWERSUIT.Helmet:GetMaxEnergy()
 	return self.Weapon:GetMaxEnergy();
 end
 
-function sm_Helmet:AddMaxEnergy(amount, refill)
+function POWERSUIT.Helmet:AddMaxEnergy(amount, refill)
 	local current = self:GetMaxEnergy();
 	return self:SetMaxEnergy(current + amount, refill);
 end
 
-function sm_Helmet:SetMaxEnergy(amount, refill)
+function POWERSUIT.Helmet:SetMaxEnergy(amount, refill)
 	local limit = self.Constants.Energy.Limit;
 	local maxEnergy = math.Clamp(amount, 0, limit);
 	self.Weapon:SetMaxEnergy(maxEnergy);
@@ -192,14 +181,12 @@ end
 -- Target System
 -- 
 
-function sm_Helmet:GetTarget(input)
+function POWERSUIT.Helmet:GetTarget(input)
 	local target = self.Weapon:GetTarget();
 	local valid  = IsValid(target);
 	return target, valid, valid && self.Weapon:GetOwner():KeyDown(input);
 end
 
-function sm_Helmet:SetTarget(target)
+function POWERSUIT.Helmet:SetTarget(target)
 	self.Weapon:SetTarget(target);
 end
-
-setmetatable(sm_Helmet, {__call = sm_Helmet.New });
