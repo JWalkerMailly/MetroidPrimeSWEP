@@ -55,6 +55,7 @@ POWERSUIT.Beams[1] = {
 	WorldModel          = Model("models/metroid/armcannon/w_power.mdl"),
 
 	-- View model particle effects.
+	Charge3DEffect      = "ChargeVents",
 	ChargeEffect        = "mp_powerbeam_charge",
 	MuzzleEffect        = "mp_powerbeam_muzzle",
 	MuzzleBreakEffect   = nil,
@@ -184,6 +185,7 @@ POWERSUIT.Beams[3] = {
 	WorldModel          = Model("models/metroid/armcannon/w_ice.mdl"),
 
 	-- View model particle effects.
+	Charge3DEffect      = "ChargeFrost",
 	ChargeEffect        = "mp_icebeam_charge",
 	MuzzleEffect        = "mp_icebeam_muzzle",
 	MuzzleBreakEffect   = "mp_icebeam_charge_muzzle",

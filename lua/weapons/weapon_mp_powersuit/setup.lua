@@ -74,6 +74,8 @@ if (SERVER) then
 	AddCSLuaFile("rendering/effects/facereflection.lua");
 	AddCSLuaFile("rendering/effects/beamchange.lua");
 	AddCSLuaFile("rendering/effects/grapplebeam.lua");
+	AddCSLuaFile("rendering/effects/chargevents.lua");
+	AddCSLuaFile("rendering/effects/chargefrost.lua");
 
 	AddCSLuaFile("rendering/huds/morphball.lua");
 	AddCSLuaFile("rendering/huds/powersuit.lua");
@@ -113,6 +115,8 @@ if (CLIENT) then
 	include("rendering/effects/facereflection.lua");
 	include("rendering/effects/beamchange.lua");
 	include("rendering/effects/grapplebeam.lua");
+	include("rendering/effects/chargevents.lua");
+	include("rendering/effects/chargefrost.lua");
 
 	include("rendering/huds/morphball.lua");
 	include("rendering/huds/powersuit.lua");

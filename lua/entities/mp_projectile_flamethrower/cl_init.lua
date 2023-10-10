@@ -74,7 +74,7 @@ function PROJECTILE:Draw()
 	if (isLocal) then
 		local fov      = owner:GetFOV();
 		local fovRatio = 1 - (75 / fov) + 1;
-		muzzle, ang    = WGL.GetViewModelAttachmentPos(1, weapon.ViewModelFOV, fov, false, owner);
+		muzzle, ang    = WGL.GetViewModelAttachmentPos(1, weapon.ViewModelFOV, fov, false, owner, true);
 		muzzle         = muzzle - ang:Forward() * fovRatio;
 		endPos         = WGL.ToViewModelProjection(endPos, weapon.ViewModelFOV, fov, false, owner);
 	else

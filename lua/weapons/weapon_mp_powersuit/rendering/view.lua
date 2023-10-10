@@ -87,7 +87,7 @@ function POWERSUIT:GetViewModelRollPos(deg, angle)
 	return angle:Right() * right - angle:Up() * up;
 end
 
-function POWERSUIT:CalcViewModelView(vm, oldPos, oldAngle, pos, angle)
+function POWERSUIT:GetViewModelPosition(pos, angle)
 
 	if (self:ShouldResetView(self:GetOwner())) then
 		self.ViewModelSway.Time     = CurTime() + math.Rand(8, 16);
@@ -138,11 +138,12 @@ end
 
 function POWERSUIT:DrawViewModelEffects()
 
+	local owner    = LocalPlayer();
 	local beamData = self:GetBeam();
 	local ratio    = self.ArmCannon:GetChargeRatio();
 	local reset    = self.ArmCannon:GetNextMissileComboResetTime();
 	local combo    = reset != 0 && reset < CurTime();
-	local vm       = LocalPlayer():GetViewModel();
+	local vm       = owner:GetViewModel();
 	if (!IsValid(vm)) then return; end
 
 	-- Use missile combo ratio for charge ball rendering if no charge ratio is 
@@ -151,7 +152,7 @@ function POWERSUIT:DrawViewModelEffects()
 	if (ratio > 0.1 || combo) then
 
 		-- Emit light when charging the arm cannon.
-		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV);
+		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, owner, true);
 		local charge = (!combo && ratio || 1) * (math.sin(CurTime() * 10) / 4 + 0.75);
 		WGL.EmitLight(self, muzzle, beamData.ChargeColor, 0, charge * 100, CurTime() + 0.1, 6);
 		WGL.EmitLight(vm, muzzle, beamData.ChargeColor, 0, charge * beamData.ChargeGlowSize, CurTime() + 0.1, 6, true);
@@ -206,4 +207,18 @@ function POWERSUIT:PostDrawViewModel(vm, weapon, ply)
 	render.MaterialOverrideByIndex(5, nil);
 	render.MaterialOverrideByIndex(6, nil);
 	render.MaterialOverrideByIndex(7, nil);
+
+	-- Do nothing if this beam does not use procedural charge effects.
+	local beamData = self:GetBeam();
+	if (!beamData.Charge3DEffect) then return; end
+
+	-- Render viewmodel charge effects after drawing the viewmodel.
+	local ratio = self.ArmCannon:GetChargeRatio();
+	if (ratio == 0) then ratio = 1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5; end
+	if (ratio > 0) then
+		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, LocalPlayer(), true);
+		WGL.Component(self, beamData.Charge3DEffect, muzzle, ang, ratio, beamData.ChargeBallColor);
+	else
+		WGL.GetComponent(self, beamData.Charge3DEffect):Initialize();
+	end
 end
