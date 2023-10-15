@@ -42,8 +42,10 @@ end
 
 function POWERSUIT:CanRequestComponent(ignoreOpenState)
 
+	local owner = self:GetOwner();
+
 	return CurTime() > (self.ChangeComponentRequestedNextTime || 0)
-		&& !self:GetOwner():KeyDown(IN_ATTACK) && !self:GetOwner():KeyDown(IN_DUCK)
+		&& !owner:KeyDown(IN_ATTACK) && !owner:KeyDown(IN_DUCK) && !owner:InVehicle()
 		&& self:GetNextPrimaryFire() < CurTime() && self:GetNextSecondaryFire() < CurTime()
 		&& !self.ArmCannon:IsBusy(ignoreOpenState) && self.MorphBall:CanMorph() && !IsValid(self:GetMorphBall());
 end
