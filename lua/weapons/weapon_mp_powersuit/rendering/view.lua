@@ -139,12 +139,13 @@ end
 function POWERSUIT:DrawViewModelEffects()
 
 	local owner    = LocalPlayer();
+	local vm       = owner:GetViewModel();
+	if (!IsValid(vm) || owner:InVehicle()) then return; end
+
 	local beamData = self:GetBeam();
 	local ratio    = self.ArmCannon:GetChargeRatio();
 	local reset    = self.ArmCannon:GetNextMissileComboResetTime();
 	local combo    = reset != 0 && reset < CurTime();
-	local vm       = owner:GetViewModel();
-	if (!IsValid(vm)) then return; end
 
 	-- Use missile combo ratio for charge ball rendering if no charge ratio is 
 	-- provided. This is will shrink the charge ball when firing a missile combo.
