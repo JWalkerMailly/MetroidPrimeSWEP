@@ -1,7 +1,9 @@
 
 function MORPHBALL:SurfaceValid(surfaceProps)
 	if (!surfaceProps) then return false; end
-	return game.MetroidPrimeSpiderSurfaces.Cache[util.GetSurfaceData(surfaceProps).name];
+	local surfaceData = util.GetSurfaceData(surfaceProps);
+	if (!surfaceData) then return false; end
+	return game.MetroidPrimeSpiderSurfaces.Cache[surfaceData.name];
 end
 
 function MORPHBALL:UseSpider(owner, boosting, bombJumping)
