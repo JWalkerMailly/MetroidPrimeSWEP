@@ -9,11 +9,11 @@ function POWERSUIT:ResetCamera()
 	owner.__mp_CameraTransition = 1;
 end
 
-hook.Add("StartCommand", "POWERSUIT.CameraMove", function(ply, cmd)
+hook.Add("CreateMove", "POWERSUIT.CameraMove", function(cmd)
 
 	-- Keep mouse movement reference for rendering operations.
-	ply.__mp_MouseX = cmd:GetMouseX();
-	ply.__mp_MouseY = cmd:GetMouseY();
+	LocalPlayer().__mp_MouseX = cmd:GetMouseX();
+	LocalPlayer().__mp_MouseY = cmd:GetMouseY();
 end);
 
 hook.Add("InputMouseApply", "POWERSUIT.LockCamera", function(cmd)
@@ -23,7 +23,7 @@ hook.Add("InputMouseApply", "POWERSUIT.LockCamera", function(cmd)
 
 	-- Prevent mouse movement when locked onto a target.
 	local _, _, locked = weapon.Helmet:GetTarget(IN_SPEED);
-	if (locked) then
+	if (locked || input.IsKeyDown(weapon.GestureKey)) then
 		cmd:SetMouseX(0);
 		cmd:SetMouseY(0);
 		return true;

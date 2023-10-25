@@ -20,8 +20,13 @@ CreateClientConVar("mp_options_facereflection",  "1", true, false);
 CreateClientConVar("mp_options_keephud",         "0", true, false);
 CreateClientConVar("mp_options_playermodel",     "1", true, true);
 CreateClientConVar("mp_options_autoaim",         "1", true, true);
+CreateClientConVar("mp_options_gestures",        "0", true, false);
+CreateClientConVar("mp_options_gesturehelp",     "0", true, false);
+CreateClientConVar("mp_options_gesturedzone","0.125", true, false, "", 0.1, 1);
+CreateClientConVar("mp_options_gesturealpha","0.125", true, false, "", 0.1, 1);
 if (CLIENT) then concommand.Add("mp_options_playermodel_get", function(ply) gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=2701609725"); end); end
 
+CreateClientConVar("mp_controls_gesture",       "81", true, true);
 CreateClientConVar("mp_controls_selectorlayer", "15", true, true);
 CreateClientConVar("mp_controls_selector1",     "88", true, true);
 CreateClientConVar("mp_controls_selector2",     "91", true, true);

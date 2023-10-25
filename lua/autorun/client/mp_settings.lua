@@ -33,6 +33,26 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		WGL.KeyMap(panel, "Beam/Visor 4 Key", "mp_controls_selector4",     "\nDefines the key to use to swap to Beam/Visor 4.");
 	end);
 
+	-- Create gestures options menu.
+	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpGestures", "Gestures", "", "", function(panel)
+
+		panel:Clear();
+
+		panel:CheckBox("Use Gestures", "mp_options_gestures");
+		panel:ControlHelp("\nTurn gesture feature on or off. To use gestures, hold down the gesture key and move your mouse up, down, left or right to change Beam. To change Visor, the visor layer key must also be held down.");
+
+		WGL.KeyMap(panel, "Gesture Key", "mp_controls_gesture", "\nDefines the key to hold for Beam/Visor swap gestures.");
+
+		panel:NumSlider("Dead Zone", "mp_options_gesturedzone", 0.1, 1, 3);
+		panel:ControlHelp("\nAdjusts the dead zone of mouse gestures. Default value: 0.125.");
+
+		panel:NumSlider("Sensitivity", "mp_options_gesturealpha", 0.1, 1, 3);
+		panel:ControlHelp("\nAdjusts the sensitivity of mouse gestures. Default value: 0.125.");
+
+		panel:CheckBox("Show Help", "mp_options_gesturehelp");
+		panel:ControlHelp("\nShow gesture calibration on screen.");
+	end);
+
 	-- Create Visor options menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpVisor", "Visor", "", "", function(panel)
 

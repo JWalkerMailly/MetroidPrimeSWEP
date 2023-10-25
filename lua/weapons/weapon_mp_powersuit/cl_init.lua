@@ -37,6 +37,20 @@ function POWERSUIT:DrawHUDBackground()
 	WGL.Texture(self.DamageFlash, 0, 0, ScrW(), ScrH(), 255, 200, 0, 20 * WGL.Clamp(damage));
 	WGL.Component(self, "PowerSuitHUD", self, damage);
 	WGL.Component(self, "MorphBallHUD", self, damage);
+
+	-- Render helpers.
+	self:DrawGestureHelp();
+end
+
+function POWERSUIT:DrawGestureHelp()
+
+	if (!GetConVar("mp_options_gesturehelp"):GetBool()) then return; end
+
+	local halfW = ScrW() * 0.5;
+	local halfH = ScrH() * 0.5;
+	local zone  = ScrH() * GetConVar("mp_options_gesturedzone"):GetFloat();
+	WGL.Circle(halfW - zone * 0.5, halfH - zone * 0.5, zone, zone, 8, 255, 255, 255, 50);
+	WGL.Rect(halfW + self.LastGesture[1] - 4, halfH + self.LastGesture[2] - 4, 8, 8, 255, 0, 0, 255);
 end
 
 function POWERSUIT:DrawWeaponSelection(x, y, wide, tall, alpha)

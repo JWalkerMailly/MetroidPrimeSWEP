@@ -5,15 +5,16 @@ end
 
 function POWERSUIT:LoadControls()
 	local owner = self:GetOwner();
-	self.SelectorLayerKey = owner:GetInfo("mp_controls_selectorlayer");
-	self.Beams[1].Key     = owner:GetInfo("mp_controls_selector1");
-	self.Beams[2].Key     = owner:GetInfo("mp_controls_selector2");
-	self.Beams[3].Key     = owner:GetInfo("mp_controls_selector3");
-	self.Beams[4].Key     = owner:GetInfo("mp_controls_selector4");
-	self.Visors[1].Key    = owner:GetInfo("mp_controls_selector1");
-	self.Visors[2].Key    = owner:GetInfo("mp_controls_selector4");
-	self.Visors[3].Key    = owner:GetInfo("mp_controls_selector3");
-	self.Visors[4].Key    = owner:GetInfo("mp_controls_selector2");
+	self.GestureKey       = owner:GetInfoNum("mp_controls_gesture",       81);
+	self.SelectorLayerKey = owner:GetInfoNum("mp_controls_selectorlayer", 15);
+	self.Beams[1].Key     = owner:GetInfoNum("mp_controls_selector1",     88);
+	self.Beams[2].Key     = owner:GetInfoNum("mp_controls_selector2",     91);
+	self.Beams[3].Key     = owner:GetInfoNum("mp_controls_selector3",     90);
+	self.Beams[4].Key     = owner:GetInfoNum("mp_controls_selector4",     89);
+	self.Visors[1].Key    = owner:GetInfoNum("mp_controls_selector1",     88);
+	self.Visors[2].Key    = owner:GetInfoNum("mp_controls_selector4",     91);
+	self.Visors[3].Key    = owner:GetInfoNum("mp_controls_selector3",     90);
+	self.Visors[4].Key    = owner:GetInfoNum("mp_controls_selector2",     89);
 end
 
 function POWERSUIT:LoadState(config)

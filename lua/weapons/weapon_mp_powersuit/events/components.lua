@@ -130,10 +130,13 @@ function POWERSUIT:ChangeComponentThink(beamData, viewModel)
 	if (visorLayer) then selectionLayer = self.Visors; end
 
 	-- Begin net message to request a component change on the server.
+	local gestureKey = self:GetGestureKey();
 	for component,data in ipairs(selectionLayer) do
-		if (input.IsKeyDown(selectionLayer[component].Key)) then
+		local componentKey = tonumber(selectionLayer[component].Key);
+		if (input.IsKeyDown(componentKey) || gestureKey == componentKey) then
 			self.ChangeComponentRequestedNextTime = CurTime() + self.ArmCannon.Constants.Beam.Request;
 			self:StartChangeComponent(component, visorLayer);
+			self:ResetGesture();
 			break;
 		end
 	end
@@ -163,6 +166,47 @@ function POWERSUIT:ChangeVisorThink()
 	local visorData = self:GetVisor();
 	self.Helmet:StartVisorLoop(true);
 	WSL.PlaySound(visorData, "ambient", 0.5, 1);
+end
+
+local gestureDown  = Vector(0, 1, 0);
+local gestureRight = Vector(1, 0, 0);
+function POWERSUIT:GetGestureKey()
+
+	if (!GetConVar("mp_options_gestures"):GetBool()) then return; end
+
+	-- Do nothing if a gesture is currently being processed.
+	local startGesture = input.IsKeyDown(self.GestureKey);
+	if (!startGesture)       then return self:ResetGesture(); end
+	if (self.LastGestureSet) then return self.LastGestureKey; end
+
+	-- Parse mouse movement.
+	local owner = LocalPlayer();
+	local gestureAlpha  = GetConVar("mp_options_gesturealpha"):GetFloat();
+	self.LastGesture[1] = self.LastGesture[1] + (owner.__mp_MouseX || 0) * gestureAlpha;
+	self.LastGesture[2] = self.LastGesture[2] + (owner.__mp_MouseY || 0) * gestureAlpha;
+
+	-- Do nothing if movement was within deadzone.
+	local deadZone = ScrH() * GetConVar("mp_options_gesturedzone"):GetFloat() * 0.5;
+	if (self.LastGesture:Length() < deadZone) then return; end
+
+	-- Parse gesture quadrant.
+	local gestureUDot = self.LastGesture:Dot(gestureDown);
+	local gestureRDot = self.LastGesture:Dot(gestureRight);
+	local gestureSlot = math.abs(gestureUDot) > math.abs(gestureRDot)
+		&& (gestureUDot < 0 && "1" || "3")
+		|| (gestureRDot > 0 && "2" || "4");
+
+	-- Parse gesture key from quadrant.
+	self.LastGestureSet = true;
+	self.LastGestureKey = owner:GetInfoNum("mp_controls_selector" .. gestureSlot, -1);
+	return self.LastGestureKey;
+end
+
+function POWERSUIT:ResetGesture()
+	self.LastGestureSet = false;
+	self.LastGestureKey = nil;
+	self.LastGesture[1] = 0;
+	self.LastGesture[2] = 0;
 end
 
 -- Change component networking code.

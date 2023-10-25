@@ -287,6 +287,7 @@ POWERSUIT.AmbientEffect          = nil;
 POWERSUIT.MuzzleOffset           = Vector(33.568420, 5.526276, 8.699661);
 POWERSUIT.CSMuzzleFlashes        = false;
 POWERSUIT.SelectorLayerKey       = KEY_E;
+POWERSUIT.GestureKey             = KEY_LALT;
 POWERSUIT.FidgetAnimations       = {
 	ACT_VM_FIDGET,
 	ACT_VM_PULLPIN,

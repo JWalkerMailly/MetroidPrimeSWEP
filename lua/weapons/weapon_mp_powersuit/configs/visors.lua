@@ -280,3 +280,7 @@ POWERSUIT.ViewModelRoll          = 0;
 POWERSUIT.ViewModelRollBuffer    = 0.5;
 POWERSUIT.ViewModelRollCompleted = false;
 POWERSUIT.LastViewModelRoll      = 0;
+
+POWERSUIT.LastGesture            = Vector(0, 0, 0);
+POWERSUIT.LastGestureSet         = false;
+POWERSUIT.LastGestureKey         = nil;

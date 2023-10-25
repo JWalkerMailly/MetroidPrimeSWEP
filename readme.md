@@ -67,6 +67,19 @@ The following commands are all accessible from the options menu:
 </details>
 
 <details>
+<summary><h4>Gesture Commands</h4></summary>
+
+The following commands are all accessible from the options menu. Gestures can be used to change Beam/Visor using mouse movements instead of keyboard inputs.
+| ConVar | Values | Description |
+| ------ | ------ | ------ |
+| mp_options_gestures | 0 / 1 | Enables or disables gesture feature. |
+| mp_controls_gesture | 0 - 159 | Defines the key to hold down to initiate a gesture. |
+| mp_options_gesturedzone | 0.1 - 1.0 | Defines the mouse movement dead zone for gestures. Default value of 0.125. |
+| mp_options_gesturealpha | 0.1 - 1.0 | Defines the mouse sensitivity for gestures. Default value of 0.125.  |
+| mp_options_gesturehelp | 0 / 1 | Show gesture calibration on screen. |
+</details>
+
+<details>
 <summary><h4>Display Commands</h4></summary>
 
 The following commands are all accessible from the options menu:
