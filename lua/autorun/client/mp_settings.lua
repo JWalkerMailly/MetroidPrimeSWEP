@@ -39,7 +39,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:Clear();
 
 		panel:CheckBox("Use Gestures", "mp_options_gestures");
-		panel:ControlHelp("\nTurn gesture feature on or off. To use gestures, hold down the gesture key and move your mouse up, down, left or right to change Beam. To change Visor, the visor layer key must also be held down.");
+		panel:ControlHelp("\nTurn gesture feature on or off. To use gestures, hold down the gesture key and move your mouse up, down, left or right to change Beam. To change Visor, the Visor Layer Key must be held down instead.");
 
 		WGL.KeyMap(panel, "Gesture Key", "mp_controls_gesture", "\nDefines the key to hold for Beam/Visor swap gestures.");
 

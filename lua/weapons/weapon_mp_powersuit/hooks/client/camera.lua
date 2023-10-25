@@ -23,7 +23,8 @@ hook.Add("InputMouseApply", "POWERSUIT.LockCamera", function(cmd)
 
 	-- Prevent mouse movement when locked onto a target.
 	local _, _, locked = weapon.Helmet:GetTarget(IN_SPEED);
-	if (locked || input.IsKeyDown(weapon.GestureKey)) then
+	local gesture = GetConVar("mp_options_gestures"):GetBool() && (input.IsKeyDown(weapon.GestureKey) || input.IsKeyDown(weapon.SelectorLayerKey)) || false;
+	if (locked || gesture) then
 		cmd:SetMouseX(0);
 		cmd:SetMouseY(0);
 		return true;

@@ -175,7 +175,7 @@ function POWERSUIT:GetGestureKey()
 	if (!GetConVar("mp_options_gestures"):GetBool()) then return; end
 
 	-- Do nothing if a gesture is currently being processed.
-	local startGesture = input.IsKeyDown(self.GestureKey);
+	local startGesture = input.IsKeyDown(self.GestureKey) || input.IsKeyDown(self.SelectorLayerKey);
 	if (!startGesture)       then return self:ResetGesture(); end
 	if (self.LastGestureSet) then return self.LastGestureKey; end
 
