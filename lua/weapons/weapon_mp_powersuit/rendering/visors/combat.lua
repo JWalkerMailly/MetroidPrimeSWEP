@@ -393,7 +393,7 @@ function CombatVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColo
 			render.SetColorModulation(guiColor.r, guiColor.g, guiColor.b);
 			render.SetBlend(transition * visorOpacity);
 			if (!locked) then
-				local aimTrace = util.QuickTrace(EyePos(), EyeAngles():Forward() * 300, LocalPlayer());
+				local aimTrace = util.TraceLine({ start = EyePos(), endpos = EyePos() + EyeAngles():Forward() * 300, filter = LocalPlayer(), mask = MASK_VISIBLE });
 				self:DrawModel("Orbit", aimTrace.HitPos, Angle(0, 0, 0), 3);
 			end
 			self:DrawModel("StaticGUI", guiPos, hudAngle);
