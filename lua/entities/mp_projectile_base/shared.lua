@@ -25,6 +25,7 @@ PROJECTILE.ProjectileEffect    = nil;
 PROJECTILE.ImpactEffect        = nil;
 
 -- Properties
+PROJECTILE.WaterDrag           = 1;
 PROJECTILE.Speed               = 0;
 PROJECTILE.RotationRate        = nil;
 PROJECTILE.LifeTime            = 0;
@@ -113,6 +114,14 @@ function PROJECTILE:Initialize()
 			if (self.ProjectileEffect != nil) then ParticleEffectAttach(self.ProjectileEffect, PATTACH_ABSORIGIN_FOLLOW, self, 0); end
 		end
 	end
+end
+
+function PROJECTILE:GetSpeed()
+	return self:WaterLevel() >= 3 && (self.Speed * self.WaterDrag) || self.Speed;
+end
+
+function PROJECTILE:GetOscillationSpeed()
+	return self:WaterLevel() >= 3 && (self.OscillationSpeed * self.WaterDrag) || self.OscillationSpeed;
 end
 
 function PROJECTILE:SetCollisionFilter(filter)
@@ -223,7 +232,7 @@ end
 function PROJECTILE:Oscillate()
 
 	-- Define oscillation wave function according to oscillator parameters.
-	local wave        = math.sin((CurTime() - self.SpawnTime) * self.OscillationSpeed + self.OscillationDegree);
+	local wave        = math.sin((CurTime() - self.SpawnTime) * self:GetOscillationSpeed() + self.OscillationDegree);
 	local oscillator  = (wave + self.OscillationDomain) / (1.0 + self.OscillationDomain);
 	local oscillation = self.RollRelativeUp * oscillator * self.OscillationFactor;
 	self:SetPos(self.RollRelativeOffset + oscillation);

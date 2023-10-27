@@ -21,6 +21,7 @@ PROJECTILE.DecalBurnEffect    = "beam_burn_missile_decal"
 
 -- Properties
 PROJECTILE.Radius             = 2;
+PROJECTILE.WaterDrag          = 0.7;
 PROJECTILE.Speed              = 1000;
 PROJECTILE.LifeTime           = 5;
 PROJECTILE.GlowColor          = Color(20, 78, 255, 3);

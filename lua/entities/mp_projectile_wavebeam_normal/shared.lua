@@ -15,6 +15,7 @@ PROJECTILE.Sounds["impact"] = Sound("weapons/wavebeam/impact_normal.wav");
 
 -- Properties
 PROJECTILE.Radius           = 0.5;
+PROJECTILE.WaterDrag        = 0.6;
 PROJECTILE.Speed            = 1150;
 PROJECTILE.LifeTime         = 2.1;
 PROJECTILE.GlowColor        = Color(255, 53, 224, 1);

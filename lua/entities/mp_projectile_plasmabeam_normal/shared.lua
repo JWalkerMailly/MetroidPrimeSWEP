@@ -21,6 +21,7 @@ PROJECTILE.ImpactEffect       = "mp_plasmabeam_impact";
 -- Properties
 PROJECTILE.Mask               = MASK_SHOT_PORTAL;
 PROJECTILE.Radius             = 2.5;
+PROJECTILE.WaterDrag          = 0.6;
 PROJECTILE.Speed              = 10000;
 PROJECTILE.LifeTime           = 0.325;
 PROJECTILE.GlowColor          = Color(225, 218, 109, 0.8);

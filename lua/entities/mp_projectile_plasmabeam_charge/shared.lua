@@ -20,6 +20,7 @@ PROJECTILE.ImpactEffect       = "mp_plasmabeam_charge_impact";
 
 -- Properties
 PROJECTILE.Radius             = 5;
+PROJECTILE.WaterDrag          = 0.6;
 PROJECTILE.Speed              = 4000;
 PROJECTILE.LifeTime           = 0.325;
 PROJECTILE.GlowColor          = Color(225, 218, 109, 0.8);

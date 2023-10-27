@@ -19,6 +19,7 @@ PROJECTILE.ProjectileEffect   = "mp_icespreader_projectile";
 
 -- Properties
 PROJECTILE.Radius             = 2;
+PROJECTILE.WaterDrag          = 0.7;
 PROJECTILE.Speed              = 1000;
 PROJECTILE.RotationRate       = 800;
 PROJECTILE.LifeTime           = 2;

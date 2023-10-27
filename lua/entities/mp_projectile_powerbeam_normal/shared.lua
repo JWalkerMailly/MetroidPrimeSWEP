@@ -23,6 +23,7 @@ PROJECTILE.DecalBurnEffect    = "beam_burn_decal";
 -- Properties
 PROJECTILE.Mask               = MASK_SHOT_PORTAL;
 PROJECTILE.Radius             = 2.5;
+PROJECTILE.WaterDrag          = 0.6;
 PROJECTILE.Speed              = 3000;
 PROJECTILE.LifeTime           = 3;
 PROJECTILE.GlowColor          = Color(225, 218, 109, 1);

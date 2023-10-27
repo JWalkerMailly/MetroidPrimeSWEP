@@ -128,7 +128,7 @@ end
 function PROJECTILE:GetHomingAngle(pos, target, targetPos, targetDirection)
 	local distance       = targetDirection:Length();
 	local targetVelocity = target:GetVelocity() / distance;
-	local time           = distance / self.Speed;
+	local time           = distance / self:GetSpeed();
 	return (targetPos + targetVelocity * time - pos):Angle();
 end
 
@@ -163,6 +163,6 @@ function PROJECTILE:PhysicsUpdate(phys)
 	if (self.Homing)       then self:Home(phys); end
 	if (self.Oscillator)   then return; end
 
-	phys:SetVelocityInstantaneous(self:GetForward() * (self.Speed + (self.InitialVelocity || 0)));
+	phys:SetVelocityInstantaneous(self:GetForward() * (self:GetSpeed() + (self.InitialVelocity || 0)));
 	if (phys:GetAngleVelocity():LengthSqr() != 0) then self:Destroy(true); end
 end
