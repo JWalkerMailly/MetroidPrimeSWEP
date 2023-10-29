@@ -15,12 +15,12 @@ function WGL.ClientsideModel(model, renderGroup)
 	return csEnt;
 end
 
-function WGL.GetViewModelAttachmentPos(id, vmfov, fov, from, owner, localize)
+function WGL.GetViewModelAttachmentPos(id, vmfov, fov, from, owner, defer)
 
 	local ply    = owner || LocalPlayer();
 	local vm     = ply:GetViewModel();
 	local attach = vm:GetAttachment(id);
-	local pos    = WGL.ToViewModelProjection(attach.Pos, vmfov, fov, from, owner, localize);
+	local pos    = WGL.ToViewModelProjection(attach.Pos, vmfov, fov, from, owner, defer);
 
 	return pos, attach.Ang, vm;
 end

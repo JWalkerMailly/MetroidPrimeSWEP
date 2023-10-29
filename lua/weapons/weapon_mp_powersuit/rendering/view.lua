@@ -153,7 +153,7 @@ function POWERSUIT:DrawViewModelEffects()
 	if (ratio > 0.1 || combo) then
 
 		-- Emit light when charging the arm cannon.
-		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, owner, true);
+		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, owner);
 		local charge = (!combo && ratio || 1) * (math.sin(CurTime() * 10) / 4 + 0.75);
 		WGL.EmitLight(self, muzzle, beamData.ChargeColor, 0, charge * 100, CurTime() + 0.1, 6);
 		WGL.EmitLight(vm, muzzle, beamData.ChargeColor, 0, charge * beamData.ChargeGlowSize, CurTime() + 0.1, 6, true);
@@ -217,7 +217,7 @@ function POWERSUIT:PostDrawViewModel(vm, weapon, ply)
 	local ratio = self.ArmCannon:GetChargeRatio();
 	if (ratio == 0) then ratio = 1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5; end
 	if (ratio > 0) then
-		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, LocalPlayer(), true);
+		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, ply);
 		WGL.Component(self, beamData.Charge3DEffect, muzzle, ang, ratio, beamData.ChargeBallColor);
 	else
 		WGL.GetComponent(self, beamData.Charge3DEffect):Initialize();

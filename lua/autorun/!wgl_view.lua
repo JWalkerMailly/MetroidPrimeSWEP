@@ -38,11 +38,11 @@ function WGL.ViewModelProjection(ignore, fov, drawDelegate, ...)
 	cam.End3D();
 end
 
-function WGL.ToViewModelProjection(pos, vmfov, fov, from, owner, localize)
+function WGL.ToViewModelProjection(pos, vmfov, fov, from, owner, defer)
 
 	local ply     = owner || LocalPlayer();
-	local result  = localize && EyePos() || ply:EyePos();
-	local eyeAng  = localize && EyeAngles() || ply:EyeAngles();
+	local result  = !defer && EyePos() || ply:EyePos();
+	local eyeAng  = !defer && EyeAngles() || ply:EyeAngles();
 	local offset  = pos - result;
 	local forward = eyeAng:Forward();
 	local right   = eyeAng:Right();
