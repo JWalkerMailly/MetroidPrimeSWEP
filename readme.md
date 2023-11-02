@@ -73,7 +73,7 @@ The following commands are all accessible from the options menu. Gestures can be
 | ConVar | Values | Description |
 | ------ | ------ | ------ |
 | mp_options_gestures | 0 / 1 | Enables or disables gesture feature. |
-| mp_controls_gesture | 0 - 159 | Defines the key to hold down to initiate a beam gesture. For visors, use the Visor Layer Key. |
+| mp_controls_gesture | 0 - 159 | Defines the key to hold down to initiate a gesture. |
 | mp_options_gesturedzone | 0.1 - 1.0 | Defines the mouse movement dead zone for gestures. Default value of 0.125. |
 | mp_options_gesturealpha | 0.1 - 1.0 | Defines the mouse sensitivity for gestures. Default value of 0.125.  |
 | mp_options_gesturehelp | 0 / 1 | Show gesture calibration on screen. |
@@ -1748,3 +1748,10 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 Metroid Prime SWEP is a passion project recreation of the original Metroid Prime character controller for Garry's Mod. It is not affiliated, associated, authorized, endorsed by, or in any way officially connected to Nintendo, or any of its subsidiaries or its affiliates.
 
 The names Metroid Prime as well as related names, marks, emblems and images are registered trademarks of their respective owners.
+
+## Analytics
+
+**Start:** November 2022
+**End:** October 2023
+**Hours:** ~800 hours
+**Lines:** ~15,500 lines
