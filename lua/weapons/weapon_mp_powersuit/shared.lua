@@ -45,14 +45,16 @@ function POWERSUIT:Think()
 	local loop      = beamData.ComboLoopDelay != nil;
 
 	-- Statemachines event block. Timings and events are processed here.
-	if (armCannon:ShouldMissileReset())                            then self:CloseBeam(beamData, false);  end
-	if (armCannon:ShouldMissileComboReset(IN_ATTACK, loop, water)) then self:CloseMissileCombo(beamData); end
-	if (armCannon:ShouldMissileReload())                           then self:MissileReload();             end
-	if (armCannon:ShouldChargeBeamStart())                         then self:StartChargeBeam(beamData);   end
-	if (armCannon:ShouldChargeBeamFire(IN_ATTACK))                 then self:ChargeBeam(beamData);        end
-	if (armCannon:ShouldChargeBeamStop(IN_ATTACK))                 then self:StopChargeBeam(beamData);    end
-	if (armCannon:ShouldMissileCombo())                            then self:MissileCombo(beamData);      end
-	if (armCannon:ShouldMissileComboDrain(loop))                   then self:MissileComboLoop(beamData);  end
+	if (SERVER) then
+		if (armCannon:ShouldMissileReset())                            then self:CloseBeam(beamData, false);  end
+		if (armCannon:ShouldMissileComboReset(IN_ATTACK, loop, water)) then self:CloseMissileCombo(beamData); end
+		if (armCannon:ShouldMissileReload())                           then self:MissileReload();             end
+		if (armCannon:ShouldChargeBeamStart())                         then self:StartChargeBeam(beamData);   end
+		if (armCannon:ShouldChargeBeamFire(IN_ATTACK))                 then self:ChargeBeam(beamData);        end
+		if (armCannon:ShouldChargeBeamStop(IN_ATTACK))                 then self:StopChargeBeam(beamData);    end
+		if (armCannon:ShouldMissileCombo())                            then self:MissileCombo(beamData);      end
+		if (armCannon:ShouldMissileComboDrain(loop))                   then self:MissileComboLoop(beamData);  end
+	end
 
 	-- Think delegates.
 	self:HelmetThink();

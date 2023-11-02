@@ -3,11 +3,11 @@ function POWERSUIT:GetWalkBob(speed)
 	return (LocalPlayer():OnGround() && LocalPlayer():GetVelocity():LengthSqr() > 2500) && math.sin(CurTime() * 17.422 * (speed || 1)) * 0.08 || 0;
 end
 
-function POWERSUIT:GetViewPunch(pos, angle)
+function POWERSUIT:GetViewPunch(fov)
 
 	-- Apply view punch positioning based on last networked data.
 	self.LastViewPunch = Lerp(FrameTime() * 8, self.LastViewPunch, self.ArmCannon:GetViewPunch());
-	return pos - angle:Forward() * self.LastViewPunch;
+	return fov + self.LastViewPunch * 0.3;
 end
 
 function POWERSUIT:ShouldResetView(ply)
@@ -75,7 +75,7 @@ function POWERSUIT:CalcView(ply, pos, angle, fov)
 	local finalAngle   = angle + self.LastViewSway;
 	      finalAngle.p = math.Clamp(finalAngle.p, -89.99, 89.99);
 
-	return self:GetViewPunch(pos, angle), self:LockView(ply) || finalAngle, fov;
+	return pos, self:LockView(ply) || finalAngle, self:GetViewPunch(fov);
 end
 
 function POWERSUIT:GetViewModelRollPos(deg, angle)
@@ -133,7 +133,7 @@ function POWERSUIT:GetViewModelPosition(pos, angle)
 
 	-- Apply final roll and compute viewmodel position in local projection space.
 	finalAngle.r = self.LastViewModelRoll;
-	return self:GetViewPunch(pos, angle) + self:GetViewModelRollPos(self.LastViewModelRoll, angle) + self.LastBobPos, finalAngle;
+	return pos + self:GetViewModelRollPos(self.LastViewModelRoll, angle) + self.LastBobPos, finalAngle;
 end
 
 function POWERSUIT:DrawViewModelEffects()

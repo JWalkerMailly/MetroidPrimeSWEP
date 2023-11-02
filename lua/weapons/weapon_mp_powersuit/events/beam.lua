@@ -8,8 +8,9 @@ function POWERSUIT:GetMuzzlePos()
 	local up        = aimAngle:Up();
 	local right     = aimAngle:Right();
 	local forward   = aimAngle:Forward();
+	local pos       = owner:GetShootPos() - (up * muzzle[3]) + (right * muzzle[2]) + (forward * muzzle[1]);
 
-	return owner:GetShootPos() - (up * muzzle[3]) + (right * muzzle[2]) + (forward * muzzle[1]), owner, aimVector;
+	return WGL.ToViewModelProjection(pos, 62, 75, false, owner, true), owner, aimVector;
 end
 
 function POWERSUIT:CanAttack()
