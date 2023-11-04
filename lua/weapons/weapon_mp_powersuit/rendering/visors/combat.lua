@@ -207,10 +207,10 @@ function CombatVisor:DrawMissiles(weapon, visorOpacity)
 	weapon:MissileNotification(missiles, maxMissiles, self.DrawMissileNotification, self.MissileNotificationCallback, self, barOffset, visorOpacity, weapon);
 end
 
-function CombatVisor:DrawRadarTarget(target)
+function CombatVisor:DrawRadarTarget(target, visorOpacity)
 
 	-- Draw central dot if target is LocalPlayer.
-	if (target == LocalPlayer()) then return WGL.Texture(radarDotMaterial, 29, 29, 6, 6, 93, 123, 153, 100); end
+	if (target == LocalPlayer()) then return WGL.Texture(radarDotMaterial, 29, 29, 6, 6, 93, 123, 153, 100 * visorOpacity); end
 
 	local targetPos   = target:GetPos();
 	local maxDistance = self.MaxRadarDistance;
@@ -225,10 +225,10 @@ function CombatVisor:DrawRadarTarget(target)
 	local phi = math.rad(math.deg(math.atan2(px, py)) - math.deg(math.atan2(aim[1], aim[2])) - 90);
 	local cos = math.cos(phi) * z;
 	local sin = math.sin(phi) * z;
-	WGL.Texture(radarDotMaterial, 32 + cos * 60 / 2 - 2, 32 + sin * 60 / 2 - 2, 6, 6, 206, 146, 93, 255);
+	WGL.Texture(radarDotMaterial, 32 + cos * 60 / 2 - 2, 32 + sin * 60 / 2 - 2, 6, 6, 206, 146, 93, 255 * visorOpacity);
 end
 
-function CombatVisor:DrawRadar()
+function CombatVisor:DrawRadar(visorOpacity)
 
 	-- Offload radar rendering to a new texture.
 	self:PushRenderTexture("rt_MPRadar", 64, 64, { ["$additive"] = 1 }, false);
@@ -238,13 +238,13 @@ function CombatVisor:DrawRadar()
 			render.ClearDepth();
 			render.Clear(0, 0, 0, 0);
 			render.SetColorModulation(1, 1, 1);
-			WGL.Texture(radarMaterial, 0, 0, 64, 64, 93, 123, 153, 255);
+			WGL.Texture(radarMaterial, 0, 0, 64, 64, 93, 123, 153, 255 * visorOpacity);
 
 			-- Draw radar targets.
 			local players = player.GetAll();
 			local npcs    = ents.FindByClass("*npc*");
-			for k,_v in ipairs(players) do self:DrawRadarTarget(_v); end
-			for k,_v in ipairs(npcs)    do self:DrawRadarTarget(_v); end
+			for k,_v in ipairs(players) do self:DrawRadarTarget(_v, visorOpacity); end
+			for k,_v in ipairs(npcs)    do self:DrawRadarTarget(_v, visorOpacity); end
 
 		cam.End2D();
 	render.PopRenderTarget();
@@ -372,7 +372,7 @@ function CombatVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColo
 				surface.SetAlphaMultiplier(1);
 
 				surface.SetAlphaMultiplier(transitionLast);
-				self:DrawRadar();
+				self:DrawRadar(visorOpacity);
 				self:DrawHealth(weapon);
 				self:DrawAlert(weapon, visorOpacity);
 				self:DrawMissiles(weapon, visorOpacity);

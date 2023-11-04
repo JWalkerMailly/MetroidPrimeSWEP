@@ -321,7 +321,7 @@ function ThermalVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiCol
 		-- Render screen reticle.
 		local fovCompensation = 1 - fovRatio;
 		surface.SetAlphaMultiplier(transitionLast);
-		WGL.TextureRot(reticleBigMaterial, ScrW() / 2 + self.LastMouseX, ScrH() / 2 + self.LastMouseY, WGL.Y(386 * fovCompensation), WGL.Y(386 * fovCompensation), 0, 93, 123, 183, 100);
+		WGL.TextureRot(reticleBigMaterial, ScrW() / 2 + self.LastMouseX, ScrH() / 2 + self.LastMouseY, WGL.Y(386 * fovCompensation), WGL.Y(386 * fovCompensation), 0, 93, 123, 183, 100 * visorOpacity);
 		WGL.TextureRot(reticleSmallMaterial, self.ReticleX, self.ReticleY, WGL.Y(228 * fovCompensation), WGL.Y(228 * fovCompensation), 0, 93, 123, 183, 100);
 		self.LastMouseX = Lerp(FrameTime() * 10, self.LastMouseX, LocalPlayer().__mp_MouseX || 0);
 		self.LastMouseY = Lerp(FrameTime() * 10, self.LastMouseY, LocalPlayer().__mp_MouseY || 0);

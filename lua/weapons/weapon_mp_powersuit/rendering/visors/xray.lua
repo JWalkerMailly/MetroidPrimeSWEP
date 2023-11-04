@@ -163,7 +163,7 @@ function XRayVisor:DrawNotifications(weapon, health, maxHealth, alertRatio, miss
 	weapon:MissileNotification(missiles, maxMissiles, self.DrawMissileNotification, self.MissileNotificationCallback, self, visorOpacity, weapon);
 end
 
-function XRayVisor:DrawReticle(weapon, fovRatio)
+function XRayVisor:DrawReticle(weapon, fovRatio, visorOpacity)
 
 	local nextTarget, validTarget, locked = weapon.Helmet:GetTarget(IN_SPEED);
 
@@ -221,8 +221,8 @@ function XRayVisor:DrawReticle(weapon, fovRatio)
 	-- Render reticle.
 	local fovCompensation = 1 - fovRatio;
 	WGL.TextureRot(reticleMaterial, reticleX, reticleY, WGL.Y(162 * fovCompensation), WGL.Y(162 * fovCompensation), CurTime() * -100, 165, 165, 195, 100);
-	WGL.TextureRot(reticleBigMaterial, cx, cy, WGL.Y(360 * fovCompensation) * lerp, WGL.Y(360 * fovCompensation) * lerp, 0, 165, 165, 195, 50);
-	WGL.TextureRot(reticleSmallMaterial, cx, cy, WGL.Y(305 * fovCompensation) * lerp, WGL.Y(305 * fovCompensation) * lerp, LocalPlayer():EyeAngles().y, 165, 165, 195, 50);
+	WGL.TextureRot(reticleBigMaterial, cx, cy, WGL.Y(360 * fovCompensation) * lerp, WGL.Y(360 * fovCompensation) * lerp, 0, 165, 165, 195, 50 * visorOpacity);
+	WGL.TextureRot(reticleSmallMaterial, cx, cy, WGL.Y(305 * fovCompensation) * lerp, WGL.Y(305 * fovCompensation) * lerp, LocalPlayer():EyeAngles().y, 165, 165, 195, 50 * visorOpacity);
 
 	self.LastReticleLerp   = lerp;
 	self.LastReticleVector = screenPos;
@@ -323,7 +323,7 @@ function XRayVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor,
 
 		-- Render screen reticle.
 		surface.SetAlphaMultiplier(transitionLast);
-		self:DrawReticle(weapon, fovRatio);
+		self:DrawReticle(weapon, fovRatio, visorOpacity);
 		surface.SetAlphaMultiplier(1);
 	end
 

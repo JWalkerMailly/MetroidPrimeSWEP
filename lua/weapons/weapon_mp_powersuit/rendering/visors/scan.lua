@@ -170,7 +170,7 @@ function ScanVisor:HandleScanning(weapon, transition)
 	-- Update reticle and menu lerp. Return current target data for reticle rendering.
 	self.LastLogLerp  = Lerp(FrameTime() * 9,  self.LastLogLerp, 1 - self.MenuLerp);
 	self.ReticleLerp  = Lerp(FrameTime() * 15, self.ReticleLerp, transition);
-	self.LastMenuLerp = Lerp(FrameTime() * 10, self.LastMenuLerp, self.MenuLerp * 1.3);
+	self.LastMenuLerp = WGL.Clamp(Lerp(FrameTime() * 10, self.LastMenuLerp, self.MenuLerp * 1.3));
 	return currentTarget, targetValid;
 end
 
