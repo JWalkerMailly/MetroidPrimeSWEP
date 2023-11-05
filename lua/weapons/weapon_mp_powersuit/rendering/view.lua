@@ -149,7 +149,7 @@ function POWERSUIT:DrawViewModelEffects()
 
 	-- Use missile combo ratio for charge ball rendering if no charge ratio is 
 	-- provided. This is will shrink the charge ball when firing a missile combo.
-	if (ratio == 0) then ratio = 1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5; end
+	if (ratio == 0) then ratio = WGL.Clamp(1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5); end
 	if (ratio > 0.1 || combo) then
 
 		-- Emit light when charging the arm cannon.
@@ -215,7 +215,7 @@ function POWERSUIT:PostDrawViewModel(vm, weapon, ply)
 
 	-- Render viewmodel charge effects after drawing the viewmodel.
 	local ratio = self.ArmCannon:GetChargeRatio();
-	if (ratio == 0) then ratio = 1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5; end
+	if (ratio == 0) then ratio = WGL.Clamp(1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5); end
 	if (ratio > 0) then
 		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, ply);
 		WGL.Component(self, beamData.Charge3DEffect, muzzle, ang, ratio, beamData.ChargeBallColor);
