@@ -1,261 +1,261 @@
 
 hook.Add("AddToolMenuTabs", "MetroidPrimeSettings", function()
-	spawnmenu.AddToolTab("mpSettings", "Metroid Prime", "icon16/cog.png");
+	spawnmenu.AddToolTab("mpSettings", "#mp.settings.title", "icon16/cog.png");
 end);
 
 hook.Add("AddToolMenuCategories", "MetroidPrimeSettings", function()
-	spawnmenu.AddToolCategory("mpSettings", "mpCompatibility", "Compatibility");
-	spawnmenu.AddToolCategory("mpSettings", "mpOptions", "Options");
-	spawnmenu.AddToolCategory("mpSettings", "mpCheats", "Cheats");
+	spawnmenu.AddToolCategory("mpSettings", "mpCompatibility", "#mp.settings.compatibility");
+	spawnmenu.AddToolCategory("mpSettings", "mpOptions", "#mp.settings.options");
+	spawnmenu.AddToolCategory("mpSettings", "mpCheats", "#mp.settings.cheats");
 end);
 
 hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
 	-- Create Visor options menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpCompatibility", "mpPlayerModel", "Player Model", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpCompatibility", "mpPlayerModel", "#mp.settings.compatibility.playermodel.title", "", "", function(panel)
 
 		panel:Clear();
 
-		panel:CheckBox("Replace Player Model", "mp_options_playermodel");
-		panel:ControlHelp("\nReplaces player model when using the Power Suit. For player models, see workshop addon 2701609725.");
-		panel:Button("Open Workshop", "mp_options_playermodel_get");
+		panel:CheckBox("#mp.settings.compatibility.playermodel.text", "mp_options_playermodel");
+		panel:ControlHelp("#mp.settings.compatibility.playermodel.help");
+		panel:Button("#mp.settings.compatibility.playermodel.button", "mp_options_playermodel_get");
 	end);
 
 	-- Create controls options menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpControls", "Controls", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpControls", "#mp.settings.options.controls.title", "", "", function(panel)
 
 		panel:Clear();
 
-		WGL.KeyMap(panel, "Visor Layer Key",  "mp_controls_selectorlayer", "\nDefines the visor layer key to use when changing visors.");
-		WGL.KeyMap(panel, "Beam/Visor 1 Key", "mp_controls_selector1",     "\nDefines the key to use to swap to Beam/Visor 1.");
-		WGL.KeyMap(panel, "Beam/Visor 2 Key", "mp_controls_selector2",     "\nDefines the key to use to swap to Beam/Visor 2.");
-		WGL.KeyMap(panel, "Beam/Visor 3 Key", "mp_controls_selector3",     "\nDefines the key to use to swap to Beam/Visor 3.");
-		WGL.KeyMap(panel, "Beam/Visor 4 Key", "mp_controls_selector4",     "\nDefines the key to use to swap to Beam/Visor 4.");
+		WGL.KeyMap(panel, "#mp.settings.options.controls.visorlayer.text", "mp_controls_selectorlayer", "#mp.settings.options.controls.visorlayer.help");
+		WGL.KeyMap(panel, "#mp.settings.options.controls.component1.text", "mp_controls_selector1",     "#mp.settings.options.controls.component1.help");
+		WGL.KeyMap(panel, "#mp.settings.options.controls.component2.text", "mp_controls_selector2",     "#mp.settings.options.controls.component2.help");
+		WGL.KeyMap(panel, "#mp.settings.options.controls.component3.text", "mp_controls_selector3",     "#mp.settings.options.controls.component3.help");
+		WGL.KeyMap(panel, "#mp.settings.options.controls.component4.text", "mp_controls_selector4",     "#mp.settings.options.controls.component4.help");
 	end);
 
 	-- Create gestures options menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpGestures", "Gestures", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpGestures", "#mp.settings.options.gestures.title", "", "", function(panel)
 
 		panel:Clear();
 
-		panel:CheckBox("Use Gestures", "mp_options_gestures");
-		panel:ControlHelp("\nTurn gesture feature on or off. To use gestures, hold down the gesture key and move your mouse up, down, left or right to change Beam. To change Visor, the Visor Layer Key must be held down instead.");
+		panel:CheckBox("#mp.settings.options.gestures.enable.text", "mp_options_gestures");
+		panel:ControlHelp("#mp.settings.options.gestures.enable.help");
 
-		WGL.KeyMap(panel, "Gesture Key", "mp_controls_gesture", "\nDefines the key to hold for Beam/Visor swap gestures.");
+		WGL.KeyMap(panel, "#mp.settings.options.gestures.key.text", "mp_controls_gesture", "#mp.settings.options.gestures.key.help");
 
-		panel:NumSlider("Dead Zone", "mp_options_gesturedzone", 0.1, 1, 3);
-		panel:ControlHelp("\nAdjusts the dead zone of mouse gestures. Default value: 0.125.");
+		panel:NumSlider("#mp.settings.options.gestures.deadzone.text", "mp_options_gesturedzone", 0.1, 1, 3);
+		panel:ControlHelp("#mp.settings.options.gestures.deadzone.help");
 
-		panel:NumSlider("Sensitivity", "mp_options_gesturealpha", 0.1, 1, 3);
-		panel:ControlHelp("\nAdjusts the sensitivity of mouse gestures. Default value: 0.125.");
+		panel:NumSlider("#mp.settings.options.gestures.sensitivity.text", "mp_options_gesturealpha", 0.1, 1, 3);
+		panel:ControlHelp("#mp.settings.options.gestures.sensitivity.help");
 
-		panel:CheckBox("Show Help", "mp_options_gesturehelp");
-		panel:ControlHelp("\nShow gesture calibration on screen.");
+		panel:CheckBox("#mp.settings.options.gestures.helper.text", "mp_options_gesturehelp");
+		panel:ControlHelp("#mp.settings.options.gestures.helper.help");
 	end);
 
 	-- Create Visor options menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpVisor", "Visor", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpVisor", "#mp.settings.options.visor.title", "", "", function(panel)
 
 		panel:Clear();
 
-		panel:CheckBox("Auto Aim", "mp_options_autoaim");
-		panel:ControlHelp("\nEnable or disable auto aim feature.");
+		panel:CheckBox("#mp.settings.options.visor.autoaim.text", "mp_options_autoaim");
+		panel:ControlHelp("#mp.settings.options.visor.autoaim.help");
 
-		panel:NumSlider("Visor Opacity", "mp_options_visoropacity", 0, 100, 0);
-		panel:ControlHelp("\nAdjusts the transparency of all UI elements except for health.");
+		panel:NumSlider("#mp.settings.options.visor.hudopacity.text", "mp_options_visoropacity", 0, 100, 0);
+		panel:ControlHelp("#mp.settings.options.visor.hudopacity.help");
 
-		panel:NumSlider("Helmet Opacity", "mp_options_helmetopacity", 0, 100, 0);
-		panel:ControlHelp("\nAdjusts the transparency of Samus's helmet.");
+		panel:NumSlider("#mp.settings.options.visor.helmetopacity.text", "mp_options_helmetopacity", 0, 100, 0);
+		panel:ControlHelp("#mp.settings.options.visor.helmetopacity.help");
 
-		panel:CheckBox("HUD Lag", "mp_options_hudlag");
-		panel:ControlHelp("\nTurn helmet and UI lag on or off when moving the camera.");
+		panel:CheckBox("#mp.settings.options.visor.hudlag.text", "mp_options_hudlag");
+		panel:ControlHelp("#mp.settings.options.visor.hudlag.help");
 
-		panel:CheckBox("Face Reflection", "mp_options_facereflection");
-		panel:ControlHelp("\nEnable or disable Samus' face reflection on combat visor.");
+		panel:CheckBox("#mp.settings.options.visor.facereflection.text", "mp_options_facereflection");
+		panel:ControlHelp("#mp.settings.options.visor.facereflection.help");
 
-		panel:CheckBox("Keep HUD", "mp_options_keephud");
-		panel:ControlHelp("\nDisplay HUD even when the Power Suit is not in use as long as it is in inventory. Can cause conflicts with other addons.");
+		panel:CheckBox("#mp.settings.options.visor.keephud.text", "mp_options_keephud");
+		panel:ControlHelp("#mp.settings.options.visor.keephud.help");
 	end);
 
 	-- Create Display options menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpDisplay", "Display", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpDisplay", "#mp.settings.options.display.title", "", "", function(panel)
 
 		panel:Clear();
 
-		panel:NumSlider("Field of View", "fov_desired", 75, 100, 0);
-		panel:ControlHelp("\nAdjust FOV. This is the same setting found in Options / Video / Advanced. Metroid Prime's original setting is 75.");
+		panel:NumSlider("#mp.settings.options.display.fov.text", "fov_desired", 75, 100, 0);
+		panel:ControlHelp("#mp.settings.options.display.fov.help");
 
-		panel:NumSlider("Viewmodel FOV", "mp_options_viewmodelfov", 54, 76, 0);
-		panel:ControlHelp("\nAdjust weapon forward position. May result in rendering issues. Default: 62.");
+		panel:NumSlider("#mp.settings.options.display.vmfov.text", "mp_options_viewmodelfov", 54, 76, 0);
+		panel:ControlHelp("#mp.settings.options.display.vmfov.help");
 
-		panel:CheckBox("Widescreen Fix", "mp_options_widescreenfix");
-		panel:ControlHelp("\nAdjust HUD to fill widescreen monitors.");
+		panel:CheckBox("#mp.settings.options.display.widescreen.text", "mp_options_widescreenfix");
+		panel:ControlHelp("#mp.settings.options.display.widescreen.help");
 	end);
 
 	-- Create Game options menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpGame", "Game", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpGame", "#mp.settings.options.game.title", "", "", function(panel)
 
 		panel:Clear();
 
-		panel:CheckBox("Dynamic Lighting", "wgl_enable_dynamiclighting");
-		panel:ControlHelp("\nEnables or disables dynamic lighting for projectiles and effects.");
+		panel:CheckBox("#mp.settings.options.game.lighting.text", "wgl_enable_dynamiclighting");
+		panel:ControlHelp("#mp.settings.options.game.lighting.help");
 
-		panel:CheckBox("Scan Dashing", "mp_cheats_scandashing");
-		panel:ControlHelp("\nEnables or disables scan dashing as found in the first revision of Metroid Prime.");
+		panel:CheckBox("#mp.settings.options.game.scandash.text", "mp_cheats_scandashing");
+		panel:ControlHelp("#mp.settings.options.game.scandash.help");
 
-		panel:NumSlider("Damage Given", "mp_cheats_damagegivenscale", 1, 10, 0);
-		panel:ControlHelp("\nScales damage given by Power Suit and Morph Ball projectiles.");
+		panel:NumSlider("#mp.settings.options.game.damagegiven.text", "mp_cheats_damagegivenscale", 1, 10, 0);
+		panel:ControlHelp("#mp.settings.options.game.damagegiven.help");
 
-		panel:NumSlider("Damage Taken", "mp_cheats_damagetakenscale", 1, 10, 0);
-		panel:ControlHelp("\nScales damage taken when a player is using the Power Suit or the Morph Ball. This can also be interpreted as a Damage Multiplier.");
+		panel:NumSlider("#mp.settings.options.game.damagetaken.text", "mp_cheats_damagetakenscale", 1, 10, 0);
+		panel:ControlHelp("#mp.settings.options.game.damagetaken.help");
 	end);
 
 	-- Create State options menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpState", "Save File", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpState", "#mp.settings.options.state.title", "", "", function(panel)
 
 		panel:Clear();
 
-		panel:CheckBox("Auto Save", "mp_cheats_autosave");
-		panel:ControlHelp("\nWrite to save file upon death or disconnect.");
+		panel:CheckBox("#mp.settings.options.state.autosave.text", "mp_cheats_autosave");
+		panel:ControlHelp("#mp.settings.options.state.autosave.help");
 
-		panel:Button("Save State", "mp_cheats_savestate");
-		panel:ControlHelp("\nWrite to save file. Current values will be loaded by default during next session.");
+		panel:Button("#mp.settings.options.state.save.text", "mp_cheats_savestate");
+		panel:ControlHelp("#mp.settings.options.state.save.help");
 
-		panel:Button("Delete State", "mp_cheats_deletestate");
-		panel:ControlHelp("\nOverwrite save file with a new one. All progress will be lost.");
+		panel:Button("#mp.settings.options.state.delete.text", "mp_cheats_deletestate");
+		panel:ControlHelp("#mp.settings.options.state.delete.help");
 	end);
 
 	-- Create General cheats menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpGeneral", "General", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpGeneral", "#mp.settings.cheats.general.title", "", "", function(panel)
 
 		panel:Clear();
 
-		WGL.NumSlider(panel, "Energy Tanks (Capacity)", "mp_cheats_set_energytankcapacity", function()
+		WGL.NumSlider(panel, "#mp.settings.cheats.general.etankcapacity.text", "mp_cheats_set_energytankcapacity", function()
 			return LocalPlayer():GetPowerSuitMaxEnergyTanks();
-		end, 0, 14, 0, "\nAdjusts the player's max health.");
+		end, 0, 14, 0, "#mp.settings.cheats.general.etankcapacity.help");
 
-		WGL.NumSlider(panel, "Energy Tanks (Amount)", "mp_cheats_set_energytankamount", function()
+		WGL.NumSlider(panel, "#mp.settings.cheats.general.etankamount.text", "mp_cheats_set_energytankamount", function()
 			return LocalPlayer():GetPowerSuitEnergyTanks();
-		end, 0, 14, 0, "\nAdjusts the player's health.");
+		end, 0, 14, 0, "#mp.settings.cheats.general.etankamount.help");
 
-		WGL.CheckBox(panel, "Combat Visor", "mp_cheats_enable_combatvisor", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.combatvisor.text", "mp_cheats_enable_combatvisor", function()
 			return LocalPlayer():IsPowerSuitVisorEnabled(1);
-		end, "\nEnables or disables the default visor.");
+		end, "#mp.settings.cheats.general.combatvisor.help");
 
-		WGL.CheckBox(panel, "Scan Visor", "mp_cheats_enable_scanvisor", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.scanvisor.text", "mp_cheats_enable_scanvisor", function()
 			return LocalPlayer():IsPowerSuitVisorEnabled(2);
-		end, "\nEnables or disables the scan visor. Scan nearby objects to display information using the IN_SPEED key.");
+		end, "#mp.settings.cheats.general.scanvisor.help");
 
-		WGL.CheckBox(panel, "Thermal Visor", "mp_cheats_enable_thermalvisor", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.thermalvisor.text", "mp_cheats_enable_thermalvisor", function()
 			return LocalPlayer():IsPowerSuitVisorEnabled(3);
-		end, "\nEnables or disables the thermal visor. Display heat signatures from the environment or interact with electronics using the wave beam.");
+		end, "#mp.settings.cheats.general.thermalvisor.help");
 
-		WGL.CheckBox(panel, "X-Ray Visor", "mp_cheats_enable_xrayvisor", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.xrayvisor.text", "mp_cheats_enable_xrayvisor", function()
 			return LocalPlayer():IsPowerSuitVisorEnabled(4);
-		end, "\nEnables or disables the x-ray visor. Display hidden passages or invisible entities.");
+		end, "#mp.settings.cheats.general.xrayvisor.help");
 
-		WGL.CheckBox(panel, "Space Jump Boots", "mp_cheats_enable_spacejump", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.spacejump.text", "mp_cheats_enable_spacejump", function()
 			return LocalPlayer():IsPowerSuitSpaceJumpEnabled();
-		end, "\nEnables or disables space jump boots. Space jump boots allow double jumping.");
+		end, "#mp.settings.cheats.general.spacejump.help");
 
-		WGL.CheckBox(panel, "Grapple Beam", "mp_cheats_enable_grapplebeam", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.grapple.text", "mp_cheats_enable_grapplebeam", function()
 			return LocalPlayer():IsPowerSuitGrappleEnabled();
-		end, "\nEnables or disables the grapple beam. Swing from viable anchor points using the IN_SPEED key.");
+		end, "#mp.settings.cheats.general.grapple.help");
 
-		WGL.CheckBox(panel, "Power Suit", "mp_cheats_enable_powersuit", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.powersuit.text", "mp_cheats_enable_powersuit", function()
 			return LocalPlayer():IsPowerSuitSuitEnabled(1);
-		end, "\nEnables or disables the default suit.");
+		end, "#mp.settings.cheats.general.powersuit.help");
 
-		WGL.CheckBox(panel, "Varia Suit", "mp_cheats_enable_variasuit", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.variasuit.text", "mp_cheats_enable_variasuit", function()
 			return LocalPlayer():IsPowerSuitSuitEnabled(2);
-		end, "\nEnables or disables the varia suit. Take 10% less damage while active.");
+		end, "#mp.settings.cheats.general.variasuit.help");
 
-		WGL.CheckBox(panel, "Gravity Suit", "mp_cheats_enable_gravitysuit", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.gravitysuit.text", "mp_cheats_enable_gravitysuit", function()
 			return LocalPlayer():IsPowerSuitSuitEnabled(3);
-		end, "\nEnables or disables the gravity suit. Take 20% less damage while active.");
+		end, "#mp.settings.cheats.general.gravitysuit.help");
 
-		WGL.CheckBox(panel, "Phazon Suit", "mp_cheats_enable_phazonsuit", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.general.phazonsuit.text", "mp_cheats_enable_phazonsuit", function()
 			return LocalPlayer():IsPowerSuitSuitEnabled(4);
-		end, "\nEnables or disables the phazon suit. Take 50% less damage while active.");
+		end, "#mp.settings.cheats.general.phazonsuit.help");
 	end);
 
 	-- Create Weapons cheats menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpWeapons", "Weapons", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpWeapons", "#mp.settings.cheats.weapons.title", "", "", function(panel)
 
 		panel:Clear();
 
-		WGL.NumSlider(panel, "Missiles (Capacity)", "mp_cheats_set_missilecapacity", function()
+		WGL.NumSlider(panel, "#mp.settings.cheats.weapons.missilecapacity.text", "mp_cheats_set_missilecapacity", function()
 			return LocalPlayer():GetPowerSuitMaxAmmo("Missile");
-		end, 0, 250, 0, "\nAdjusts the player's max missile ammo capacity.");
+		end, 0, 250, 0, "#mp.settings.cheats.weapons.missilecapacity.help");
 
-		WGL.NumSlider(panel, "Missiles (Amount)", "mp_cheats_set_missileamount", function()
+		WGL.NumSlider(panel, "#mp.settings.cheats.weapons.missileamount.text", "mp_cheats_set_missileamount", function()
 			return LocalPlayer():GetPowerSuitAmmo("Missile");
-		end, 0, 250, 0, "\nAdjusts the player's missile ammo.");
+		end, 0, 250, 0, "#mp.settings.cheats.weapons.missileamount.help");
 
-		WGL.CheckBox(panel, "Charge Beam", "mp_cheats_enable_chargebeam", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.chargebeam.text", "mp_cheats_enable_chargebeam", function()
 			return LocalPlayer():IsPowerSuitChargeBeamEnabled();
-		end, "\nEnables or disables charge beam feature. Charge beams by holding down the IN_ATTACK key.");
+		end, "#mp.settings.cheats.weapons.chargebeam.help");
 
-		WGL.CheckBox(panel, "Power Beam", "mp_cheats_enable_powerbeam", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.powerbeam.text", "mp_cheats_enable_powerbeam", function()
 			return LocalPlayer():IsPowerSuitBeamEnabled(1);
-		end, "\nEnables or disables the default beam.");
+		end, "#mp.settings.cheats.weapons.powerbeam.help");
 
-		WGL.CheckBox(panel, "Wave Beam", "mp_cheats_enable_wavebeam", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.wavebeam.text", "mp_cheats_enable_wavebeam", function()
 			return LocalPlayer():IsPowerSuitBeamEnabled(2);
-		end, "\nEnables or disables the wave beam. Interact with electronics by shooting at them using the thermal visor.");
+		end, "#mp.settings.cheats.weapons.wavebeam.help");
 
-		WGL.CheckBox(panel, "Ice Beam", "mp_cheats_enable_icebeam", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.icebeam.text", "mp_cheats_enable_icebeam", function()
 			return LocalPlayer():IsPowerSuitBeamEnabled(3);
-		end, "\nEnables or disables the ice beam.");
+		end, "#mp.settings.cheats.weapons.icebeam.help");
 
-		WGL.CheckBox(panel, "Plasma Beam", "mp_cheats_enable_plasmabeam", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.plasmabeam.text", "mp_cheats_enable_plasmabeam", function()
 			return LocalPlayer():IsPowerSuitBeamEnabled(4);
-		end, "\nEnables or disables the plasma beam.");
+		end, "#mp.settings.cheats.weapons.plasmabeam.help");
 
-		WGL.CheckBox(panel, "Super Missile", "mp_cheats_enable_supermissile", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.supermissile.text", "mp_cheats_enable_supermissile", function()
 			return LocalPlayer():IsPowerSuitMissileComboEnabled(1);
-		end, "\nEnables or disables super missiles. Fire a stronger missile using the IN_ATTACK2 key when power beam is fully charged.");
+		end, "#mp.settings.cheats.weapons.supermissile.help");
 
-		WGL.CheckBox(panel, "Wavebuster", "mp_cheats_enable_wavebuster", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.wavebuster.text", "mp_cheats_enable_wavebuster", function()
 			return LocalPlayer():IsPowerSuitMissileComboEnabled(2);
-		end, "\nEnables or disables wavebuster. Fire a continuous electrical arc using the IN_ATTACK2 key when wave beam is fully charged.");
+		end, "#mp.settings.cheats.weapons.wavebuster.help");
 
-		WGL.CheckBox(panel, "Ice Spreader", "mp_cheats_enable_icespreader", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.icespreader.text", "mp_cheats_enable_icespreader", function()
 			return LocalPlayer():IsPowerSuitMissileComboEnabled(3);
-		end, "\nEnables or disables ice spreader. Fire an ice missile using the IN_ATTACK2 key when ice beam is fully charged.");
+		end, "#mp.settings.cheats.weapons.icespreader.help");
 
-		WGL.CheckBox(panel, "Flamethrower", "mp_cheats_enable_flamethrower", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.weapons.flamethrower.text", "mp_cheats_enable_flamethrower", function()
 			return LocalPlayer():IsPowerSuitMissileComboEnabled(4);
-		end, "\nEnables or disables flamethrower. Fire a stream of fire using the IN_ATTACK2 key when plasma beam is fully charged.");
+		end, "#mp.settings.cheats.weapons.flamethrower.help");
 	end);
 
 	-- Create Morph Ball cheats menu.
-	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpMorphBall", "Morph Ball", "", "", function(panel)
+	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpMorphBall", "#mp.settings.cheats.morphball.title", "", "", function(panel)
 
 		panel:Clear();
 
-		WGL.NumSlider(panel, "Power Bombs (Capacity)", "mp_cheats_set_powerbombcapacity", function()
+		WGL.NumSlider(panel, "#mp.settings.cheats.morphball.pbombcapacity.text", "mp_cheats_set_powerbombcapacity", function()
 			return LocalPlayer():GetPowerSuitPowerBombMaxAmmo();
-		end, 0, 8, 0, "\nAdjusts the player's max power bomb capacity.");
+		end, 0, 8, 0, "#mp.settings.cheats.morphball.pbombcapacity.help");
 
-		WGL.NumSlider(panel, "Power Bombs (Amount)", "mp_cheats_set_powerbombamount", function()
+		WGL.NumSlider(panel, "#mp.settings.cheats.morphball.pbombamount.text", "mp_cheats_set_powerbombamount", function()
 			return LocalPlayer():GetPowerSuitPowerBombAmmo();
-		end, 0, 8, 0, "\nAdjusts the player's power bomb count.");
+		end, 0, 8, 0, "#mp.settings.cheats.morphball.pbombamount.help");
 
-		WGL.CheckBox(panel, "Morph Ball", "mp_cheats_enable_morphball", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.morphball.morphball.text", "mp_cheats_enable_morphball", function()
 			return LocalPlayer():IsMorphBallEnabled();
-		end, "\nEnables or disables morph ball. Morph into a ball using the IN_CROUCH key to navigate tight passages.");
+		end, "#mp.settings.cheats.morphball.morphball.help");
 
-		WGL.CheckBox(panel, "Bombs", "mp_cheats_enable_morphballbombs", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.morphball.bombs.text", "mp_cheats_enable_morphballbombs", function()
 			return LocalPlayer():IsMorphBallBombsEnabled();
-		end, "\nEnables or disables morph ball bombs. Drop bombs using the IN_ATTACK key while in morph ball mode.");
+		end, "#mp.settings.cheats.morphball.bombs.help");
 
-		WGL.CheckBox(panel, "Boost Ball", "mp_cheats_enable_morphballboost", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.morphball.boost.text", "mp_cheats_enable_morphballboost", function()
 			return LocalPlayer():IsMorphBallBoostEnabled();
-		end, "\nEnables or disables boost ball. Charge by holding down the IN_JUMP key and release for a temporary speed boost.");
+		end, "#mp.settings.cheats.morphball.boost.help");
 
-		WGL.CheckBox(panel, "Spider Ball", "mp_cheats_enable_morphballspider", function()
+		WGL.CheckBox(panel, "#mp.settings.cheats.morphball.spider.text", "mp_cheats_enable_morphballspider", function()
 			return LocalPlayer():IsMorphBallSpiderEnabled();
-		end, "\nEnables or disables spider ball. Defy gravity by sticking onto metallic surfaces using the IN_SPEED key.");
+		end, "#mp.settings.cheats.morphball.spider.help");
 	end);
 end);
