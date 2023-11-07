@@ -47,6 +47,7 @@ function WGL.KeyMap(panel, text, convar, helpText)
 	dFormKeyLabel:DockMargin(8, 8, 8, 0);
 	dFormKeyLabel:Dock(TOP);
 	dFormKeyLabel:SetText(text);
+	dFormKeyLabel:SetDark(true);
 	panel:AddItem(panel);
 
 	-- Create key map bound to convar.
