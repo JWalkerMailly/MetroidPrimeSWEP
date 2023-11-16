@@ -12,9 +12,9 @@ function POWERSUIT:LoadControls()
 	self.Beams[3].Key     = owner:GetInfoNum("mp_controls_selector3",     90);
 	self.Beams[4].Key     = owner:GetInfoNum("mp_controls_selector4",     89);
 	self.Visors[1].Key    = owner:GetInfoNum("mp_controls_selector1",     88);
-	self.Visors[2].Key    = owner:GetInfoNum("mp_controls_selector4",     91);
+	self.Visors[2].Key    = owner:GetInfoNum("mp_controls_selector4",     89);
 	self.Visors[3].Key    = owner:GetInfoNum("mp_controls_selector3",     90);
-	self.Visors[4].Key    = owner:GetInfoNum("mp_controls_selector2",     89);
+	self.Visors[4].Key    = owner:GetInfoNum("mp_controls_selector2",     91);
 end
 
 function POWERSUIT:LoadState(config)
