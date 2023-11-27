@@ -1,6 +1,8 @@
 
+list.Set("ContentCategoryIcons", "Metroid Prime", "games/16/metroid_prime_icon.png");
+
 hook.Add("AddToolMenuTabs", "MetroidPrimeSettings", function()
-	spawnmenu.AddToolTab("mpSettings", "#mp.settings.title", "icon16/cog.png");
+	spawnmenu.AddToolTab("mpSettings", "#mp.settings.title", "games/16/metroid_prime_icon.png");
 end);
 
 hook.Add("AddToolMenuCategories", "MetroidPrimeSettings", function()
