@@ -73,7 +73,6 @@ function POWERSUIT:CalcView(ply, pos, angle, fov)
 	-- Compute final view angle based on modulated sway.
 	self.LastViewSway  = self:GetRandomViewAngle(2.5, 10, 8, 11, 4, self.ViewSway, 12, 12);
 	local finalAngle   = angle + self.LastViewSway;
-	      finalAngle.p = math.Clamp(finalAngle.p, -89.99, 89.99);
 
 	return pos, self:LockView(ply) || finalAngle, self:GetViewPunch(fov);
 end
