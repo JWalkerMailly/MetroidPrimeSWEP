@@ -154,8 +154,12 @@ function POWERSUIT:DrawViewModelEffects()
 		-- Emit light when charging the arm cannon.
 		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, _, false, owner);
 		local charge = (!combo && ratio || 1) * (math.sin(CurTime() * 10) / 4 + 0.75);
-		WGL.EmitLight(self, muzzle, beamData.ChargeColor, 0, charge * 100, CurTime() + 0.1, 6);
-		WGL.EmitLight(vm, muzzle, beamData.ChargeColor, 0, charge * beamData.ChargeGlowSize, CurTime() + 0.1, 6, true);
+
+		-- Emit light during charge or during looping combo.
+		if (!combo || (combo && beamData.ComboLoopDelay != nil)) then
+			WGL.EmitLight(self, muzzle, beamData.ChargeColor, 0, charge * 100, CurTime() + 0.1, 6);
+			WGL.EmitLight(vm, muzzle, beamData.ChargeColor, 0, charge * beamData.ChargeGlowSize, CurTime() + 0.1, 6, true);
+		end
 
 		-- Render 3D charge ball on end muzzle.
 		if (beamData.ChargeBallColor) then WGL.Component(self, "ChargeBall", muzzle, ang, ratio, beamData.ChargeBallColor); end
