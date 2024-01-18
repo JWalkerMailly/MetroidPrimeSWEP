@@ -26,3 +26,15 @@ hook.Add("EntityTakeDamage", "POWERSUIT.GiveDamage", function(ent, damage)
 	if (!attacker:UsingPowerSuit()) then return; end
 	damage:ScaleDamage(GetConVar("mp_cheats_damagegivenscale"):GetInt());
 end);
+
+hook.Add("EntityTakeDamage", "POWERSUIT.TakeDamage", function(ent, damage)
+
+	if (!IsValid(ent) || !ent:IsPlayer()) then return; end
+
+	local isPowerSuit, weapon = ent:UsingPowerSuit();
+	if (!isPowerSuit) then return; end
+
+	-- Scale damage according to current suit and game multiplier.
+	damage:ScaleDamage(weapon:GetSuit().DamageScale);
+	damage:ScaleDamage(GetConVar("mp_cheats_damagetakenscale"):GetInt());
+end);
