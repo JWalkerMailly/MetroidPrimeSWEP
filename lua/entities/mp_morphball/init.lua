@@ -7,6 +7,7 @@ function MORPHBALL:Initialize()
 
 	-- Make owner invisible while using the morphball.
 	local owner = self:GetOwner();
+	if (!IsValid(owner) || !IsValid(self:GetPowerSuit())) then return self:Remove(); end
 	owner:SetNoDraw(true);
 
 	-- Prepare physics sphere for our morphball.

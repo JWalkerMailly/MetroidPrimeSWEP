@@ -45,6 +45,7 @@ function BOMB:Initialize()
 	end
 
 	if (!SERVER) then return; end
+	if (!IsValid(self:GetOwner()) || !IsValid(self.MorphBall)) then return self:Remove(); end
 
 	-- Prepare physics sphere for our bomb.
 	if (!game.SinglePlayer()) then self:NextThink(CurTime()); end

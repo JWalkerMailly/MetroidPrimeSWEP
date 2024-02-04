@@ -82,6 +82,8 @@ function PROJECTILE:Initialize()
 
 	if (SERVER) then
 
+		if (!IsValid(self:GetOwner()) || !IsValid(self:GetWeapon())) then return self:Remove(); end
+
 		-- Prepare physics sphere for our projectile.
 		self:SetModel("models/effects/combineball.mdl");
 		self:SetCollisionGroup(COLLISION_GROUP_PROJECTILE);
