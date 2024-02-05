@@ -52,6 +52,10 @@ DMG_MP_SPECIAL = 32;
 -- UTILITIES API
 -- ----------------------------------------------
 
+function _entity:IsPowerSuit()
+	return self:GetClass() == "weapon_mp_powersuit" || self.Base == "weapon_mp_powersuit";
+end
+
 function _player:GetPowerSuit()
 	local powersuit = self:GetNWEntity("MP.PowerSuit", NULL);
 	if (!IsValid(powersuit) || powersuit.StateIdentifier == nil) then return nil; end
@@ -63,11 +67,10 @@ function _player:UsingPowerSuit(ignoreState)
 
 	if (!IsValid(self)) then return false; end
 
-	local powersuit = self:GetActiveWeapon();
-	if (!IsValid(powersuit)) then return false; end
+	local weapon = self:GetActiveWeapon();
+	if (!IsValid(weapon)) then return false; end
 
-	local isPowerSuit = powersuit:GetClass() == "weapon_mp_powersuit" || powersuit.Base == "weapon_mp_powersuit";
-	return isPowerSuit && (ignoreState || powersuit.StateIdentifier != nil), powersuit;
+	return weapon:IsPowerSuit() && (ignoreState || weapon.StateIdentifier != nil), weapon;
 end
 
 -- lua_run print(Entity(1):UsingMorphBall());
