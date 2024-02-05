@@ -125,7 +125,7 @@ function MORPHBALL:PhysicsUpdate(phys)
 	self:SetVelocityFix(self:GetVelocity());
 
 	-- Failsafe for weapon drops.
-	if (!IsValid(self:GetPowerSuit()) || !IsValid(self:GetPowerSuit():GetOwner())) then return; end
+	if (!IsValid(self:GetPowerSuit()) || !IsValid(self:GetPowerSuit():GetOwner()) || self.SoundsCache["roll"] == nil) then return; end
 
 	-- Apply custom gravity to the morphball in order to match the feel of the original game.
 	-- If we are using the spider ball, this is where greater gravity will be applied

@@ -10,10 +10,19 @@ hook.Add("SetupMove", "POWERSUIT.RestoreState", function(ply, _, cmd)
 	-- Map changes of type "transition" behave differently from normal map changes.
 	if (stateRestore[ply] && !cmd:IsForced()) then
 
+		local forceSelect = false;
 		local currentWeapon = ply:GetActiveWeapon();
 		for k,v in ipairs(ply:GetWeapons()) do
 
 			if (!v:IsPowerSuit()) then continue; end
+
+			-- Cleanup stray Morph Balls now.
+			local morphball = v:GetMorphBall();
+			if (IsValid(morphball)) then
+				forceSelect = true;
+				morphball:Remove();
+				ply:ExitVehicle();
+			end
 
 			-- Reload weapon entirely in order to refresh entire state.
 			local weaponClass = v:GetClass();
@@ -21,7 +30,7 @@ hook.Add("SetupMove", "POWERSUIT.RestoreState", function(ply, _, cmd)
 			ply:Give(weaponClass);
 
 			-- Reequip powersuit if it was active after a map change.
-			if (currentWeapon == v) then ply:SelectWeapon(weaponClass); end
+			if (forceSelect || currentWeapon == v) then ply:SelectWeapon(weaponClass); end
 		end
 
 		-- Clear state restore cache.
