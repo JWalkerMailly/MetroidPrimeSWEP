@@ -30,7 +30,12 @@ hook.Add("SetupMove", "POWERSUIT.RestoreState", function(ply, _, cmd)
 			ply:Give(weaponClass);
 
 			-- Reequip powersuit if it was active after a map change.
-			if (forceSelect || currentWeapon == v) then ply:SelectWeapon(weaponClass); end
+			if (forceSelect || currentWeapon == v) then
+				local vehicle = ply:GetAllowWeaponsInVehicle();
+				ply:SetAllowWeaponsInVehicle(true);
+				ply:SelectWeapon(weaponClass);
+				timer.Simple(math.Clamp(FrameTime() * 16, 0.24, 0.24 * 16), function() ply:SetAllowWeaponsInVehicle(vehicle); end);
+			end
 		end
 
 		-- Clear state restore cache.
