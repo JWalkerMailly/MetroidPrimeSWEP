@@ -1753,7 +1753,9 @@ Metroid Prime SWEP is a passion project recreation of the original Metroid Prime
 The names Metroid Prime as well as related names, marks, emblems and images are registered trademarks of their respective owners.
 
 ## Analytics
-
+![Steam Views](https://img.shields.io/steam/views/3041333779)
+![Steam Release Date](https://img.shields.io/steam/release-date/3041333779)
+![Steam Update Date](https://img.shields.io/steam/update-date/3041333779)\
 **Start:** November 2022
 **End:** October 2023
 **Hours:** ~800 hours
