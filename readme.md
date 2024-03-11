@@ -1,6 +1,9 @@
 <p align="center"><img src="readme/banner.png"/></p>
 
 # Metroid Prime SWEP
+![Steam Downloads](https://img.shields.io/steam/downloads/3041333779)
+![Steam Favorites](https://img.shields.io/steam/favorites/3041333779)
+![Steam File Size](https://img.shields.io/steam/size/3041333779)\
 Metroid Prime SWEP is a passion project recreation of the original Metroid Prime character controller for Garry's Mod with utmost fidelity in mind. The project also ships with a comprehensive API and a multitude of hooks for developers to integrate their own add-ons.
 
 [Workshop Link](https://steamcommunity.com/sharedfiles/filedetails/?id=3041333779)
