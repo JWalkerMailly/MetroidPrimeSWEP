@@ -3,30 +3,22 @@ WSL = WSL || {};
 
 function WSL.IterateSounds(ent, container, lambda)
 
-	-- Wait one tick to ensure entity is valid before iterating. This fixes
-	-- a breaking change introduced in the march 2024 update with CSoundPatches.
-	timer.Simple(0, function()
+	local _container = container || ent;
 
-		if (!IsValid(ent)) then return; end
+	-- Box sounds for entities since we can't parse userdata.
+	for k,v in pairs(container || { ["Sounds"] = ent.Sounds }) do
 
-		local _container = container || ent;
+		-- Recurse all subtables for sounds.
+		if (istable(v)) then WSL.IterateSounds(ent, v, lambda); end
+		if (k != "Sounds") then continue; end
 
-		-- Box sounds for entities since we can't parse userdata.
-		for k,v in pairs(container || { ["Sounds"] = ent.Sounds }) do
-
-			-- Recurse all subtables for sounds.
-			if (istable(v)) then WSL.IterateSounds(ent, v, lambda); end
-			if (k != "Sounds") then continue; end
-
-			-- Initialize sound cache.
-			_container.SoundsCache = _container.SoundsCache || {};
-			for name,snd in pairs(v) do
-				if (name == "BaseClass") then continue; end
-				lambda(_container.SoundsCache, name, snd);
-			end
+		-- Initialize sound cache.
+		_container.SoundsCache = _container.SoundsCache || {};
+		for name,snd in pairs(v) do
+			if (name == "BaseClass") then continue; end
+			lambda(_container.SoundsCache, name, snd); 
 		end
-
-	end);
+	end
 end
 
 function WSL.InitializeSounds(ent, container)
@@ -38,8 +30,6 @@ function WSL.InitializeSounds(ent, container)
 end
 
 function WSL.PlaySoundPatch(container, name, volume, fade)
-
-	if (!container.SoundsCache) then return; end
 
 	local soundPatch = container.SoundsCache[name];
 	if (soundPatch == nil) then return; end
@@ -63,8 +53,6 @@ function WSL.PlaySound(container, name, volume, fade, noPrediction)
 end
 
 function WSL.StopSound(container, name, fade)
-
-	if (!container.SoundsCache) then return; end
 
 	local soundPatch = container.SoundsCache[name];
 	if (!soundPatch) then return; end
