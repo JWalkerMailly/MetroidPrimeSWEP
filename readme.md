@@ -1,6 +1,9 @@
 <p align="center"><img src="readme/banner.png"/></p>
 
 # Metroid Prime SWEP
+![Steam Downloads](https://img.shields.io/steam/downloads/3041333779)
+![Steam Favorites](https://img.shields.io/steam/favorites/3041333779)
+![Steam File Size](https://img.shields.io/steam/size/3041333779)\
 Metroid Prime SWEP is a passion project recreation of the original Metroid Prime character controller for Garry's Mod with utmost fidelity in mind. The project also ships with a comprehensive API and a multitude of hooks for developers to integrate their own add-ons.
 
 [Workshop Link](https://steamcommunity.com/sharedfiles/filedetails/?id=3041333779)
@@ -42,7 +45,7 @@ An options menu is available in Sandbox mode from the Spawn Menu. It will be fou
 ---
 
 <details>
-<summary><h4>Game Commands</h4></summary>
+<summary><strong>Game Commands</strong></summary>
 
 The following commands are all accessible from the options menu:
 | Command | Values | Description |
@@ -54,7 +57,7 @@ The following commands are all accessible from the options menu:
 </details>
 
 <details>
-<summary><h4>Control Commands</h4></summary>
+<summary><strong>Control Commands</strong></summary>
 
 **Warning**: Changing controls may have consequences and cause conflicts with other addons. Change at your own risk. Controls use the KEY enums, see the following link for a list of possible values: https://wiki.facepunch.com/gmod/Enums/KEY.
 | ConVar | Values | Description |
@@ -67,7 +70,7 @@ The following commands are all accessible from the options menu:
 </details>
 
 <details>
-<summary><h4>Gesture Commands</h4></summary>
+<summary><strong>Gesture Commands</strong></summary>
 
 The following commands are all accessible from the options menu. Gestures can be used to change Beam/Visor using mouse movements instead of keyboard inputs.
 | ConVar | Values | Description |
@@ -80,7 +83,7 @@ The following commands are all accessible from the options menu. Gestures can be
 </details>
 
 <details>
-<summary><h4>Display Commands</h4></summary>
+<summary><strong>Display Commands</strong></summary>
 
 The following commands are all accessible from the options menu:
 | Command | Values | Description |
@@ -96,7 +99,7 @@ The following commands are all accessible from the options menu:
 </details>
 
 <details>
-<summary><h4>Cheat Commands</h4></summary>
+<summary><strong>Cheat Commands</strong></summary>
 
 The following commands are all accessible from the options menu:
 | Command | Args | Args | Description |
@@ -142,7 +145,7 @@ The supplied API offers methods for other addons to integrate with this project.
 ---
 
 <details>
-<summary><h4>Damage Types</h4></summary>
+<summary><strong>Damage Types</strong></summary>
 
 Weapons use a combination of custom damage types:
 | DMG Type | Value | Weapons |
@@ -160,7 +163,7 @@ https://wiki.facepunch.com/gmod/CTakeDamageInfo:GetDamageCustom
 </details>
 
 <details>
-<summary><h4>Adding Threat Indicator Support</h4></summary>
+<summary><strong>Adding Threat Indicator Support</strong></summary>
 
 To add entities to the threat indication system, use the following stub in an autorun script:
 ```lua
@@ -169,7 +172,7 @@ game.MetroidPrimeThreats.Add("entity_class_name")
 </details>
 
 <details>
-<summary><h4>Adding Log Book Support</h4></summary>
+<summary><strong>Adding Log Book Support</strong></summary>
 
 There are two ways to add Log Book support to your entities. The first method declares the Log Book data directly in your shared.lua file. The second approach makes use of an autorun script to register your entity into the game. If you are the author of the entity you wish to add support for, the first approach is recommended. If you are not the author, your only option will be the second method.
 
@@ -222,7 +225,7 @@ Here is what your VMT should look like:
 </details>
 
 <details>
-<summary><h4>Adding Grapple Beam Anchors</h4></summary>
+<summary><strong>Adding Grapple Beam Anchors</strong></summary>
 
 To add grapple beam anchors, use the following stub in an autorun script:
 ```lua
@@ -231,7 +234,7 @@ game.MetroidPrimeAnchors.Add("entity_class_name")
 </details>
 
 <details>
-<summary><h4>Adding Spider Ball Surfaces</h4></summary>
+<summary><strong>Adding Spider Ball Surfaces</strong></summary>
 
 The Spider Ball uses surface properties to determine if it can ride along surfaces. To learn more about surface properties, see the following link:
 https://developer.valvesoftware.com/wiki/Material_surface_properties
@@ -243,7 +246,7 @@ game.MetroidPrimeSpiderSurfaces.Add("surface_prop_name")
 </details>
 
 <details>
-<summary><h4>Adding Lock-On Support</h4></summary>
+<summary><strong>Adding Lock-On Support</strong></summary>
 
 By default, the weapon will use the world space center of an entity to lock on. The API offers a way to define a lock-on attachment. The first method declares the attachment in your Initialize hook. The second approach makes use of an autorun script to register your attachment into the game. If you are the author of the entity you wish to add support for, the first approach is recommended. If you are not the author, your only option will be the second method. Attachments are dynamic, you can change the attachment at any time in your logic as long as it is called server-side. See API section for all available functions in the **Entity** section.
 
@@ -1750,7 +1753,9 @@ Metroid Prime SWEP is a passion project recreation of the original Metroid Prime
 The names Metroid Prime as well as related names, marks, emblems and images are registered trademarks of their respective owners.
 
 ## Analytics
-
+![Steam Views](https://img.shields.io/steam/views/3041333779)
+![Steam Release Date](https://img.shields.io/steam/release-date/3041333779)
+![Steam Update Date](https://img.shields.io/steam/update-date/3041333779)\
 **Start:** November 2022
 **End:** October 2023
 **Hours:** ~800 hours
