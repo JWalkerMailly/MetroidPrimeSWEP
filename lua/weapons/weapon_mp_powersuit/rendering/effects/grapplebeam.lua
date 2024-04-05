@@ -18,8 +18,8 @@ function GrappleBeam:Draw(weapon)
 	local owner = weapon:GetOwner();
 	local grappleStartPos;
 	if (LocalPlayer() == owner) then
-		local eyeAngles = owner:EyeAngles();
-		grappleStartPos = owner:EyePos() - eyeAngles:Up() * 30 - eyeAngles:Right() * 30;
+		local eyeAngles = EyeAngles();
+		grappleStartPos = EyePos() - eyeAngles:Up() * 30 - eyeAngles:Right() * 30;
 	else
 		local handAttachmentID = owner:LookupAttachment("anim_attachment_LH");
 		grappleStartPos = handAttachmentID > 0 && owner:GetAttachment(handAttachmentID).Pos || owner:GetPos();
