@@ -124,6 +124,7 @@ function POWERSUIT:HandleMorphBall(ply, movement)
 		local phys = morphball:GetPhysicsObject();
 		phys:SetVelocityInstantaneous(movement:GetVelocity());
 		ply:EnterVehicle(morphball.Vehicle);
+		ply:SetAllowWeaponsInVehicle(false);
 		ply:Freeze(true);
 
 		-- Animations.
