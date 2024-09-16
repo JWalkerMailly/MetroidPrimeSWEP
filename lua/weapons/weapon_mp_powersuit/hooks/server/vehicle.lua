@@ -42,7 +42,6 @@ hook.Add("PlayerLeaveVehicle", "MORPHBALL.Leave", function(ply, vehicle)
 	if (!morphball:IsMorphBall()) then return; end
 
 	-- Match the player's velocity and direction to the morphball before removing it.
-	local ang = morphball:GetVelocity():Angle();
 	ply:SetEyeAngles(Angle(0, ply:LocalEyeAngles()[2] - 90, 0));
 	ply:SetPos(morphball:GetPos() - Vector(0, 0, 11));
 	ply:SetVelocity(morphball:GetVelocity() * 0.75);
