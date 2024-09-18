@@ -26,6 +26,8 @@ hook.Add("CanExitVehicle", "MORPHBALL.CanLeave", function(vehicle, ply)
 	});
 
 	local powersuit = morphball:GetPowerSuit();
+	if (!IsValid(powersuit)) then return; end
+
 	local canExit   = !unmorphHull.StartSolid && !unmorphHull.Hit;
 	local canMorph  = powersuit.MorphBall:CanMorph();
 	if (!canExit && canMorph) then
@@ -46,11 +48,11 @@ hook.Add("PlayerLeaveVehicle", "MORPHBALL.Leave", function(ply, vehicle)
 	ply:SetPos(morphball:GetPos() - Vector(0, 0, 11));
 	ply:SetVelocity(morphball:GetVelocity() * 0.75);
 
-	-- Update statemachines.
 	local powersuit = morphball:GetPowerSuit();
-	powersuit.MorphBall:SetNextMorphTime(CurTime());
+	if (!IsValid(powersuit)) then return; end
 
 	-- Remove morphball on exit.
+	powersuit.MorphBall:SetNextMorphTime(CurTime());
 	morphball:StopCharging(powersuit.MorphBall);
 	ply:EmitSound("entities/morphball/unmorph.wav");
 	SafeRemoveEntity(morphball);
