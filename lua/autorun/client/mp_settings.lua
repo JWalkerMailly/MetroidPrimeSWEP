@@ -84,9 +84,6 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
 		panel:Clear();
 
-		panel:NumSlider("#mp.settings.options.display.fov.text", "fov_desired", 75, 100, 0);
-		panel:ControlHelp("#mp.settings.options.display.fov.help");
-
 		panel:NumSlider("#mp.settings.options.display.vmfov.text", "mp_options_viewmodelfov", 54, 76, 0);
 		panel:ControlHelp("#mp.settings.options.display.vmfov.help");
 
