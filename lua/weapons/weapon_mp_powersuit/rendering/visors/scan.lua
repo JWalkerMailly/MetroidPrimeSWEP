@@ -175,13 +175,13 @@ function ScanVisor:HandleScanning(weapon, transition)
 end
 
 function ScanVisor:DrawLeftPane(image, x, alpha, widescreen)
-	WGL.Perspective(widescreen, -70, _, function()
+	WGL.Perspective(widescreen, -70, nil, function()
 		WGL.Texture(image, x + -610, -122, 135, 240, 150, 150, 150, alpha)
 	end);
 end
 
 function ScanVisor:DrawRightPane(image, x, alpha, widescreen)
-	WGL.Perspective(widescreen, 70, _, function()
+	WGL.Perspective(widescreen, 70, nil, function()
 		WGL.Texture(image, x + 473, -122, 135, 240, 150, 150, 150, alpha)
 	end);
 end
