@@ -1,29 +1,8 @@
 
 include("shared.lua");
 
-local hideHUD = {
-	["CHudAmmo"]                  = true,
-	["CHudBattery"]               = true,
-	["CHudCrosshair"]             = true,
-	["CHudCloseCaption"]          = true,
-	["CHudDamageIndicator"]       = true,
-	["CHudDeathNotice"]           = true,
-	["CHudGeiger"]                = true,
-	["CHudHealth"]                = true,
-	["CHudHintDisplay"]           = true,
-	["CHudPoisonDamageIndicator"] = true,
-	["CHudSecondaryAmmo"]         = true,
-	["CHudSquadStatus"]           = true,
-	["CHudTrain"]                 = true,
-	["CHudVehicle"]               = true,
-	["CHudWeapon"]                = true,
-	["CHudZoom"]                  = true,
-	["CHUDQuickInfo"]             = true,
-	["CHudSuitPower"]             = true
-}
-
 function POWERSUIT:HUDShouldDraw(name)
-	if (hideHUD[name]) then return false;
+	if (self.Helmet.Constants.HideHUD[name]) then return false;
 	else return true; end
 end
 
@@ -39,11 +18,6 @@ function POWERSUIT:DrawHUDBackground()
 	WGL.Component(self, "MorphBallHUD", self, damage);
 
 	-- Render helpers.
-	self:DrawGestureHelp();
-end
-
-function POWERSUIT:DrawGestureHelp()
-
 	if (!GetConVar("mp_options_gesturehelp"):GetBool()) then return; end
 
 	local halfW = ScrW() * 0.5;

@@ -100,3 +100,10 @@ function WGL.TraceCollision(ent, reset, filter, endPos, mask)
 	ent.__wgl_LastPosition = ent:GetPos();
 	return ent.__wgl_LastCollision, ent.__wgl_LastPosition, velocity;
 end
+
+function WGL.IsFirstPerson(ent)
+	local ply    = ent || LocalPlayer();
+	local eyePos = ply:EyePos();
+	local diff   = (eyePos - EyePos()):Length();
+	return diff < 50;
+end

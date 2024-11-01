@@ -77,6 +77,9 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
 		panel:CheckBox("#mp.settings.options.visor.keephud.text", "mp_options_keephud");
 		panel:ControlHelp("#mp.settings.options.visor.keephud.help");
+
+		panel:CheckBox("#mp.settings.options.visor.hudsway.text", "mp_options_hudsway");
+		panel:ControlHelp("#mp.settings.options.visor.hudsway.help");
 	end);
 
 	-- Create Display options menu.

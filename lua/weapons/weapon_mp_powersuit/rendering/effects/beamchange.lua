@@ -55,6 +55,9 @@ function BeamChange:Draw(weapon, beamData, eyePos, eyeAngles)
 	-- Transition complete, save current model to prevent overhead.
 	if (self.Transition >= 1) then self.CurrentModel = beamData.ViewModel; end
 
+	-- Prevent rendering if not in first person.
+	if (!weapon.IsFirstPerson) then return; end
+
 	local w = ScrW();
 	local h = ScrH();
 	self:PushRenderTexture("rt_MPBeamChange", w, h, {}, true);
@@ -69,7 +72,7 @@ function BeamChange:Draw(weapon, beamData, eyePos, eyeAngles)
 			dopostprocess = true
 		});
 
-		WGL.ViewModelProjection(false, weapon.ViewModelFOV, self.DrawTransition, self, weapon);
+		WGL.ViewModelProjection(false, self.DrawTransition, self, weapon);
 		hook.Call("RenderScreenspaceEffects");
 
 	render.PopRenderTarget();

@@ -23,14 +23,12 @@ function PROJECTILE:UpdateRenderData(muzzle, up, right, endPos)
 	-- Wait for next render update.
 	local time = CurTime();
 	local resolution = self.Resolution;
-	if (time < (self.NextRenderUpdate || 0)) then return time, resolution, self.RenderData; end
 
 	-- Prepare spline date for bezier spline computations.
 	local waveTime          = 4000 * FrameTime();
 	local pseudoRandomUp    = up * math.Clamp(math.sin(2 * time * 10) + math.cos(math.pi * time), -0.5, 1) * 25;
 	local pseudoRandomRight = right * (math.cos(2 * time) + math.sin(math.pi * time * 10)) * 25;
 	local pseudoRandomEnd   = self.EndNormal * math.abs(pseudoRandomUp[3]) * 2;
-	local points            = { muzzle, muzzle + pseudoRandomUp + pseudoRandomRight, endPos + pseudoRandomEnd, endPos };
 
 	-- Choose a random color for the buster core. Purple is the most frequent,
 	-- followed by white, blue and red equally.
@@ -47,14 +45,13 @@ function PROJECTILE:UpdateRenderData(muzzle, up, right, endPos)
 	for i = 0,resolution do
 		local t         = i / resolution;
 		local wave      = math.cos((time + t) * waveTime) / 2 + 0.5;
-		local pos       = WGL.Bezier(t, points);
+		local pos       = WGL.Bezier2(t, muzzle, muzzle + pseudoRandomUp + pseudoRandomRight, endPos + pseudoRandomEnd, endPos);
 		local swirlTime = i / 1.5 - time25;
 		local swirlPos  = right * math.cos(swirlTime) * 5 + up * math.sin(swirlTime) * 5;
 		table.insert(self.RenderData, i + 1, { t, wave, pos, swirlPos, coreColor });
 	end
 
 	-- Raise next update flag.
-	self.NextRenderUpdate = time + math.max(self.RenderFPS, FrameTime());
 	return time, resolution, self.RenderData;
 end
 
@@ -118,9 +115,10 @@ function PROJECTILE:Draw()
 	if (!self.ValidTarget) then endPos = endPos + VectorRand(-7, 7); end
 
 	-- If rendering on client, use viewmodel muzzle pos, else, use world attachment pos.
-	local ang     = nil;
-	local muzzle  = nil;
-	local isLocal = LocalPlayer() == owner;
+	local ang          = nil;
+	local muzzle       = nil;
+	local localPlayer  = LocalPlayer();
+	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && WGL.IsFirstPerson(localPlayer);
 	if (isLocal) then
 		local fov      = owner:GetFOV();
 		local fovRatio = 1 - (75 / fov) + 1;
@@ -133,5 +131,5 @@ function PROJECTILE:Draw()
 	end
 
 	-- Render beam effect.
-	WGL.ViewModelProjection(!isLocal, weapon.ViewModelFOV, self.DrawBeam, self, muzzle, ang, endPos);
+	WGL.ViewModelProjection(!isLocal, self.DrawBeam, self, muzzle, ang, endPos);
 end

@@ -133,21 +133,3 @@ POWERSUIT.Suits.Sounds = {
 };
 
 POWERSUIT.MorphBallVehicle = "mp_morphball";
-
-POWERSUIT.JumpCount        = 0;
-POWERSUIT.JumpTime         = 0;
-POWERSUIT.Dashing          = false;
-POWERSUIT.WasMoving        = false;
-
-POWERSUIT.GrappleStart     = nil;
-POWERSUIT.GrappleDistance  = nil;
-POWERSUIT.GrappleStartTime = nil;
-
-POWERSUIT.SwingStart       = nil;
-POWERSUIT.SwingLastPos     = nil;
-POWERSUIT.SwingStartPos    = nil;
-POWERSUIT.SwingStartTime   = nil;
-POWERSUIT.SwingStartAngle  = nil;
-POWERSUIT.SwingViewAngle   = nil;
-POWERSUIT.SwingVelocity    = nil;
-POWERSUIT.Swinging         = false;

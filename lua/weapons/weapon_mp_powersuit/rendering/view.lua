@@ -1,4 +1,10 @@
 
+function POWERSUIT:ResetCamera(ply)
+	if (!IsValid(ply)) then return; end
+	ply.__mp_FOVTransition = ply:GetFOV();
+	ply.__mp_CameraTransition = 1;
+end
+
 function POWERSUIT:GetWalkBob(speed)
 	return (LocalPlayer():OnGround() && LocalPlayer():GetVelocity():LengthSqr() > 2500) && math.sin(CurTime() * 17.422 * (speed || 1)) * 0.08 || 0;
 end
@@ -10,7 +16,53 @@ function POWERSUIT:GetViewPunch(fov)
 	return fov + self.LastViewPunch * 0.3;
 end
 
+function POWERSUIT:HandleMaterialOverrides(visor)
+
+	for k,v in pairs(game.MetroidPrimeMaterialSwaps) do
+
+		-- Apply material swap to valid entities.
+		local override = visor.MaterialFilter(v);
+		if (override) then
+			v:SetMaterial(override);
+			v.__mp_VisorOverride = true;
+			continue;
+		end
+
+		-- Entity visor rules changed, reset material.
+		if (v.__mp_VisorOverride) then
+			v:SetMaterial(v:GetMaterial());
+			v.__mp_VisorOverride = false;
+		end
+	end
+
+	self.CleanupMaterials = true;
+end
+
+function POWERSUIT:CleanupMaterialOverrides()
+
+	-- Remove color manipulation projection.
+	if (IsValid(self.ProjectedTexture)) then
+		self.ProjectedTexture:Remove();
+		self.ProjectedTexture = nil;
+	end
+
+	if (!self.CleanupMaterials) then return; end
+	for k,v in pairs(game.MetroidPrimeMaterialSwaps) do
+
+		if (!v.__mp_VisorOverride) then continue; end
+
+		-- Fallback to default texture.
+		v:SetMaterial(v:GetMaterial());
+		v.__mp_VisorOverride = false;
+	end
+
+	self.CleanupMaterials = false;
+end
+
 function POWERSUIT:ShouldResetView(ply)
+
+	-- Prevent HUD and Beam sway if desired.
+	if (!GetConVar("mp_options_hudsway"):GetBool()) then return true; end
 
 	-- If we are moving, or our view is moving, or we are attacking, the view should reset.
 	local mouseAction   = ply:KeyDown(IN_ATTACK) || ply:KeyDown(IN_ATTACK2);
@@ -135,34 +187,37 @@ function POWERSUIT:GetViewModelPosition(pos, angle)
 	return pos + self:GetViewModelRollPos(self.LastViewModelRoll, angle) + self.LastBobPos, finalAngle;
 end
 
-function POWERSUIT:DrawViewModelEffects()
+function POWERSUIT:DrawViewModelEffects(vm, ply)
 
-	local owner    = LocalPlayer();
-	local vm       = owner:GetViewModel();
-	if (!IsValid(vm) || owner:InVehicle()) then return; end
-
+	-- Render viewmodel charge effects after drawing the viewmodel.
 	local beamData = self:GetBeam();
-	local ratio    = self.ArmCannon:GetChargeRatio();
 	local reset    = self.ArmCannon:GetNextMissileComboResetTime();
 	local combo    = reset != 0 && reset < CurTime();
+	local ratio    = self.ArmCannon:GetChargeRatio();
 
-	-- Use missile combo ratio for charge ball rendering if no charge ratio is 
-	-- provided. This is will shrink the charge ball when firing a missile combo.
 	if (ratio == 0) then ratio = WGL.Clamp(1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5); end
-	if (ratio > 0.1 || combo) then
+	if (ratio > 0) then
 
-		-- Emit light when charging the arm cannon.
-		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, nil, false, owner);
-		local charge = (!combo && ratio || 1) * (math.sin(CurTime() * 10) / 4 + 0.75);
+		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, nil, false, ply);
+		if (beamData.Charge3DEffect) then
+			WGL.Component(self, beamData.Charge3DEffect, muzzle, ang, ratio, beamData.ChargeBallColor);
+		end
+
+		-- Render 3D charge ball on end muzzle.
+		if (ratio > 0.1 || combo) then
+			if (beamData.ChargeBallColor) then WGL.Component(self, "ChargeBall", muzzle, ang, ratio, beamData.ChargeBallColor); end
+		end
 
 		-- Emit light during charge or during looping combo.
+		local charge = (!combo && ratio || 1) * (math.sin(CurTime() * 10) / 4 + 0.75);
 		if (!combo || (combo && beamData.ComboLoopDelay != nil)) then
 			WGL.EmitLight(self, muzzle, beamData.ChargeColor, 0, charge * 100, CurTime() + 0.1, 6);
 			WGL.EmitLight(vm, muzzle, beamData.ChargeColor, 0, charge * beamData.ChargeGlowSize, CurTime() + 0.1, 6, true);
 		end
-
-		-- Render 3D charge ball on end muzzle.
-		if (beamData.ChargeBallColor) then WGL.Component(self, "ChargeBall", muzzle, ang, ratio, beamData.ChargeBallColor); end
+	else
+		if (beamData.Charge3DEffect) then
+			WGL.GetComponent(self, beamData.Charge3DEffect):Initialize();
+		end
 	end
 
 	-- Handle ambient particle effects. Attach it to the viewmodel so emission stops when the model is changed.
@@ -181,6 +236,11 @@ function POWERSUIT:DrawViewModelEffects()
 	if (IsValid(self.ChargeEffect) && !self.ArmCannon:IsCharging()) then
 		self.ChargeEffect:StopEmissionAndDestroyImmediately();
 	end
+end
+
+function POWERSUIT:RenderScreen()
+	self.IsFirstPerson = self.PostDrawViewModelRan;
+	self.PostDrawViewModelRan = false;
 end
 
 function POWERSUIT:PreDrawViewModel(vm, weapon, ply)
@@ -211,18 +271,6 @@ function POWERSUIT:PostDrawViewModel(vm, weapon, ply)
 	render.MaterialOverrideByIndex(5, nil);
 	render.MaterialOverrideByIndex(6, nil);
 	render.MaterialOverrideByIndex(7, nil);
-
-	-- Do nothing if this beam does not use procedural charge effects.
-	local beamData = self:GetBeam();
-	if (!beamData.Charge3DEffect) then return; end
-
-	-- Render viewmodel charge effects after drawing the viewmodel.
-	local ratio = self.ArmCannon:GetChargeRatio();
-	if (ratio == 0) then ratio = WGL.Clamp(1 - self.ArmCannon:GetMissileComboStartRatio() / 1.5); end
-	if (ratio > 0) then
-		local muzzle, ang = WGL.GetViewModelAttachmentPos(1, self.ViewModelFOV, nil, false, ply);
-		WGL.Component(self, beamData.Charge3DEffect, muzzle, ang, ratio, beamData.ChargeBallColor);
-	else
-		WGL.GetComponent(self, beamData.Charge3DEffect):Initialize();
-	end
+	self:DrawViewModelEffects(vm, ply);
+	self.PostDrawViewModelRan = true;
 end

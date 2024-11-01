@@ -17,7 +17,9 @@ function GrappleBeam:Draw(weapon)
 
 	local owner = weapon:GetOwner();
 	local grappleStartPos;
-	if (LocalPlayer() == owner) then
+	local localPlayer  = LocalPlayer();
+	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && WGL.IsFirstPerson(localPlayer);
+	if (isLocal) then
 		local eyeAngles = EyeAngles();
 		grappleStartPos = EyePos() - eyeAngles:Up() * 30 - eyeAngles:Right() * 30;
 	else

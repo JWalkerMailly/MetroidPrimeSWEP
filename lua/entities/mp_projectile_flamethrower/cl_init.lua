@@ -68,9 +68,10 @@ function PROJECTILE:Draw()
 	if (!IsValid(weapon)) then return; end
 
 	-- If rendering on client, use viewmodel muzzle pos, else, use world attachment pos.
-	local ang     = nil
-	local muzzle  = nil;
-	local isLocal = LocalPlayer() == owner;
+	local ang          = nil
+	local muzzle       = nil;
+	local localPlayer  = LocalPlayer();
+	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && WGL.IsFirstPerson(localPlayer);
 	if (isLocal) then
 		local fov      = owner:GetFOV();
 		local fovRatio = 1 - (75 / fov) + 1;
@@ -92,5 +93,5 @@ function PROJECTILE:Draw()
 	};
 
 	-- Render beam effect.
-	WGL.ViewModelProjection(!isLocal, weapon.ViewModelFOV, self.DrawBeam, self, points);
+	WGL.ViewModelProjection(!isLocal, self.DrawBeam, self, points);
 end

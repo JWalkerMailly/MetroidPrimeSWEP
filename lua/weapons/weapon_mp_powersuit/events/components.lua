@@ -119,6 +119,7 @@ function POWERSUIT:ChangeComponentThink(beamData, viewModel)
 	-- Delegate call to beam and visor handlers.
 	self:ChangeBeamThink(beamData, viewModel);
 	self:ChangeVisorThink();
+	self:ChangeSuitThink();
 
 	-- Prevents beam change from being called multiple times in one request.
 	if (!CLIENT || gui.IsGameUIVisible() || !self:CanRequestComponent(true)) then return;
@@ -166,6 +167,32 @@ function POWERSUIT:ChangeVisorThink()
 	local visorData = self:GetVisor();
 	self.Helmet:StartVisorLoop(true);
 	WSL.PlaySound(visorData, "ambient", 0.5, 1);
+end
+
+local playerModelSupport = nil;
+function POWERSUIT:ChangeSuitThink()
+
+	-- PlayerModelSupport is a three state variable. Nil means we haven't checked if the models are present.
+	-- False means the models are not present. True means the models are installed.
+	local ply = self:GetOwner();
+	if (playerModelSupport == false || !tobool(ply:GetInfo("mp_options_playermodel"))) then return; end
+
+	-- Avoid running hook if suit did not change.
+	local suit, suitID = self:GetSuit();
+	if (self.Suit == suitID) then
+		return;
+	else
+		playerModelSupport = nil;
+		self.Suit = suitID;
+	end
+
+	-- Check for player model support.
+	if (playerModelSupport == nil) then playerModelSupport = util.IsValidModel(suit.WorldModel); end
+	if (!playerModelSupport)       then return; end
+
+	-- Apply suit model, skin and bodygroups to player now.
+	WGL.ForceSetModel(ply, suit.WorldModel);
+	WGL.SetBodyGroupSkin(ply, 1, suit.Group, suit.Skin);
 end
 
 local gestureDown  = Vector(0, 1, 0);

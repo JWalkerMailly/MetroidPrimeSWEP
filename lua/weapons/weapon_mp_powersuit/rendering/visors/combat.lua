@@ -241,10 +241,9 @@ function CombatVisor:DrawRadar(visorOpacity)
 			WGL.Texture(radarMaterial, 0, 0, 64, 64, 93, 123, 153, 255 * visorOpacity);
 
 			-- Draw radar targets.
-			local players = player.GetAll();
-			local npcs    = ents.FindByClass("*npc*");
-			for k,_v in ipairs(players) do self:DrawRadarTarget(_v, visorOpacity); end
-			for k,_v in ipairs(npcs)    do self:DrawRadarTarget(_v, visorOpacity); end
+			local npcs = ents.FindByClass("*npc*");
+			for k,_v in player.Iterator() do self:DrawRadarTarget(_v, visorOpacity); end
+			for k,_v in ipairs(npcs)      do self:DrawRadarTarget(_v, visorOpacity); end
 
 		cam.End2D();
 	render.PopRenderTarget();

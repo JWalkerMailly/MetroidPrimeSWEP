@@ -2,14 +2,13 @@
 include("setup.lua");
 
 function POWERSUIT:SetupDataTables()
+
 	self.Helmet:SetupDataTables(self);
 	self.PowerSuit:SetupDataTables(self);
 	self.ArmCannon:SetupDataTables(self);
 	self.MorphBall:SetupDataTables(self);
-	if (CLIENT) then self:SetupMuzzleEffects(); end
-end
 
-function POWERSUIT:SetupMuzzleEffects()
+	if (!CLIENT) then return; end
 	self:MuzzleCallback("NextBeamMuzzle",      "MuzzleEffect");
 	self:MuzzleCallback("NextChargeMuzzle",    "MuzzleBreakEffect");
 	self:MuzzleCallback("NextComboMuzzle",     "MuzzleComboEffect");
@@ -21,6 +20,7 @@ function POWERSUIT:Initialize()
 	WSL.InitializeSounds(self, self.Suits);
 	WSL.InitializeSounds(self, self.Beams);
 	WSL.InitializeSounds(self, self.Visors);
+	self:CreateHooks();
 end
 
 function POWERSUIT:PrimaryAttack()

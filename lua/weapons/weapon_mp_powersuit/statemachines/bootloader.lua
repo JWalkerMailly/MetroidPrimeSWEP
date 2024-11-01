@@ -121,3 +121,43 @@ function POWERSUIT:DeleteState(reload)
 	owner:SelectWeapon(class);
 	return true;
 end
+
+hook.Add("PlayerInitialSpawn", "POWERSUIT.RestoreState", function(ply, transition)
+	if (transition) then ply.__mp_RestoreState = true; end
+end);
+
+hook.Add("SetupMove", "POWERSUIT.RestoreState", function(ply, move, cmd)
+
+	if (!ply.__mp_RestoreState) then return; end
+
+	local forceSelect = false;
+	local currentWeapon = ply:GetActiveWeapon();
+	for k,v in ipairs(ply:GetWeapons()) do
+
+		if (!v:IsPowerSuit(true)) then continue; end
+
+		-- Cleanup stray Morph Balls now.
+		local morphball = v:GetMorphBall();
+		if (IsValid(morphball)) then
+			forceSelect = true;
+			morphball:Remove();
+			ply:ExitVehicle();
+		end
+
+		-- Reload weapon entirely in order to refresh entire state.
+		local weaponClass = v:GetClass();
+		ply:StripWeapon(weaponClass);
+		ply:Give(weaponClass);
+
+		-- Reequip powersuit if it was active after a map change.
+		if (forceSelect || currentWeapon == v) then
+			local vehicle = ply:GetAllowWeaponsInVehicle();
+			ply:SetAllowWeaponsInVehicle(true);
+			ply:SelectWeapon(weaponClass);
+			timer.Simple(math.Clamp(FrameTime() * 16, 0.24, 0.24 * 16), function() ply:SetAllowWeaponsInVehicle(vehicle); end);
+		end
+	end
+
+	-- Clear state restore cache.
+	ply.__mp_RestoreState = nil;
+end);

@@ -21,6 +21,11 @@ function POWERSUIT.MorphBall:SetupDataTables(weapon)
 		PowerBomb = {
 			Limit   = 8,
 			Delay   = 4.0
+		},
+
+		Camera = {
+			Offset = 5,
+			Radius = 155
 		}
 	};
 

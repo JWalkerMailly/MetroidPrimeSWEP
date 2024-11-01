@@ -14,6 +14,17 @@ POWERSUIT.LogBook       = {
 	Description = "The Power Suit is an advanced Chozo exoskeleton modified for use by Samus Aran."
 };
 
+POWERSUIT.Hooks = {};
+function POWERSUIT:CreateHooks()
+	for k,v in pairs(self.Hooks) do
+		hook.Add(k, self, v);
+	end
+end
+
+function POWERSUIT:IsActiveWeapon(ply)
+	return ply:GetActiveWeapon() == self && self.StateIdentifier != nil;
+end
+
 -- Shared files.
 do
 	include("events/beam.lua");
@@ -31,8 +42,7 @@ do
 	include("configs/beams.lua");
 	include("configs/visors.lua");
 
-	include("hooks/death.lua");
-	include("hooks/lookup.lua");
+	include("hooks/shared.lua");
 end
 
 -- Initialization files.
@@ -80,19 +90,11 @@ if (SERVER) then
 	AddCSLuaFile("rendering/huds/morphball.lua");
 	AddCSLuaFile("rendering/huds/powersuit.lua");
 
-	AddCSLuaFile("hooks/server/damage.lua");
-	AddCSLuaFile("hooks/server/vehicle.lua");
-	AddCSLuaFile("hooks/server/movement.lua");
-	AddCSLuaFile("hooks/server/spawn.lua");
-	AddCSLuaFile("hooks/client/camera.lua");
-	AddCSLuaFile("hooks/client/rendering.lua");
-	AddCSLuaFile("hooks/death.lua");
-	AddCSLuaFile("hooks/lookup.lua");
+	AddCSLuaFile("hooks/shared.lua");
+	AddCSLuaFile("hooks/server.lua");
+	AddCSLuaFile("hooks/client.lua");
 
-	include("hooks/server/damage.lua");
-	include("hooks/server/vehicle.lua");
-	include("hooks/server/movement.lua");
-	include("hooks/server/spawn.lua");
+	include("hooks/server.lua");
 end
 
 -- Client initialization files.
@@ -121,18 +123,16 @@ if (CLIENT) then
 	include("rendering/huds/morphball.lua");
 	include("rendering/huds/powersuit.lua");
 
-	include("hooks/client/camera.lua");
-	include("hooks/client/rendering.lua");
+	include("hooks/client.lua");
 end
 
 function POWERSUIT:Cleanup(autoSave)
 
 	self:StopParticles();
 
-	-- Prevent player from being stuck if frozen from morphball.
 	local owner = self:GetOwner();
 	if (IsValid(owner)) then
-		if (SERVER) then owner:Freeze(false); end
+		self:ResetMovement(owner);
 		if (IsValid(owner:GetViewModel())) then owner:GetViewModel():StopParticles(); end
 	end
 
@@ -143,7 +143,7 @@ function POWERSUIT:Cleanup(autoSave)
 	self.MorphBall:Reset();
 	self.PowerSuit:Reset();
 
-	-- Reset weapon timings.
+	-- Reset instance timings.
 	local beamData = self:GetBeam();
 	self:StopChargeBeam(beamData);
 	self:CloseMissileCombo(beamData);
@@ -159,7 +159,8 @@ function POWERSUIT:Cleanup(autoSave)
 	if (!CLIENT) then return true; end
 	WGL.GetComponent(self, "MorphBallHUD"):Reset();
 	WGL.GetComponent(self, "PowerSuitHUD"):Reset(self, true);
-	self:ResetCamera();
+	self:CleanupMaterialOverrides();
+	self:ResetCamera(owner);
 	return true;
 end
 

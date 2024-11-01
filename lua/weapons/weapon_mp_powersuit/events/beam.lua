@@ -57,7 +57,7 @@ function POWERSUIT:NormalBeam()
 
 	-- Statemachines.
 	self:SetNextFire(beamData.BeamDelay, self.ArmCannon.Constants.Charge.Delay);
-	self.ArmCannon:StartBeam();
+	if (SERVER) then self.ArmCannon:StartBeam(); end
 
 	-- Animations.
 	self:GetOwner():SetAnimation(PLAYER_ATTACK1);

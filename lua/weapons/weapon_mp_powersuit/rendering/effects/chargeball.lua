@@ -30,5 +30,4 @@ function ChargeBall:Draw(pos, ang, ratio, color)
 	render.SetBlend(0.8);
 	self:DrawModel("Glow", pos, ang, scale);
 	render.SetBlend(1);
-	render.DepthRange(0, 1);
 end

@@ -18,6 +18,27 @@ function POWERSUIT.Helmet:SetupDataTables(weapon)
 			AimAssistAngle  = 0.994,
 			AimAssistFrames = 15,
 			DangerDistance  = 512
+		},
+
+		HideHUD = {
+			["CHudAmmo"]                  = true,
+			["CHudBattery"]               = true,
+			["CHudCrosshair"]             = true,
+			["CHudCloseCaption"]          = true,
+			["CHudDamageIndicator"]       = true,
+			["CHudDeathNotice"]           = true,
+			["CHudGeiger"]                = true,
+			["CHudHealth"]                = true,
+			["CHudHintDisplay"]           = true,
+			["CHudPoisonDamageIndicator"] = true,
+			["CHudSecondaryAmmo"]         = true,
+			["CHudSquadStatus"]           = true,
+			["CHudTrain"]                 = true,
+			["CHudVehicle"]               = true,
+			["CHudWeapon"]                = true,
+			["CHudZoom"]                  = true,
+			["CHUDQuickInfo"]             = true,
+			["CHudSuitPower"]             = true
 		}
 	};
 
@@ -181,10 +202,10 @@ end
 -- Target System
 -- 
 
-function POWERSUIT.Helmet:GetTarget(input)
+function POWERSUIT.Helmet:GetTarget(input, movement)
 	local target = self.Weapon:GetTarget();
 	local valid  = IsValid(target);
-	return target, valid, valid && self.Weapon:GetOwner():KeyDown(input);
+	return target, valid, valid && (movement && movement:KeyDown(input) || self.Weapon:GetOwner():KeyDown(input));
 end
 
 function POWERSUIT.Helmet:SetTarget(target)

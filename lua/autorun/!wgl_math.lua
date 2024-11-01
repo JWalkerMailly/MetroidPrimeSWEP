@@ -144,3 +144,12 @@ function WGL.Bezier(t, points, i, c)
 	-- Recursively lerp given control points in order to approximate bezier position along spline.
 	return WGL.Bezier(t, points, i, c - 1) * (1 - t) + WGL.Bezier(t, points, i + 1, c - 1) * t;
 end
+
+function WGL.Bezier2(t, p0, p1, p2, p3)
+	
+	local t1 = 1 - t;
+	return t1 * t1 * t1 * p0
+		+ 3 * t1 * t1 * t * p1
+		+ 3 * t1 * t * t * p2
+		+ t * t * t * p3;
+end

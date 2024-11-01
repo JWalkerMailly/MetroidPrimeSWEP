@@ -267,7 +267,7 @@ function POWERSUIT.ArmCannon:GetBeamRoll()
 end
 
 function POWERSUIT.ArmCannon:SetBeamRoll(roll)
-	if (math.random(7) > 4) then self.Weapon:SetBeamRoll(roll); end
+	if (util.SharedRandom("beamroll", 0, 7) > 4) then self.Weapon:SetBeamRoll(roll); end
 end
 
 function POWERSUIT.ArmCannon:GetNextBeamFidgetTime()
@@ -716,7 +716,7 @@ end
 function POWERSUIT.ArmCannon:StartBeam()
 	self:SetNextBeamMuzzleTime(CurTime());
 	self:SetNextChargeStartTime(CurTime());
-	self:SetBeamRoll(math.Rand(-12.5, 12.5));
+	self:SetBeamRoll(util.SharedRandom("beamroll", -12.5, 12.5));
 end
 
 function POWERSUIT.ArmCannon:StopBeam(silent, quickCharge, close)

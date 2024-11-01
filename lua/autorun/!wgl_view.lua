@@ -27,13 +27,14 @@ function WGL.Perspective(widescreenFix, xPan, yPan, drawDelegate, ...)
 	cam.End3D();
 end
 
-function WGL.ViewModelProjection(ignore, fov, drawDelegate, ...)
+function WGL.ViewModelProjection(ignore, drawDelegate, ...)
 
 	-- Render in currently active projection space if needed.
 	if (ignore) then return drawDelegate(...); end
 
 	-- Render in viewmodel projection space.
-	WGL.Start3D(false, fov || 62);
+	local view = render.GetViewSetup();
+	WGL.Start3D(false, view.fovviewmodel_unscaled);
 		drawDelegate(...);
 	cam.End3D();
 end
@@ -78,6 +79,15 @@ function WGL.ToScreenFOV(pos, newFOV, oldFOV, w, h)
 		x = screen.x - (width / 2 - screen.x) * deltaFOV,
 		y = screen.y - (height / 2 - screen.y) * deltaFOV
 	}
+end
+
+function WGL.ToScreenFOV2(pos)
+	
+	cam.Start3D();
+		local screen = pos:ToScreen();
+	cam.End3D();
+
+	return screen;
 end
 
 function WGL.Start3D(widescreenFix, fov, noclip)
