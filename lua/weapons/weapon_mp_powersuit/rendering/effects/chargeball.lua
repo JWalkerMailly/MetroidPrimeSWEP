@@ -18,7 +18,6 @@ function ChargeBall:Draw(pos, ang, ratio, color)
 
 	-- Render charge ball angles using rendering matrix.
 	local scale = math.ease.InBounce(math.Clamp(ratio + 0.15, 0, 1.05)) * 6.25;
-	render.DepthRange(0, 0.25);
 	render.SetBlend(color.a);
 	render.SetColorModulation(color.r / 255, color.g / 255, color.b / 255);
 	self:DrawModel("Ball", pos, modelMatrix:GetAngles(), scale);
