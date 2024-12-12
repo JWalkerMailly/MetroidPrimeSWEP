@@ -189,7 +189,7 @@ POWERSUIT.Hooks["InputMouseApply"] = function(weapon, cmd)
 
 	-- Prevent mouse movement when locked onto a target.
 	local _, _, locked = weapon.Helmet:GetTarget(IN_SPEED);
-	local gesture = GetConVar("mp_options_gestures"):GetBool() && (input.IsKeyDown(weapon.GestureKey) || input.IsKeyDown(weapon.SelectorLayerKey)) || false;
+	local gesture = GetConVar("mp_options_gestures"):GetBool() && (input.IsButtonDown(weapon.GestureKey) || input.IsButtonDown(weapon.SelectorLayerKey)) || false;
 	if (locked || gesture) then
 		cmd:SetMouseX(0);
 		cmd:SetMouseY(0);

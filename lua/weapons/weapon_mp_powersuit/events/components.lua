@@ -126,7 +126,7 @@ function POWERSUIT:ChangeComponentThink(beamData, viewModel)
 	else self.ChangeComponentRequestedNextTime = 0; end
 
 	-- Determine which layer is being requested.
-	local visorLayer     = input.IsKeyDown(self.SelectorLayerKey);
+	local visorLayer     = input.IsButtonDown(self.SelectorLayerKey);
 	local selectionLayer = self.Beams;
 	if (visorLayer) then selectionLayer = self.Visors; end
 
@@ -134,7 +134,7 @@ function POWERSUIT:ChangeComponentThink(beamData, viewModel)
 	local gestureKey = self:GetGestureKey();
 	for component,data in ipairs(selectionLayer) do
 		local componentKey = tonumber(selectionLayer[component].Key);
-		if (input.IsKeyDown(componentKey) || gestureKey == componentKey) then
+		if (input.IsButtonDown(componentKey) || gestureKey == componentKey) then
 			self.ChangeComponentRequestedNextTime = CurTime() + self.ArmCannon.Constants.Beam.Request;
 			self:StartChangeComponent(component, visorLayer);
 			self:ResetGesture();
@@ -202,7 +202,7 @@ function POWERSUIT:GetGestureKey()
 	if (!GetConVar("mp_options_gestures"):GetBool()) then return; end
 
 	-- Do nothing if a gesture is currently being processed.
-	local startGesture = input.IsKeyDown(self.GestureKey) || input.IsKeyDown(self.SelectorLayerKey);
+	local startGesture = input.IsButtonDown(self.GestureKey) || input.IsButtonDown(self.SelectorLayerKey);
 	if (!startGesture)       then return self:ResetGesture(); end
 	if (self.LastGestureSet) then return self.LastGestureKey; end
 
