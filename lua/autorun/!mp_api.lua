@@ -1,4 +1,7 @@
 
+-- Ease of integration for developers.
+MetroidPrimeSWEP = true
+
 local _player = FindMetaTable("Player");
 local _entity = FindMetaTable("Entity");
 
@@ -46,6 +49,7 @@ DMG_MP_ICE     = 4;
 DMG_MP_PLASMA  = 8;
 DMG_MP_BOMB    = 16;
 DMG_MP_SPECIAL = 32;
+DMG_MP_PHAZON  = 64;
 
 -- ----------------------------------------------
 -- UTILITIES API

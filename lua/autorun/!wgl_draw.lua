@@ -129,75 +129,63 @@ end
 function WGL.FitText(text, font, maxWidth, maxHeight, lineHeight, top, right, bottom, left)
 
 	-- Make sure entry is valid before parsing.
-	if (!isstring(text)) then return nil; end
-
-	-- Make sure text height fits inside area or that whole text does not already fit whole width.
+	if (!isstring(text) || text == "") then return nil; end
 	surface.SetFont(font);
-	local areaWidth = maxWidth - (left || 0) - (right || 0);
-	local areaHeight = maxHeight - (top || 0) - (bottom || 0);
-	local textWidth, textHeight = surface.GetTextSize(text);
+
+	-- Make sure text height fits inside area.
+	local areaWidth     = maxWidth  - (left || 0)  - (right  || 0);
+	local areaHeight    = maxHeight - (top  || 0)  - (bottom || 0);
+	local _, textHeight = surface.GetTextSize(text:gsub("[\r\n]", ""));
 	if (textHeight > areaHeight) then return { { "" } }; end
-	if (textWidth <= areaWidth) then return { { text } }; end
 
 	-- Setup line and paragraph processing.
 	local line            = nil;
 	local lineIndex       = 1;
 	local paragraphs      = {};
 	local paragraphIndex  = 1;
-	local paragraphHeight = lineHeight || textHeight;
+	local fontHeight      = lineHeight || textHeight;
+	local paragraphHeight = fontHeight;
+
+	-- Helper function to start new lines or paragraphs.
+	local function advanceParagraph(nextLine)
+
+		paragraphHeight = paragraphHeight + fontHeight;
+		if (paragraphHeight > areaHeight - (bottom || 0)) then
+			paragraphHeight = fontHeight;
+			paragraphIndex = paragraphIndex + 1;
+			lineIndex = 0;
+		end
+
+		line = nextLine;
+		lineIndex = lineIndex + 1;
+
+		if (nextLine) then return end
+		paragraphs[paragraphIndex] = paragraphs[paragraphIndex] || {};
+		paragraphs[paragraphIndex][lineIndex] = "";
+	end
 
 	-- Begin text processing.
+	text = string.Replace(string.Trim(text), "\n", " [NL] ");
 	for word in string.gmatch(text, "[%S]+") do
 
-		-- Word does not fit in given area, truncate.
-		local overflow = false;
-		local wordWidth, _ = surface.GetTextSize(word .. " ");
-		if (wordWidth > areaWidth) then
-			word = WGL.TruncatedText(word, font, areaWidth);
-		end
-
-		-- First word being processed, add it now.
-		if (line == nil) then
-			line = word;
+		if (word == "[NL]") then
+			advanceParagraph(nil)
 		else
-
-			-- New word overflows the current line, raise flag.
-			local newWord = line .. " " .. word;
-			local newWidth, _ = surface.GetTextSize(newWord);
-			if (newWidth > areaWidth) then
-				overflow = true;
-				newWord = word;
+			if (surface.GetTextSize(word .. " ") > areaWidth) then
+				word = WGL.TruncatedText(word, font, areaWidth);
 			end
 
-			-- Update line entry with new word.
-			if (overflow) then
-
-				-- Paragraph is taller than max height, prepare next paragraph.
-				fontHeight = lineHeight || textHeight;
-				paragraphHeight = paragraphHeight + fontHeight;
-				if (paragraphHeight > areaHeight - (bottom || 0)) then
-					paragraphHeight = fontHeight;
-					paragraphIndex = paragraphIndex + 1;
-					lineIndex = 0;
-				end
-
-				lineIndex = lineIndex + 1;
+			if (line == nil) then
+				line = word;
+			else
+				local newWord = line .. " " .. word;
+				if (surface.GetTextSize(newWord) > areaWidth) then advanceParagraph(word)
+				else line = newWord; end
 			end
 
-			line = newWord;
+			paragraphs[paragraphIndex] = paragraphs[paragraphIndex] || {};
+			paragraphs[paragraphIndex][lineIndex] = line;
 		end
-
-		-- Initialize paragraph container.
-		if (paragraphs[paragraphIndex] == nil) then
-			paragraphs[paragraphIndex] = {};
-		end
-
-		-- Initialize paragraph line container.
-		if (paragraphs[paragraphIndex][lineIndex] == nil) then
-			paragraphs[paragraphIndex][lineIndex] = "";
-		end
-
-		paragraphs[paragraphIndex][lineIndex] = line;
 	end
 
 	return paragraphs;

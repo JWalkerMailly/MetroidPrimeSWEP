@@ -157,6 +157,7 @@ Weapons use a combination of custom damage types:
 | DMG_MP_PLASMA | 8 | Plasma Beam, Flamethrower |
 | DMG_MP_BOMB | 16 | Bombs, Power Bombs |
 | DMG_MP_SPECIAL | 32 | Missile, Super Missile, Wavebuster, Ice Spreader, Flamethrower, Power Bombs |
+| DMG_MP_PHAZON | 64 | Unused |
 
 To check for a specific damage type, use:
 https://wiki.facepunch.com/gmod/CTakeDamageInfo:GetDamageCustom
