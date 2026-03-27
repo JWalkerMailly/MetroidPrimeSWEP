@@ -192,7 +192,7 @@ end
 -- Prepare log book cache for compatibility.
 game.MetroidPrimeLogBook = {};
 game.MetroidPrimeLogBook.Cache = {
-	["npc_rollermine"] = { Description = "They see me rollin'." },
+	["npc_rollermine"] = { Description = "They see me rollin'.", Important = true },
 	["sent_ball"] = { Description = "An edible bouncy ball." }
 };
 

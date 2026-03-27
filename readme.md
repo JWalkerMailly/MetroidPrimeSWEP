@@ -197,6 +197,7 @@ ENT.LogBook = {
 | Var | Description |
 | ------ | ------ |
 | ScanDuration | Time required to scan entity. (Default of 1.33) |
+| Important | Will mark the entity with a red icon. |
 
 **Method 2**\
 In your autorun script, add the following stub and change the values to your needs:
