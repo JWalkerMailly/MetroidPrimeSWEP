@@ -122,6 +122,10 @@ POWERSUIT.Visors[3] = {
 		end
 	end,
 
+	LockOnFilter        = function(entity)
+		return !entity:IsThermalCold();
+	end,
+
 	-- Helmet ambient lighting.
 	AmbientLight = {
 		Color           = Color(50, 50, 50, 1),
@@ -202,6 +206,10 @@ POWERSUIT.Visors[4] = {
 		-- Test entity for visibility/invisibility.
 		if (entity:IsXRayHot())  then return "huds/xray/xray_hot"; end
 		if (entity:IsXRayCold()) then return "huds/xray/xray_cold"; end
+	end,
+
+	LockOnFilter        = function(entity)
+		return !entity:IsXRayCold();
 	end,
 
 	-- Helmet ambient lighting.

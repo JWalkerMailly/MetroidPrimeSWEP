@@ -30,8 +30,9 @@ function POWERSUIT:HandleTargetInvalidation(movement)
 	if (!targetValid) then return; end
 
 	-- If grapple anchor is not visible, unlock now.
+	local visorData = self:GetVisor()
 	local visor     = self.Helmet.Constants.Visor;
-	local isVisible = self:IsBoundingBoxVisible(target, visor.LockOnDistance);
+	local isVisible = self:IsBoundingBoxVisible(target, visor.LockOnDistance, visorData.LockOnFilter);
 	local isAnchor  = target:IsGrappleAnchor();
 	if (!isVisible && isAnchor) then return self.Helmet:Reset(); end
 	if (isVisible) then self.LastLock = CurTime(); end
@@ -149,7 +150,7 @@ function POWERSUIT:HandleGrapple(ply, movement)
 	if (SERVER) then
 		local collision = WGL.TraceCollision(ply, !self.PowerSuit:GetSwingStart());
 		local collided  = (!onGround && self.PowerSuit:IsGrappling() && collision.Hit) || collision.StartSolid;
-		if (collided) then return self:ResetGrapple(isAnchor && collided); end
+		if (collided) then return self:ResetGrapple(true); end
 	end
 
 	-- Setup grapple variables.

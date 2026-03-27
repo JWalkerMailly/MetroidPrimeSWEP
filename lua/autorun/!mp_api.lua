@@ -91,35 +91,6 @@ function _entity:IsGrappleAnchor()
 	return game.MetroidPrimeAnchors.Cache[self:GetClass()];
 end
 
--- lua_run print(Entity(1):SavePowerSuitState());
-if (SERVER) then concommand.Add("mp_cheats_savestate", function(ply, cmd, args) ply:SavePowerSuitState(); end, nil, nil, FCVAR_CHEAT); end
-function _player:SavePowerSuitState()
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	return powersuit:SaveState(true);
-end
-
--- lua_run print(Entity(1):LoadPowerSuitState("metroidprime/endgame.json"));
-function _player:LoadPowerSuitState(json)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	return powersuit:LoadState(util.JSONToTable(file.Read(json, "DATA")));
-end
-
-if (SERVER) then concommand.Add("mp_cheats_deletestate", function(ply, cmd, args) ply:DeletePowerSuitState(true); end, nil, nil, FCVAR_CHEAT); end
-function _player:DeletePowerSuitState(reload)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	return powersuit:DeleteState(reload);
-end
-
-function _entity:SetIgnitable(ignitable)
-	self:SetNWBool("MP.Ignitable", ignitable);
-end
-
 function _entity:IsIgnitable()
 	return self:GetNWBool("MP.Ignitable", true);
 end
@@ -136,46 +107,12 @@ function _player:GetPowerSuitAmmo(type)
 	return powersuit.ArmCannon:GetAmmo(type);
 end
 
--- lua_run print(Entity(1):AddPowerSuitAmmo("Missile", 50));
-function _player:AddPowerSuitAmmo(type, amount)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	return powersuit.ArmCannon:AddAmmo(type, amount);
-end
-
--- lua_run print(Entity(1):SetPowerSuitAmmo("Missile", 50));
-if (SERVER) then concommand.Add("mp_cheats_set_missileamount", function(ply, cmd, args) ply:SetPowerSuitAmmo("Missile", tonumber(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:SetPowerSuitAmmo(type, amount)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	return powersuit.ArmCannon:SetAmmo(type, amount);
-end
-
 -- lua_run print(Entity(1):GetPowerSuitMaxAmmo("Missile"));
 function _player:GetPowerSuitMaxAmmo(type)
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return nil; end
 	return powersuit.ArmCannon:GetMaxAmmo(type);
-end
-
--- lua_run print(Entity(1):AddPowerSuitMaxAmmo("Missile", 50));
-function _player:AddPowerSuitMaxAmmo(type, amount)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	return powersuit.ArmCannon:AddMaxAmmo(type, amount);
-end
-
--- lua_run print(Entity(1):SetPowerSuitMaxAmmo("Missile", 0));
-if (SERVER) then concommand.Add("mp_cheats_set_missilecapacity", function(ply, cmd, args) ply:SetPowerSuitMaxAmmo("Missile", tonumber(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:SetPowerSuitMaxAmmo(type, amount)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	return powersuit.ArmCannon:SetMaxAmmo(type, amount);
 end
 
 -- lua_run print(Entity(1):IsPowerSuitBeamEnabled(4));
@@ -186,19 +123,6 @@ function _player:IsPowerSuitBeamEnabled(index)
 	return powersuit.ArmCannon:IsBeamEnabled(index);
 end
 
--- lua_run print(Entity(1):EnablePowerSuitBeam(4, false));
-if (SERVER) then concommand.Add("mp_cheats_enable_powerbeam",  function(ply, cmd, args) ply:EnablePowerSuitBeam(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_wavebeam",   function(ply, cmd, args) ply:EnablePowerSuitBeam(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_icebeam",    function(ply, cmd, args) ply:EnablePowerSuitBeam(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_plasmabeam", function(ply, cmd, args) ply:EnablePowerSuitBeam(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnablePowerSuitBeam(index, enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.ArmCannon:EnableBeam(index, enable);
-	return true;
-end
-
 -- lua_run print(Entity(1):IsPowerSuitChargeBeamEnabled());
 function _player:IsPowerSuitChargeBeamEnabled()
 
@@ -207,35 +131,12 @@ function _player:IsPowerSuitChargeBeamEnabled()
 	return powersuit.ArmCannon:IsChargeBeamEnabled();
 end
 
--- lua_run print(Entity(1):EnablePowerSuitChargeBeam(false));
-if (SERVER) then concommand.Add("mp_cheats_enable_chargebeam", function(ply, cmd, args) ply:EnablePowerSuitChargeBeam(tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnablePowerSuitChargeBeam(enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.ArmCannon:EnableChargeBeam(enable);
-	return true;
-end
-
 -- lua_run print(Entity(1):IsPowerSuitMissileComboEnabled(1));
 function _player:IsPowerSuitMissileComboEnabled(index)
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return false; end
 	return powersuit.ArmCannon:IsMissileComboEnabled(index);
-end
-
--- lua_run print(Entity(1):EnablePowerSuitMissileCombo(1, false));
-if (SERVER) then concommand.Add("mp_cheats_enable_supermissile", function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_wavebuster",   function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_icespreader",  function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_flamethrower", function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnablePowerSuitMissileCombo(index, enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.ArmCannon:EnableMissileCombo(index, enable);
-	return true;
 end
 
 -- ----------------------------------------------
@@ -257,16 +158,6 @@ function _player:IsPowerSuitSpaceJumpEnabled()
 	return powersuit.PowerSuit:IsSpaceJumpEnabled();
 end
 
--- lua_run print(Entity(1):EnablePowerSuitSpaceJump(true));
-if (SERVER) then concommand.Add("mp_cheats_enable_spacejump", function(ply, cmd, args) ply:EnablePowerSuitSpaceJump(tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnablePowerSuitSpaceJump(enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.PowerSuit:EnableSpaceJump(enable);
-	return true;
-end
-
 -- lua_run print(Entity(1):IsPowerSuitGrappleEnabled());
 function _player:IsPowerSuitGrappleEnabled()
 
@@ -275,35 +166,12 @@ function _player:IsPowerSuitGrappleEnabled()
 	return powersuit.PowerSuit:IsGrappleEnabled();
 end
 
--- lua_run print(Entity(1):EnablePowerSuitGrapple(1));
-if (SERVER) then concommand.Add("mp_cheats_enable_grapplebeam", function(ply, cmd, args) ply:EnablePowerSuitGrapple(tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnablePowerSuitGrapple(enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.PowerSuit:EnableGrapple(enable);
-	return true;
-end
-
 -- lua_run print(Entity(1):IsPowerSuitSuitEnabled(1));
 function _player:IsPowerSuitSuitEnabled(suit)
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return false; end
 	return powersuit.PowerSuit:IsSuitEnabled(suit);
-end
-
--- lua_run print(Entity(1):EnablePowerSuitSuit(2, true));
-if (SERVER) then concommand.Add("mp_cheats_enable_powersuit",   function(ply, cmd, args) ply:EnablePowerSuitSuit(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_variasuit",   function(ply, cmd, args) ply:EnablePowerSuitSuit(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_gravitysuit", function(ply, cmd, args) ply:EnablePowerSuitSuit(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_phazonsuit",  function(ply, cmd, args) ply:EnablePowerSuitSuit(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnablePowerSuitSuit(suit, enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.PowerSuit:EnableSuit(suit, enable);
-	return true;
 end
 
 -- ----------------------------------------------
@@ -386,10 +254,6 @@ function _entity:GetLockOnAttachment()
 	return self:GetNWInt("MP.LockOnAttachment", 0);
 end
 
-function _entity:SetLockOnAttachment(name)
-	self:SetNWInt("MP.LockOnAttachment", self:LookupAttachment(name));
-end
-
 function _entity:GetLogBookData()
 
 	local logbook = self.LogBook;
@@ -407,27 +271,6 @@ function _player:GetPowerSuitEnergyTanks()
 	return powersuit.Helmet:GetEnergy();
 end
 
--- lua_run print(Entity(1):AddPowerSuitEnergyTanks(1, true));
-function _player:AddPowerSuitEnergyTanks(amount, norefill)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	local energy = powersuit.Helmet:AddEnergy(amount);
-	if (!norefill) then self:SetHealth(energy * 100 + 99); end
-	return energy;
-end
-
--- lua_run print(Entity(1):SetPowerSuitEnergyTanks(1, true));
-if (SERVER) then concommand.Add("mp_cheats_set_energytankamount", function(ply, cmd, args) ply:SetPowerSuitEnergyTanks(tonumber(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:SetPowerSuitEnergyTanks(amount, norefill)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	local energy = powersuit.Helmet:SetEnergy(amount);
-	if (!norefill) then self:SetHealth(energy * 100 + 99); end
-	return energy;
-end
-
 -- lua_run print(Entity(1):GetPowerSuitMaxEnergyTanks());
 function _player:GetPowerSuitMaxEnergyTanks()
 
@@ -436,66 +279,12 @@ function _player:GetPowerSuitMaxEnergyTanks()
 	return powersuit.Helmet:GetMaxEnergy();
 end
 
--- lua_run print(Entity(1):AddPowerSuitMaxEnergyTanks(1, true));
-function _player:AddPowerSuitMaxEnergyTanks(amount, refill)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	local energy, maxEnergy = powersuit.Helmet:AddMaxEnergy(amount, refill);
-	local maxHealth = maxEnergy * 100 + 99;
-	self:SetMaxHealth(maxHealth);
-	if (refill) then self:SetHealth(maxHealth); end
-
-	return energy, maxEnergy;
-end
-
--- lua_run print(Entity(1):SetPowerSuitMaxEnergyTanks(1, true));
-if (SERVER) then concommand.Add("mp_cheats_set_energytankcapacity", function(ply, cmd, args) ply:SetPowerSuitMaxEnergyTanks(tonumber(args[1]), tobool(args[2])); end, nil, nil, FCVAR_CHEAT); end
-function _player:SetPowerSuitMaxEnergyTanks(amount, refill)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	local energy, maxEnergy = powersuit.Helmet:SetMaxEnergy(amount, refill);
-	local maxHealth = maxEnergy * 100 + 99;
-	self:SetMaxHealth(maxHealth);
-	if (refill) then self:SetHealth(maxHealth); end
-
-	return energy, maxEnergy;
-end
-
 -- lua_run print(Entity(1):IsPowerSuitVisorEnabled(2));
 function _player:IsPowerSuitVisorEnabled(index)
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return false; end
 	return powersuit.Helmet:IsVisorEnabled(index);
-end
-
--- lua_run print(Entity(1):EnablePowerSuitVisor(2, false));
-if (SERVER) then concommand.Add("mp_cheats_enable_combatvisor",  function(ply, cmd, args) ply:EnablePowerSuitVisor(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_scanvisor",    function(ply, cmd, args) ply:EnablePowerSuitVisor(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_thermalvisor", function(ply, cmd, args) ply:EnablePowerSuitVisor(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-if (SERVER) then concommand.Add("mp_cheats_enable_xrayvisor",    function(ply, cmd, args) ply:EnablePowerSuitVisor(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnablePowerSuitVisor(index, enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.Helmet:EnableVisor(index, enable);
-	return true;
-end
-
-function _entity:SetXRayHot(hot)
-
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.XRayVisorHot", hot);
-	return hot;
-end
-
-function _entity:SetXRayCold(cold)
-
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.XRayVisorCold", cold);
-	return cold;
 end
 
 function _entity:IsXRayHot()
@@ -508,20 +297,6 @@ function _entity:IsXRayCold()
 
 	if (!IsValid(self)) then return false; end
 	return self:GetNWBool("MP.XRayVisorCold", false);
-end
-
-function _entity:SetThermalHot(hot)
-
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.ThermalVisorHot", hot);
-	return hot;
-end
-
-function _entity:SetThermalCold(cold)
-
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.ThermalVisorCold", cold);
-	return cold;
 end
 
 function _entity:IsThermalHot()
@@ -590,32 +365,12 @@ function _player:IsMorphBallEnabled()
 	return powersuit.MorphBall:IsMorphEnabled();
 end
 
--- lua_run print(Entity(1):EnableMorphBall(false));
-if (SERVER) then concommand.Add("mp_cheats_enable_morphball", function(ply, cmd, args) ply:EnableMorphBall(tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnableMorphBall(enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.MorphBall:EnableMorph(enable);
-	return true;
-end
-
 -- lua_run print(Entity(1):IsMorphBallBombsEnabled());
 function _player:IsMorphBallBombsEnabled()
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return false; end
 	return powersuit.MorphBall:IsBombsEnabled();
-end
-
--- lua_run print(Entity(1):EnableMorphBallBombs(false));
-if (SERVER) then concommand.Add("mp_cheats_enable_morphballbombs", function(ply, cmd, args) ply:EnableMorphBallBombs(tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnableMorphBallBombs(enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.MorphBall:EnableBombs(enable);
-	return true;
 end
 
 -- lua_run print(Entity(1):IsMorphBallBoostEnabled());
@@ -626,16 +381,6 @@ function _player:IsMorphBallBoostEnabled()
 	return powersuit.MorphBall:IsBoostEnabled();
 end
 
--- lua_run print(Entity(1):EnableMorphBallBoost(false));
-if (SERVER) then concommand.Add("mp_cheats_enable_morphballboost", function(ply, cmd, args) ply:EnableMorphBallBoost(tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnableMorphBallBoost(enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.MorphBall:EnableBoost(enable);
-	return true;
-end
-
 -- lua_run print(Entity(1):IsMorphBallSpiderEnabled());
 function _player:IsMorphBallSpiderEnabled()
 
@@ -644,22 +389,310 @@ function _player:IsMorphBallSpiderEnabled()
 	return powersuit.MorphBall:IsSpiderEnabled();
 end
 
--- lua_run print(Entity(1):EnableMorphBallSpider(false));
-if (SERVER) then concommand.Add("mp_cheats_enable_morphballspider", function(ply, cmd, args) ply:EnableMorphBallSpider(tobool(args[1])); end, nil, nil, FCVAR_CHEAT); end
-function _player:EnableMorphBallSpider(enable)
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return false; end
-	powersuit.MorphBall:EnableSpider(enable);
-	return true;
-end
-
 -- lua_run print(Entity(1):GetPowerSuitPowerBombAmmo());
 function _player:GetPowerSuitPowerBombAmmo()
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return nil; end
 	return powersuit.MorphBall:GetPowerBombAmmo();
+end
+
+-- lua_run print(Entity(1):GetPowerSuitPowerBombMaxAmmo());
+function _player:GetPowerSuitPowerBombMaxAmmo()
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	return powersuit.MorphBall:GetPowerBombMaxAmmo();
+end
+
+if (CLIENT) then
+	net.Receive("MP.AddEntityToMaterialSwapCache", function()
+		local ent = net.ReadEntity()
+		if (!IsValid(ent)) then return; end
+		game.MetroidPrimeMaterialSwaps[tostring(ent:EntIndex())] = ent;
+	end);
+end
+
+-- ----------------------------------------------
+-- SERVER-SIDE API ENDPOINTS
+if (!SERVER) then return; end
+-- ----------------------------------------------
+
+util.AddNetworkString("MP.AddEntityToMaterialSwapCache");
+
+-- lua_run print(Entity(1):SavePowerSuitState());
+concommand.Add("mp_cheats_savestate", function(ply, cmd, args) ply:SavePowerSuitState(); end, nil, nil, FCVAR_CHEAT);
+function _player:SavePowerSuitState()
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	return powersuit:SaveState(true);
+end
+
+-- lua_run print(Entity(1):LoadPowerSuitState("metroidprime/endgame.json"));
+function _player:LoadPowerSuitState(json)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	return powersuit:LoadState(util.JSONToTable(file.Read(json, "DATA")));
+end
+
+concommand.Add("mp_cheats_deletestate", function(ply, cmd, args) ply:DeletePowerSuitState(true); end, nil, nil, FCVAR_CHEAT);
+function _player:DeletePowerSuitState(reload)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	return powersuit:DeleteState(reload);
+end
+
+function _entity:SetIgnitable(ignitable)
+	self:SetNWBool("MP.Ignitable", ignitable);
+end
+
+-- lua_run print(Entity(1):AddPowerSuitAmmo("Missile", 50));
+function _player:AddPowerSuitAmmo(type, amount)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	return powersuit.ArmCannon:AddAmmo(type, amount);
+end
+
+-- lua_run print(Entity(1):SetPowerSuitAmmo("Missile", 50));
+concommand.Add("mp_cheats_set_missileamount", function(ply, cmd, args) ply:SetPowerSuitAmmo("Missile", tonumber(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:SetPowerSuitAmmo(type, amount)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	return powersuit.ArmCannon:SetAmmo(type, amount);
+end
+
+-- lua_run print(Entity(1):AddPowerSuitMaxAmmo("Missile", 50));
+function _player:AddPowerSuitMaxAmmo(type, amount)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	return powersuit.ArmCannon:AddMaxAmmo(type, amount);
+end
+
+-- lua_run print(Entity(1):SetPowerSuitMaxAmmo("Missile", 0));
+concommand.Add("mp_cheats_set_missilecapacity", function(ply, cmd, args) ply:SetPowerSuitMaxAmmo("Missile", tonumber(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:SetPowerSuitMaxAmmo(type, amount)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	return powersuit.ArmCannon:SetMaxAmmo(type, amount);
+end
+
+-- lua_run print(Entity(1):EnablePowerSuitBeam(4, false));
+concommand.Add("mp_cheats_enable_powerbeam",  function(ply, cmd, args) ply:EnablePowerSuitBeam(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_wavebeam",   function(ply, cmd, args) ply:EnablePowerSuitBeam(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_icebeam",    function(ply, cmd, args) ply:EnablePowerSuitBeam(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_plasmabeam", function(ply, cmd, args) ply:EnablePowerSuitBeam(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnablePowerSuitBeam(index, enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.ArmCannon:EnableBeam(index, enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnablePowerSuitChargeBeam(false));
+concommand.Add("mp_cheats_enable_chargebeam", function(ply, cmd, args) ply:EnablePowerSuitChargeBeam(tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnablePowerSuitChargeBeam(enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.ArmCannon:EnableChargeBeam(enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnablePowerSuitMissileCombo(1, false));
+concommand.Add("mp_cheats_enable_supermissile", function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_wavebuster",   function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_icespreader",  function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_flamethrower", function(ply, cmd, args) ply:EnablePowerSuitMissileCombo(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnablePowerSuitMissileCombo(index, enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.ArmCannon:EnableMissileCombo(index, enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnablePowerSuitSpaceJump(true));
+concommand.Add("mp_cheats_enable_spacejump", function(ply, cmd, args) ply:EnablePowerSuitSpaceJump(tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnablePowerSuitSpaceJump(enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.PowerSuit:EnableSpaceJump(enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnablePowerSuitGrapple(1));
+concommand.Add("mp_cheats_enable_grapplebeam", function(ply, cmd, args) ply:EnablePowerSuitGrapple(tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnablePowerSuitGrapple(enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.PowerSuit:EnableGrapple(enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnablePowerSuitSuit(2, true));
+concommand.Add("mp_cheats_enable_powersuit",   function(ply, cmd, args) ply:EnablePowerSuitSuit(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_variasuit",   function(ply, cmd, args) ply:EnablePowerSuitSuit(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_gravitysuit", function(ply, cmd, args) ply:EnablePowerSuitSuit(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_phazonsuit",  function(ply, cmd, args) ply:EnablePowerSuitSuit(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnablePowerSuitSuit(suit, enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.PowerSuit:EnableSuit(suit, enable);
+	return true;
+end
+
+function _entity:SetLockOnAttachment(name)
+	self:SetNWInt("MP.LockOnAttachment", self:LookupAttachment(name));
+end
+
+-- lua_run print(Entity(1):AddPowerSuitEnergyTanks(1, true));
+function _player:AddPowerSuitEnergyTanks(amount, norefill)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	local energy = powersuit.Helmet:AddEnergy(amount);
+	if (!norefill) then self:SetHealth(energy * 100 + 99); end
+	return energy;
+end
+
+-- lua_run print(Entity(1):SetPowerSuitEnergyTanks(1, true));
+concommand.Add("mp_cheats_set_energytankamount", function(ply, cmd, args) ply:SetPowerSuitEnergyTanks(tonumber(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:SetPowerSuitEnergyTanks(amount, norefill)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	local energy = powersuit.Helmet:SetEnergy(amount);
+	if (!norefill) then self:SetHealth(energy * 100 + 99); end
+	return energy;
+end
+
+-- lua_run print(Entity(1):AddPowerSuitMaxEnergyTanks(1, true));
+function _player:AddPowerSuitMaxEnergyTanks(amount, refill)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	local energy, maxEnergy = powersuit.Helmet:AddMaxEnergy(amount, refill);
+	local maxHealth = maxEnergy * 100 + 99;
+	self:SetMaxHealth(maxHealth);
+	if (refill) then self:SetHealth(maxHealth); end
+
+	return energy, maxEnergy;
+end
+
+-- lua_run print(Entity(1):SetPowerSuitMaxEnergyTanks(1, true));
+concommand.Add("mp_cheats_set_energytankcapacity", function(ply, cmd, args) ply:SetPowerSuitMaxEnergyTanks(tonumber(args[1]), tobool(args[2])); end, nil, nil, FCVAR_CHEAT);
+function _player:SetPowerSuitMaxEnergyTanks(amount, refill)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return nil; end
+	local energy, maxEnergy = powersuit.Helmet:SetMaxEnergy(amount, refill);
+	local maxHealth = maxEnergy * 100 + 99;
+	self:SetMaxHealth(maxHealth);
+	if (refill) then self:SetHealth(maxHealth); end
+
+	return energy, maxEnergy;
+end
+
+-- lua_run print(Entity(1):EnablePowerSuitVisor(2, false));
+concommand.Add("mp_cheats_enable_combatvisor",  function(ply, cmd, args) ply:EnablePowerSuitVisor(1, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_scanvisor",    function(ply, cmd, args) ply:EnablePowerSuitVisor(2, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_thermalvisor", function(ply, cmd, args) ply:EnablePowerSuitVisor(3, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+concommand.Add("mp_cheats_enable_xrayvisor",    function(ply, cmd, args) ply:EnablePowerSuitVisor(4, tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnablePowerSuitVisor(index, enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.Helmet:EnableVisor(index, enable);
+	return true;
+end
+
+function _entity:AddToMaterialSwapCache()
+	net.Start("MP.AddEntityToMaterialSwapCache");
+		net.WriteEntity(self);
+	net.Broadcast();
+end
+
+function _entity:SetXRayHot(hot)
+
+	if (!IsValid(self)) then return false; end
+	self:SetNWBool("MP.XRayVisorHot", hot);
+	self:AddToMaterialSwapCache();
+	return hot;
+end
+
+function _entity:SetXRayCold(cold)
+
+	if (!IsValid(self)) then return false; end
+	self:SetNWBool("MP.XRayVisorCold", cold);
+	self:AddToMaterialSwapCache();
+	return cold;
+end
+
+function _entity:SetThermalHot(hot)
+
+	if (!IsValid(self)) then return false; end
+	self:SetNWBool("MP.ThermalVisorHot", hot);
+	self:AddToMaterialSwapCache();
+	return hot;
+end
+
+function _entity:SetThermalCold(cold)
+
+	if (!IsValid(self)) then return false; end
+	self:SetNWBool("MP.ThermalVisorCold", cold);
+	self:AddToMaterialSwapCache();
+	return cold;
+end
+
+-- lua_run print(Entity(1):EnableMorphBallBombs(false));
+concommand.Add("mp_cheats_enable_morphballbombs", function(ply, cmd, args) ply:EnableMorphBallBombs(tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnableMorphBallBombs(enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.MorphBall:EnableBombs(enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnableMorphBall(false));
+concommand.Add("mp_cheats_enable_morphball", function(ply, cmd, args) ply:EnableMorphBall(tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnableMorphBall(enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.MorphBall:EnableMorph(enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnableMorphBallBoost(false));
+concommand.Add("mp_cheats_enable_morphballboost", function(ply, cmd, args) ply:EnableMorphBallBoost(tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnableMorphBallBoost(enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.MorphBall:EnableBoost(enable);
+	return true;
+end
+
+-- lua_run print(Entity(1):EnableMorphBallSpider(false));
+concommand.Add("mp_cheats_enable_morphballspider", function(ply, cmd, args) ply:EnableMorphBallSpider(tobool(args[1])); end, nil, nil, FCVAR_CHEAT);
+function _player:EnableMorphBallSpider(enable)
+
+	local powersuit = self:GetPowerSuit();
+	if (powersuit == nil) then return false; end
+	powersuit.MorphBall:EnableSpider(enable);
+	return true;
 end
 
 -- lua_run print(Entity(1):AddPowerSuitPowerBombAmmo(50));
@@ -671,20 +704,12 @@ function _player:AddPowerSuitPowerBombAmmo(amount)
 end
 
 -- lua_run print(Entity(1):SetPowerSuitPowerBombAmmo(50));
-if (SERVER) then concommand.Add("mp_cheats_set_powerbombamount", function(ply, cmd, args) ply:SetPowerSuitPowerBombAmmo(tonumber(args[1])); end, nil, nil, FCVAR_CHEAT); end
+concommand.Add("mp_cheats_set_powerbombamount", function(ply, cmd, args) ply:SetPowerSuitPowerBombAmmo(tonumber(args[1])); end, nil, nil, FCVAR_CHEAT);
 function _player:SetPowerSuitPowerBombAmmo(amount)
 
 	local powersuit = self:GetPowerSuit();
 	if (powersuit == nil) then return nil; end
 	return powersuit.MorphBall:SetPowerBombAmmo(amount);
-end
-
--- lua_run print(Entity(1):GetPowerSuitPowerBombMaxAmmo());
-function _player:GetPowerSuitPowerBombMaxAmmo()
-
-	local powersuit = self:GetPowerSuit();
-	if (powersuit == nil) then return nil; end
-	return powersuit.MorphBall:GetPowerBombMaxAmmo();
 end
 
 -- lua_run print(Entity(1):AddPowerSuitPowerBombMaxAmmo(1));
@@ -696,7 +721,7 @@ function _player:AddPowerSuitPowerBombMaxAmmo(amount)
 end
 
 -- lua_run print(Entity(1):SetPowerSuitPowerBombMaxAmmo(0));
-if (SERVER) then concommand.Add("mp_cheats_set_powerbombcapacity", function(ply, cmd, args) ply:SetPowerSuitPowerBombMaxAmmo(tonumber(args[1])); end, nil, nil, FCVAR_CHEAT); end
+concommand.Add("mp_cheats_set_powerbombcapacity", function(ply, cmd, args) ply:SetPowerSuitPowerBombMaxAmmo(tonumber(args[1])); end, nil, nil, FCVAR_CHEAT);
 function _player:SetPowerSuitPowerBombMaxAmmo(amount)
 
 	local powersuit = self:GetPowerSuit();

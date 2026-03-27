@@ -1,5 +1,7 @@
 
-function POWERSUIT:IsBoundingBoxVisible(entity, maxDistance)
+function POWERSUIT:IsBoundingBoxVisible(entity, maxDistance, lockOnFilter)
+
+	if (lockOnFilter && !lockOnFilter(entity)) then return false; end
 
 	local owner  = self:GetOwner();
 	local eyePos = owner:EyePos();
@@ -83,7 +85,7 @@ function POWERSUIT:CanBeLockedOn(visor, entity, maxDistance)
 
 		if (!isAnchor && !WGL.IsAlive(entity)) then return false, NULL, false; end
 
-		local isVisible = self:IsBoundingBoxVisible(entity, maxDistance);
+		local isVisible = self:IsBoundingBoxVisible(entity, maxDistance, visor.LockOnFilter);
 		if (!isVisible) then return false, NULL, false; end
 
 		if (isAnchor) then
