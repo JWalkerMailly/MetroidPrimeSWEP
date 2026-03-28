@@ -246,7 +246,10 @@ function game.MetroidPrimeLockOn.Add(class, attachment)
 end
 
 function _entity:GetLockOnPosition()
+
 	local id = self:GetLockOnAttachment();
+	if (id <= 0) then id = self:LookupAttachment("chest"); end
+
 	return id > 0 && self:GetAttachment(id).Pos || self:WorldSpaceCenter();
 end
 
