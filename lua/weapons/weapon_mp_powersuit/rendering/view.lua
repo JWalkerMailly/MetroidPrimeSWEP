@@ -16,6 +16,17 @@ function POWERSUIT:GetViewPunch(fov)
 	return fov + self.LastViewPunch * 0.3;
 end
 
+function POWERSUIT:SetMaterialOverrides(entity, override)
+
+	if (istable(override)) then
+		for k,v in pairs(override) do
+			entity:SetSubMaterial(k, v);
+		end
+	else
+		entity:SetMaterial(override);
+	end
+end
+
 function POWERSUIT:HandleMaterialOverrides(visor)
 
 	for k,v in pairs(game.MetroidPrimeMaterialSwaps) do
@@ -23,14 +34,15 @@ function POWERSUIT:HandleMaterialOverrides(visor)
 		-- Apply material swap to valid entities.
 		local override = visor.MaterialFilter(v);
 		if (override) then
-			v:SetMaterial(override);
+			self:SetMaterialOverrides(v, override);
 			v.__mp_VisorOverride = true;
 			continue;
 		end
 
 		-- Entity visor rules changed, reset material.
 		if (v.__mp_VisorOverride) then
-			v:SetMaterial(v:GetMaterial());
+			v:SetSubMaterial();
+			v:SetMaterial(nil);
 			v.__mp_VisorOverride = false;
 		end
 	end
@@ -52,7 +64,8 @@ function POWERSUIT:CleanupMaterialOverrides()
 		if (!v.__mp_VisorOverride) then continue; end
 
 		-- Fallback to default texture.
-		v:SetMaterial(v:GetMaterial());
+		v:SetSubMaterial();
+		v:SetMaterial(nil);
 		v.__mp_VisorOverride = false;
 	end
 

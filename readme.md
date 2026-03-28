@@ -270,6 +270,34 @@ game.MetroidPrimeLockOn.Add("entity_class_name", "your_attachment_name")
 ```
 </details>
 
+<details>
+<summary><strong>Adding Custom Thermal and XRay Textures</strong></summary>
+
+By default, the visors will use the standard textures over the entire entity. The API offers a way to define your own set of textures for both Thermal and XRay. It also supports sub-material assignment if more granular control is required.
+
+*Variables:*
+| Var | Description |
+| ------ | ------ |
+| ThermalOverride | Used during Thermal Visor shader pass. |
+| XRayHotOverride | Used during XRay Visor shader pass for bright entities. You must call **SetXRayHot(true)**. |
+| XRayColdOverride | Used during XRay Visor shader pass for invisible entities. You must call **SetXRayCold(true)**. |
+
+**Method 1**\
+To use a custom material over an entire entity, use:
+```lua
+ENT.ThermalOverride = "your/texture/path"
+```
+
+**Method 2**\
+To use custom sub-materials, use:
+```lua
+ENT.ThermalOverride = {
+	[0] = "your/subtexture0/path",
+	[1] = "your/subtexture1/path"
+}
+```
+</details>
+
 </br>
 
 ## Architecture Overview
@@ -1021,7 +1049,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 <summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetXRayHot(hot)</code></summary>
 
 ###### Description
-> Marks an entity as *hot* on the X-Ray Visor. Hot entities appear solid white.
+> Marks an entity as *hot* on the X-Ray Visor. Hot entities appear solid white. Please note that an entity cannot be both hot and cold.
 ###### Arguments
 > <code>1. Boolean</code> <code>**hot**</code> True if hot, False if normal.
 ###### Returns
@@ -1033,7 +1061,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 <summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetXRayCold(cold)</code></summary>
 
 ###### Description
-> Marks an entity as *cold* on the X-Ray Visor. Cold entities are invisible.
+> Marks an entity as *cold* on the X-Ray Visor. Cold entities are invisible. Please note that an entity cannot be both hot and cold. A cold entity cannot be locked on.
 ###### Arguments
 > <code>1. Boolean</code> <code>**cold**</code> True if cold, False if normal.
 ###### Returns
@@ -1055,7 +1083,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 <summary><img src="readme/shared.png"/> <code>Boolean</code> <code>_entity:IsXRayCold()</code></summary>
 
 ###### Description
-> Determines if an entity is marked as *cold* on the X-Ray Visor.
+> Determines if an entity is marked as *cold* on the X-Ray Visor. A cold entity cannot be locked on.
 ###### Returns
 > <code>1. Boolean</code> True if *cold*, False otherwise.
 ---
@@ -1077,7 +1105,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 <summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetThermalCold(cold)</code></summary>
 
 ###### Description
-> Marks an entity as *cold* on the Thermal Visor. Cold entities are invisible.
+> Marks an entity as *cold* on the Thermal Visor. Cold entities are invisible. A cold entity cannot be locked on.
 ###### Arguments
 > <code>1. Boolean</code> <code>**cold**</code> True if cold, False if normal.
 ###### Returns
@@ -1099,7 +1127,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 <summary><img src="readme/shared.png"/> <code>Boolean</code> <code>_entity:IsThermalCold()</code></summary>
 
 ###### Description
-> Determines if an entity is marked as *cold* on the Thermal Visor.
+> Determines if an entity is marked as *cold* on the Thermal Visor. A cold entity cannot be locked on.
 ###### Returns
 > <code>1. Boolean</code> True if *cold*, False otherwise.
 ---

@@ -118,7 +118,7 @@ POWERSUIT.Visors[3] = {
 		-- All living entities are hot by default unless specified to be cold.
 		-- Call to API for implementation homogenization.
 		if (entity:HasHeatSignature()) then
-			return "huds/thermal/thermal_hot";
+			return entity.ThermalOverride && entity.ThermalOverride || "huds/thermal/thermal_hot";
 		end
 	end,
 
@@ -149,11 +149,11 @@ POWERSUIT.Visors[3] = {
 		-- Color modify now before any other rendering operations. This way
 		-- the texturizer will be compounded on top.
 		DrawColorModify({
-			["$pp_colour_addr"]       = 0   * 0.02,
-			["$pp_colour_addg"]       = 0   * 0.02,
-			["$pp_colour_addb"]       = 0   * 0.02,
+			["$pp_colour_addr"]       = 0,
+			["$pp_colour_addg"]       = 0,
+			["$pp_colour_addb"]       = 0,
 			["$pp_colour_mulr"]       = 125 * 0.1,
-			["$pp_colour_mulg"]       = 75 * 0.1,
+			["$pp_colour_mulg"]       = 75  * 0.1,
 			["$pp_colour_mulb"]       = 45  * 0.1,
 			["$pp_colour_brightness"] = 0.04,
 			["$pp_colour_contrast"]   = 0.15,
@@ -203,9 +203,13 @@ POWERSUIT.Visors[4] = {
 	-- Entity material swapping while using visor.
 	MaterialFilter      = function(entity)
 
-		-- Test entity for visibility/invisibility.
-		if (entity:IsXRayHot())  then return "huds/xray/xray_hot"; end
-		if (entity:IsXRayCold()) then return "huds/xray/xray_cold"; end
+		if (entity:IsXRayHot())  then
+			return entity.XRayHotOverride && entity.XRayHotOverride || "huds/xray/xray_hot";
+		end
+
+		if (entity:IsXRayCold()) then
+			return entity.XRayColdOverride && entity.XRayColdOverride || "huds/xray/xray_cold";
+		end
 	end,
 
 	LockOnFilter        = function(entity)
