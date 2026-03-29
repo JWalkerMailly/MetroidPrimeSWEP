@@ -221,6 +221,9 @@ function _entity:CanBeScanned()
 	-- Make sure we can't scan ourselves.
 	if (CLIENT && self == LocalPlayer()) then return false; end
 
+	-- Forced compatibility.
+	if (self.ForceCanBeScanned || self.ForceCanBeLockedOn) then return true; end
+
 	-- Entity has to be solid.
 	local isSolid = self:IsSolid();
 	if (!isSolid) then return false end

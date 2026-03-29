@@ -224,6 +224,12 @@ Here is what your VMT should look like:
 	"$vertexcolor" "1"
 }
 ```
+
+**Note**\
+By default, the weapon will do its best to identify entities that can be scanned. If your entity is failing to be recognized, you might be able to force it by adding the following:
+```lua
+ENT.ForceCanBeScanned = true
+```
 </details>
 
 <details>
@@ -272,7 +278,7 @@ game.MetroidPrimeLockOn.Add("entity_class_name", "your_attachment_name")
 **Note**\
 By default, the weapon will do its best to identify entities that can be locked-on. If your entity is failing to be recognized, you might be able to force it by adding the following:
 ```lua
-ENT.CanBeLockedOn = true
+ENT.ForceCanBeLockedOn = true
 ```
 The inverse is also true, you can prevent lock-on by setting it to *false*. Setting it to *nil* will return to default behaviour.
 </details>
@@ -285,9 +291,12 @@ By default, the visors will use the standard textures over the entire entity. Th
 *Variables:*
 | Var | Description |
 | ------ | ------ |
-| ThermalOverride | Used during Thermal Visor shader pass. |
-| XRayHotOverride | Used during XRay Visor shader pass for bright entities. You must call **SetXRayHot(true)**. |
-| XRayColdOverride | Used during XRay Visor shader pass for invisible entities. You must call **SetXRayCold(true)**. |
+| ThermalOverride | Used during Thermal Visor shader pass. Rarely ever used. |
+| ThermalHotOverride | Used during Thermal Visor shader pass if entity has a heat signature. |
+| ThermalColdOverride | Used during Thermal Visor shader pass if entity is cold. Only used if **SetThermalCold(true)**. |
+| XRayOverride | Used during XRay Visor shader pass. |
+| XRayHotOverride | Used during XRay Visor shader pass for bright entities. Only used if **SetXRayHot(true)**. |
+| XRayColdOverride | Used during XRay Visor shader pass for invisible entities. Only used if **SetXRayCold(true)**. |
 
 **Method 1**\
 To use a custom material over an entire entity, use:

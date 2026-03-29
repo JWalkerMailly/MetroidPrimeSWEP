@@ -31,6 +31,8 @@ function POWERSUIT:HandleMaterialOverrides(visor)
 
 	for k,v in pairs(game.MetroidPrimeMaterialSwaps) do
 
+		if (!IsValid(v)) then continue; end
+
 		-- Apply material swap to valid entities.
 		local override = visor.MaterialFilter(v);
 		if (override) then

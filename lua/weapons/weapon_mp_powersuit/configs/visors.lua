@@ -121,12 +121,18 @@ POWERSUIT.Visors[3] = {
 	-- Entity material swapping while using visor.
 	MaterialFilter      = function(entity)
 
-		if (!IsValid(entity)) then return nil; end
+		if (entity:IsThermalCold() && entity.ThermalColdOverride) then
+			return entity.ThermalColdOverride;
+		end
 
 		-- All living entities are hot by default unless specified to be cold.
 		-- Call to API for implementation homogenization.
 		if (entity:HasHeatSignature()) then
-			return entity.ThermalOverride && entity.ThermalOverride || "huds/thermal/thermal_hot";
+			return entity.ThermalHotOverride && entity.ThermalHotOverride || "huds/thermal/thermal_hot";
+		end
+
+		if (entity.ThermalOverride) then
+			return entity.ThermalOverride;
 		end
 	end,
 
@@ -217,6 +223,10 @@ POWERSUIT.Visors[4] = {
 
 		if (entity:IsXRayHot())  then
 			return entity.XRayHotOverride && entity.XRayHotOverride || "huds/xray/xray_hot";
+		end
+
+		if (entity.XRayOverride) then
+			return entity.XRayOverride;
 		end
 	end,
 

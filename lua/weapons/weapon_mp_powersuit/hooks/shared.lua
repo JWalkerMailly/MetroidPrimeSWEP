@@ -5,26 +5,30 @@
 
 local function AddEntityToLookupCache(ent)
 
-	-- Add logbook compatibility for entities that do not directly reference the API.
-	local class   = ent:GetClass();
-	local logBook = game.MetroidPrimeLogBook;
-	if (logBook.Cache[class]) then
-		ent.LogBook = logBook.Cache[class];
-	end
+	timer.Simple(FrameTime(), function()
 
-	-- Add lock on support to entities defined through the API.
-	local lockOn = game.MetroidPrimeLockOn;
-		if (SERVER && lockOn.Cache[class]) then timer.Simple(FrameTime(), function() if (IsValid(ent)) then ent:SetLockOnAttachment(lockOn.Cache[class]); end end);
-	end
+		if (!IsValid(ent)) then return; end
 
-	-- Add entity to material swap cache if it contains material swap logic.
-	if (ent:HasHeatSignature() || ent:HasXRaySignature()) then
-		game.MetroidPrimeMaterialSwaps[tostring(ent:EntIndex())] = ent;
-	end
+		-- Add logbook compatibility for entities that do not directly reference the API.
+		local class   = ent:GetClass();
+		local logBook = game.MetroidPrimeLogBook;
+		if (logBook.Cache[class]) then
+			ent.LogBook = logBook.Cache[class];
+		end
 
-	-- Add entity to logbook cache if it can be scanned.
-	if (!ent:CanBeScanned()) then return; end
-	game.MetroidPrimeLogBook.Entities[tostring(ent:EntIndex())] = ent;
+		-- Add lock on support to entities defined through the API.
+		local lockOn = game.MetroidPrimeLockOn;
+		if (SERVER && lockOn.Cache[class]) then ent:SetLockOnAttachment(lockOn.Cache[class]); end
+
+		-- Add entity to material swap cache if it contains material swap logic.
+		if (ent:HasHeatSignature() || ent:HasXRaySignature()) then
+			game.MetroidPrimeMaterialSwaps[tostring(ent:EntIndex())] = ent;
+		end
+
+		-- Add entity to logbook cache if it can be scanned.
+		if (!ent:CanBeScanned()) then return; end
+		game.MetroidPrimeLogBook.Entities[tostring(ent:EntIndex())] = ent;
+	end);
 end
 
 hook.Add("OnEntityCreated", "POWERSUIT.AddToEntityLookupCache",      AddEntityToLookupCache);
