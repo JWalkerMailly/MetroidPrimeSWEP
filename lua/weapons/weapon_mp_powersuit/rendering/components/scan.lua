@@ -18,6 +18,9 @@ function ScanPoints:Draw(weapon)
 		-- Make sure entity is still valid.
 		if (!IsValid(v) || v:GetOwner() == weapon:GetOwner()) then continue; end
 
+		-- Make sure entity passes filtering.
+		if (!visor.LockOnFilter(v)) then continue; end
+
 		-- Render scan point sprite.
 		local pos      = v:GetLockOnPosition();
 		local dir      = (EyePos() - pos);

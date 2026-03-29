@@ -24,6 +24,10 @@ POWERSUIT.Visors[1] = {
 		["grapple"]     = Sound("visors/grapple.wav")
 	},
 
+	LockOnFilter        = function(entity)
+		return !entity:IsThermalHot() && !entity:IsXRayHot();
+	end,
+
 	-- Special settings.
 	ShouldHideBeamMenu  = false,
 	ShouldHideVisorMenu = false,
@@ -54,6 +58,10 @@ POWERSUIT.Visors[2] = {
 		["aimlock"]     = Sound("visors/aimlock.wav"),
 		["grapple"]     = Sound("visors/aimlock.wav")
 	},
+
+	LockOnFilter        = function(entity)
+		return !entity:IsThermalHot() && !entity:IsXRayHot();
+	end,
 
 	-- Special settings.
 	ShouldHideBeamMenu  = true,
@@ -123,7 +131,7 @@ POWERSUIT.Visors[3] = {
 	end,
 
 	LockOnFilter        = function(entity)
-		return !entity:IsThermalCold();
+		return !entity:IsThermalCold() && !entity:IsXRayHot();
 	end,
 
 	-- Helmet ambient lighting.
@@ -203,17 +211,17 @@ POWERSUIT.Visors[4] = {
 	-- Entity material swapping while using visor.
 	MaterialFilter      = function(entity)
 
-		if (entity:IsXRayHot())  then
-			return entity.XRayHotOverride && entity.XRayHotOverride || "huds/xray/xray_hot";
-		end
-
 		if (entity:IsXRayCold()) then
 			return entity.XRayColdOverride && entity.XRayColdOverride || "huds/xray/xray_cold";
+		end
+
+		if (entity:IsXRayHot())  then
+			return entity.XRayHotOverride && entity.XRayHotOverride || "huds/xray/xray_hot";
 		end
 	end,
 
 	LockOnFilter        = function(entity)
-		return !entity:IsXRayCold();
+		return !entity:IsXRayCold() && !entity:IsThermalHot();
 	end,
 
 	-- Helmet ambient lighting.

@@ -305,6 +305,31 @@ ENT.ThermalOverride = {
 ```
 </details>
 
+<details>
+<summary><strong>Thermal and XRay Visor Integration</strong></summary>
+
+A note about lock-on rules. The API exposes convenience functions for Thermal and XRay Visor integration. These functions are used to decide how an entity should behave, these functions are:
+```lua
+_entity:SetThermalHot(bool)
+_entity:SetThermalCold(bool)
+_entity:SetXRayHot(bool)
+_entity:SetXRayCold(bool)
+```
+
+**Examples**
+- Thermal Hot → Only lockable with Thermal Visor
+- Thermal Cold → Not lockable with Thermal Visor
+- XRay Hot → Only lockable with XRay Visor
+- XRay Cold → Not lockable with XRay Visor
+
+**Combined**
+- Thermal Hot + XRay Hot → No visor can lock-on
+- Thermal Cold + XRay Cold → Only Combat and Scan can lock-on
+
+**Note**\
+An entity cannot both be hot and cold. If so, cold takes precedence.
+</details>
+
 </br>
 
 ## Architecture Overview
