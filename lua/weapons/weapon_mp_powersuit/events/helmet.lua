@@ -83,7 +83,8 @@ function POWERSUIT:CanBeLockedOn(visor, entity, maxDistance)
 	local isAnchor  = entity:IsGrappleAnchor();
 	if (!visor.AllowLockAll) then
 
-		if (!isAnchor && !WGL.IsAlive(entity)) then return false, NULL, false; end
+		if (entity.CanBeLockedOn == false) then return false, NULL, false; end
+		if (!isAnchor && !WGL.IsAlive(entity) && !entity.CanBeLockedOn) then return false, NULL, false; end
 
 		local isVisible = self:IsBoundingBoxVisible(entity, maxDistance, visor.LockOnFilter);
 		if (!isVisible) then return false, NULL, false; end

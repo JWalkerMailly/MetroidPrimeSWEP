@@ -13,6 +13,7 @@ POWERSUIT.WepSelectIcon = Material("weapons/weapon_mp_powersuit");
 POWERSUIT.LogBook       = {
 	Description = "The Power Suit is an advanced Chozo exoskeleton modified for use by Samus Aran."
 };
+POWERSUIT.LogBookDatabase = {}
 
 POWERSUIT.Hooks = {};
 function POWERSUIT:CreateHooks()

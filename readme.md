@@ -268,6 +268,13 @@ In your autorun script, add the following stub and change the values to your nee
 ```lua
 game.MetroidPrimeLockOn.Add("entity_class_name", "your_attachment_name")
 ```
+
+**Note**\
+By default, the weapon will do its best to identify entities that can be locked-on. If your entity is failing to be recognized, you might be able to force it by adding the following:
+```lua
+ENT.CanBeLockedOn = true
+```
+The inverse is also true, you can prevent lock-on by setting it to *false*. Setting it to *nil* will return to default behaviour.
 </details>
 
 <details>

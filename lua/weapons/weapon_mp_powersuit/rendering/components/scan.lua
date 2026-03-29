@@ -2,6 +2,7 @@
 local ScanPoints   = WGLComponent:New(POWERSUIT, "ScanPoints");
 ScanPoints.Icon    = Material("huds/scan/scan");
 ScanPoints.IconRed = Material("huds/scan/scanred");
+ScanPoints.Color   = Color(255, 255, 255, 255);
 
 function ScanPoints:Draw(weapon)
 
@@ -24,7 +25,10 @@ function ScanPoints:Draw(weapon)
 		local distance = dir:Length() / weapon.Helmet.Constants.Visor.LockOnDistance;
 		local size     = math.Clamp(60 * distance, 0, 60);
 		local icon     = (v.LogBook && v.LogBook.Important) && self.IconRed || self.Icon;
+
+		if (weapon.LogBookDatabase[v:GetClass()]) then self.Color.a = 100; end
 		render.SetMaterial(icon);
-		render.DrawSprite(pos + forward * (v:BoundingRadius() + size), size, size, color_white);
+		render.DrawSprite(pos + forward * (v:BoundingRadius() + size), size, size, self.Color);
+		self.Color.a = 255;
 	end
 end

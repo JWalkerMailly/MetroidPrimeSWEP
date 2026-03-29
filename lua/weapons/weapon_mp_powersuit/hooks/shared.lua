@@ -47,6 +47,14 @@ hook.Add("SetupMove", "POWERSUIT.BuildEntityLookupCache", function(ply)
 end);
 
 -- --------------------------
+-- Log Book Database
+-- --------------------------
+
+hook.Add("MP.OnScanCompleted", "MP.OnScanCompleted", function(powersuit, target)
+	powersuit.LogBookDatabase[target:GetClass()] = true;
+end);
+
+-- --------------------------
 -- Movement and Command Hooks
 -- --------------------------
 

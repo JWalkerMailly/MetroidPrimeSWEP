@@ -23,6 +23,8 @@ function ScanVisor:Initialize()
 	self.LogBookText          = nil;
 	self.LogBookEntity        = NULL;
 	self.LogBookDuration      = 1.33;
+	self.LogBookMinDuration   = 0.01;
+	self.LogBookMaxDuration   = 10;
 	self.CurrentParagraph     = 1;
 
 	-- Scan states and flags.
@@ -70,6 +72,14 @@ function ScanVisor:HandleLogBook(weapon, currentTarget)
 	local logBook        = currentTarget.LogBook || {};
 	self.LogBookDuration = logBook.ScanDuration || self.ScanDuration;
 
+	-- Handle pre-scanned entities.
+	if (IsValid(currentTarget) && weapon.LogBookDatabase[currentTarget:GetClass()]) then
+		self.LogBookDuration = self.LogBookMinDuration;
+	end
+
+	-- Safety.
+	self.LogBookDuration = math.Clamp(self.LogBookDuration, self.LogBookMinDuration, self.LogBookMaxDuration);
+
 	-- Do nothing if we are still scanning the entity.
 	if (self.ScanComplete || self.ScanTime < self.LogBookDuration) then return; end
 
@@ -115,6 +125,7 @@ function ScanVisor:StartScan(weapon)
 
 	-- Scan completion states.
 	if (self.ScanComplete) then
+		self.LastScanLerp = 1;
 		self.ScanCompleteTime = CurTime() + 0.23;
 	else
 		self.ScanTime = math.Clamp(CurTime() - self.ScanStart, 0, self.LogBookDuration);
@@ -361,7 +372,7 @@ function ScanVisor:DrawReticle(weapon, nextTarget, nextTargetValid, w, h, transi
 
 	-- Draw scan progression bar.
 	local scanWidth = WGL.Y(188);
-	local scanProgress = self.ScanTime / self.LogBookDuration;
+	local scanProgress = WGL.Clamp(self.ScanTime / self.LogBookDuration);
 	WGL.Rect(scrW2 - scanWidth / 2, WGL.Y(524), scanWidth * scanProgress, WGL.Y(8), 136, 214, 255, self.LastScanLerp * 255);
 
 	-- Render info pane.
