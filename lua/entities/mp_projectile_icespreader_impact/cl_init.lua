@@ -12,9 +12,11 @@ function ENT:ChunkExists(pos)
 	return self.ChunkTests[pos[1]][pos[2]][pos[3]];
 end
 
+local halfVec = Vector(0.5, 0.5, 0.5);
+
 function ENT:GetChunkSurface(pos, size)
 
-	local chunkHull  = Vector(0.5, 0.5, 0.5) * size;
+	local chunkHull  = halfVec * size;
 	local chunkTrace = util.TraceHull({
 		start  = pos,
 		endpos = pos,
@@ -27,15 +29,15 @@ function ENT:GetChunkSurface(pos, size)
 	if (!chunkTrace.Hit && chunkTrace.FractionLeftSolid == 0) then return; end
 
 	-- Attempt to find surface in up local space.
-	local surfaceValid, surfacePos, surfaceNormal = self:ChunkHasSurface(pos, Vector(0, 0, 1), size);
+	local surfaceValid, surfacePos, surfaceNormal = self:ChunkHasSurface(pos, WGL.UpVec, size);
 	if (surfaceValid) then return surfacePos, surfaceNormal; end
 
 	-- Attempt to find surface in forward local space.
-	surfaceValid, surfacePos, surfaceNormal = self:ChunkHasSurface(pos, Vector(1, 0, 0), size);
+	surfaceValid, surfacePos, surfaceNormal = self:ChunkHasSurface(pos, WGL.FrontVec, size);
 	if (surfaceValid) then return surfacePos, surfaceNormal; end
 
 	-- Attempt to find surface in rigth local space.
-	surfaceValid, surfacePos, surfaceNormal = self:ChunkHasSurface(pos, Vector(0, 1, 0), size);
+	surfaceValid, surfacePos, surfaceNormal = self:ChunkHasSurface(pos, WGL.SideVec, size);
 	if (surfaceValid) then return surfacePos, surfaceNormal; end
 
 	return nil;
@@ -74,7 +76,9 @@ function ENT:Draw()
 
 	-- Fade out all ice caps found in chunk data.
 	for k,v in pairs(self.ChunkData) do
-		v:SetColor(Color(255, 255, 255, math.Clamp((1 - (CurTime() - self.SpawnTime) / self.LifeTime) * 255, 0, 255)));
+		local color = v:GetColor();
+		color.a = math.Clamp((1 - (CurTime() - self.SpawnTime) / self.LifeTime) * 255, 0, 255);
+		v:SetColor(color);
 	end
 end
 

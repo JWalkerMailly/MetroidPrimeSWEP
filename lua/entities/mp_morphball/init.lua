@@ -4,6 +4,7 @@ include("shared.lua");
 function MORPHBALL:Initialize()
 
 	self.SpawnTime = CurTime();
+	self.GroundTraceVector = Vector(0, 0, -self.Radius * 1.5);
 
 	-- Make owner invisible while using the morphball.
 	local owner = self:GetOwner();

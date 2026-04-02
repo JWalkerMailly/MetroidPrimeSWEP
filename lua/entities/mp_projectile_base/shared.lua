@@ -183,10 +183,7 @@ function PROJECTILE:SetRollRelatives()
 
 	-- Roll relative angle defines the angle constant between parent and child.
 	-- Oscillators' position is always relative to parent.
-	self.RollRelativeAngle = self:GetParent():GetAngles() - self:GetAngles();
-
-	-- Define roll relative angle to parent.
-	local rollAngle = Angle(self.RollRelativeAngle[1], self.RollRelativeAngle[2], self.RollRelativeAngle[3]);
+	local rollAngle = self:GetParent():GetAngles() - self:GetAngles();
 	rollAngle:RotateAroundAxis(Vector(1, 0, 0), self:GetParent().Roll);
 
 	-- Define relative up to parent.

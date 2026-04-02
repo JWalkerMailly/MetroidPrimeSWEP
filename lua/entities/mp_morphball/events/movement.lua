@@ -2,7 +2,7 @@
 MORPHBALL.InvertedControls = 1;
 
 function MORPHBALL:GroundTrace()
-	return util.QuickTrace(self:GetPos(), Vector(0, 0, -self.Radius * 1.5), self);
+	return util.QuickTrace(self:GetPos(), self.GroundTraceVector, self);
 end
 
 function MORPHBALL:ShouldUnfreeze(owner, morphball)
@@ -13,6 +13,8 @@ function MORPHBALL:ShouldUnmorph(owner)
 	return (CurTime() - self.SpawnTime > 1) && owner:KeyDown(IN_DUCK) && hook.Call("CanExitVehicle", nil, self.Vehicle, owner);
 end
 
+MORPHBALL.VelocityAngle2D = Angle(0, 0, 0);
+
 function MORPHBALL:GetSlopeInfluence()
 
 	-- Compute slope influence based on the camera and the morphball. This will tilt
@@ -20,11 +22,15 @@ function MORPHBALL:GetSlopeInfluence()
 	local ground          = self:GroundTrace();
 	local velocity        = self:GetVelocity();
 	local velocityAngle   = velocity:Angle();
-	local velocityAngle2D = Angle(0, velocityAngle[2], velocityAngle[3]);
-	local slopeInfluence  = velocityAngle2D:Right():Dot(WGL.UpVec:Cross(ground.HitNormal));
+
+	self.VelocityAngle2D:SetUnpacked(0, velocityAngle[2], velocityAngle[3]);
+	local slopeInfluence  = self.VelocityAngle2D:Right():Dot(WGL.UpVec:Cross(ground.HitNormal));
 
 	return slopeInfluence, ground.Hit;
 end
+
+MORPHBALL.Direction = Vector(0, 0, 0);
+MORPHBALL.MoveAngle = Angle(0, 0, 0)
 
 function MORPHBALL:GetDirectionalInput(owner)
 
@@ -48,18 +54,18 @@ function MORPHBALL:GetDirectionalInput(owner)
 	end
 
 	-- Compute movement based on our camera's current orientation.
-	local moveAngles  = Angle(0, eyeAngles[2], eyeAngles[3]);
-	local moveForward = moveAngles:Right():Cross(-surfaceNormal):GetNormalized() * self.InvertedControls;
+	self.MoveAngle:SetUnpacked(0, eyeAngles[2], eyeAngles[3]);
+	local moveForward = self.MoveAngle:Right():Cross(-surfaceNormal):GetNormalized() * self.InvertedControls;
 	local moveRight   = moveForward:Cross(surfaceNormal):GetNormalized() * self.InvertedControls;
-	local direction   = Vector(0, 0, 0);
 
 	-- Compute desired movement and let the physics handle the velocity.
-	if (keyForward) then direction = direction + moveForward; end
-	if (keyBack)    then direction = direction - moveForward; end
-	if (keyRight)   then direction = direction + moveRight; end
-	if (keyLeft)    then direction = direction - moveRight; end
+	self.Direction:Zero();
+	if (keyForward) then self.Direction:Add(moveForward); end
+	if (keyBack)    then self.Direction:Sub(moveForward); end
+	if (keyRight)   then self.Direction:Add(moveRight); end
+	if (keyLeft)    then self.Direction:Sub(moveRight); end
 
-	return direction;
+	return self.Direction;
 end
 
 function MORPHBALL:DefaultPhysicsUpdate(phys, onGround)
@@ -70,7 +76,7 @@ function MORPHBALL:DefaultPhysicsUpdate(phys, onGround)
 	self:SetOnGround(onGround);
 	self:SetSurfaceParent(NULL);
 	self:SetSurfaceNormal(WGL.UpVec);
-	self:SetSurfaceVelocity(Vector(0, 0, 0));
+	self:SetSurfaceVelocity(vector_origin);
 
 	-- Animations.
 	if (self.SpiderSoundActive) then
@@ -111,13 +117,21 @@ function MORPHBALL:SpiderBallThink(phys, velocity, desiredVelocity, deceleration
 	-- Apply velocity taking into account the spider surface velocity.
 	local parentVelocity = parentPhys:GetVelocityAtPoint(self:GetPos());
 	self:SetSurfaceVelocity(parentVelocity);
-	phys:SetVelocityInstantaneous(velocity + parentVelocity + desiredVelocity - deceleration);
+
+	phys:SetVelocityInstantaneous(velocity);
+	phys:AddVelocity(parentVelocity);
+	phys:AddVelocity(desiredVelocity);
+	phys:AddVelocity(deceleration);
 	phys:SetMass(0);
 
 	-- Raise event.
 	hook.Run("MP.MorphBallSpiderThink", self, surfaceParent, parentPhys, parentVelocity);
 	return true;
 end
+
+MORPHBALL.VelocityDecel = Vector(0, 0, 0);
+MORPHBALL.DesiredVelocity = Vector(0, 0, 0);
+MORPHBALL.DesiredVelocityDecel = Vector(0, 0, 0);
 
 function MORPHBALL:PhysicsUpdate(phys)
 
@@ -139,7 +153,10 @@ function MORPHBALL:PhysicsUpdate(phys)
 	local bombJumping     = CurTime() < self:GetBombJumpTime();
 	local slope, onGround = self:GetSlopeInfluence();
 	local acceleration    = (1 - WGL.Clamp(slope)) * self.Acceleration * FrameTime();
-	local velocity        = self:GetVelocity() - self:GetSurfaceVelocity();
+
+	local velocity        = self:GetVelocity();
+	velocity:Sub(self:GetSurfaceVelocity());
+
 	local velocityMag     = velocity:Length();
 	local maxSpeed        = self.MaxSpeed;
 
@@ -163,17 +180,35 @@ function MORPHBALL:PhysicsUpdate(phys)
 		self.SoundsCache["roll"]:ChangeVolume(0, 0);
 	end
 
-	-- Compute input and velocity data.
-	local desiredVelocity    = self:GetDirectionalInput(owner) * acceleration;
-	local directionInfluence = desiredVelocity:GetNormalized():Dot(velocity:GetNormalized());
-	local decelRatio         = (1 - directionInfluence) / 2 * acceleration;
-	local deceleration       = decelRatio * (velocity + surfaceNormal) / maxSpeed;
-	local magnitude          = math.Clamp(velocityMag, 0, maxSpeed + self.Deceleration);
-	desiredVelocity          = desiredVelocity - (desiredVelocity * magnitude / maxSpeed) * directionInfluence;
+	self.DesiredVelocity:Set(self:GetDirectionalInput(owner));
+	self.DesiredVelocity:Mul(acceleration);
+
+	local dirInfluence = self.DesiredVelocity:GetNormalized():Dot(velocity:GetNormalized());
+	local decelRatio   = (1 - dirInfluence) / 2 * acceleration;
+	local magnitude    = math.Clamp(velocityMag, 0, maxSpeed + self.Deceleration);
+
+	self.VelocityDecel:Set(velocity);
+	self.VelocityDecel:Add(surfaceNormal);
+	self.VelocityDecel:Mul(decelRatio);
+	self.VelocityDecel:Div(maxSpeed);
+	self.VelocityDecel:Mul(-1);
+	self.DesiredVelocityDecel:Set(self.DesiredVelocity);
+	self.DesiredVelocityDecel:Mul(magnitude);
+	self.DesiredVelocityDecel:Div(maxSpeed);
+	self.DesiredVelocityDecel:Mul(dirInfluence);
+	self.DesiredVelocity:Sub(self.DesiredVelocityDecel);
 
 	-- Apply final velocity and handle spider ball parent velocity.
-	if ((slope < self.MinSlope && !self:GetSpider()) || !onGround || boosting || bombJumping) then deceleration = deceleration * 0; end
-	if (self:SpiderBallThink(phys, velocity, desiredVelocity, deceleration)) then return; end
-	phys:SetVelocity(velocity + desiredVelocity - deceleration);
+	if ((slope < self.MinSlope && !self:GetSpider()) || !onGround || boosting || bombJumping) then
+		self.VelocityDecel:Mul(0);
+	end
+
+	if (self:SpiderBallThink(phys, velocity, self.DesiredVelocity, self.VelocityDecel)) then
+		return;
+	end
+
+	phys:SetVelocity(velocity);
+	phys:AddVelocity(self.DesiredVelocity);
+	phys:AddVelocity(self.VelocityDecel);
 	phys:SetMass(90);
 end

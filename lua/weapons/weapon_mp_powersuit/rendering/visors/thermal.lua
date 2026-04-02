@@ -1,9 +1,13 @@
 
-local ThermalVisor  = WGLComponent:New(POWERSUIT, "ThermalVisor");
-ThermalVisor.Models = {
-	["GUI"]         = Model("models/metroid/hud/thermalvisor/v_ui_context.mdl"),
-	["GUIMenus"]    = Model("models/metroid/hud/v_ui_context.mdl"),
-	["StaticGUI"]   = Model("models/metroid/hud/thermalvisor/v_staticgui.mdl")
+local ThermalVisor             = WGLComponent:New(POWERSUIT, "ThermalVisor");
+ThermalVisor.HealthBarColor    = Color(116, 194, 255);
+ThermalVisor.HealthNotifColor  = Color(255, 174, 34);
+ThermalVisor.AlertNotifColor   = Color(255, 174, 34);
+ThermalVisor.AlertRatioColor   = Color(45,  70,  95);
+ThermalVisor.MissileNotifColor = Color(255, 174, 34);
+ThermalVisor.MissileCountColor = Color(255, 255, 255);
+ThermalVisor.Models            = {
+	["StaticGUI"]              = Model("models/metroid/hud/thermalvisor/v_staticgui.mdl")
 };
 
 -- Setup UV coordinates for numbers texture lookup.
@@ -36,8 +40,9 @@ function ThermalVisor:Initialize()
 end
 
 function ThermalVisor:DrawHealthNotification(alpha)
-	self.HealthBarColor = Color(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
-	draw.SimpleText("Energy Low", "Metroid Prime Visor UI Small", 512, 132, Color(255, 174, 34, 255 * alpha), TEXT_ALIGN_CENTER);
+	self.HealthBarColor:SetUnpacked(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
+	self.HealthNotifColor.a = 255 * alpha;
+	draw.SimpleText("Energy Low", "Metroid Prime Visor UI", 512, 176, self.HealthNotifColor, TEXT_ALIGN_CENTER);
 end
 
 function ThermalVisor:HealthNotificationCallback(weapon)
@@ -59,7 +64,7 @@ function ThermalVisor:DrawHealth(weapon)
 	local tanksTotal = weapon:ParseTanks(maxHealth);
 	if (tanksTotal > -1) then
 		for i = 0,tanksTotal do
-			WGL.Rect(438 + (i * 14), 107, 10, 8, 45, 70, 95, 255);
+			WGL.Rect(438 + (i * 14), 143, 10, 10, 45, 70, 95, 255);
 		end
 	end
 
@@ -67,7 +72,7 @@ function ThermalVisor:DrawHealth(weapon)
 	local tanks = weapon:ParseTanks(health);
 	if (tanks > -1) then
 		for i = 0,tanks do
-			WGL.Rect(438 + (i * 14), 107, 10, 8, 116, 194, 255, 255);
+			WGL.Rect(438 + (i * 14), 143, 10, 10, 116, 194, 255, 255);
 		end
 	end
 
@@ -96,25 +101,27 @@ function ThermalVisor:DrawHealth(weapon)
 
 	-- Render empty health bar, bar damage and health text.
 	local tens, ones = weapon:AnimatedHealthText(health, 150, state);
-	WGL.Rect(429, 107, 4, 21, 93, 123, 183, 255);
-	WGL.Rect(438, 121, 192, 5, 45, 70, 95, 255);
-	WGL.Rect(438, 121, 192 * weapon:TankRatio(damage), 5, 78, 124, 165, 255);
-	WGL.TextureUV(numbersUIMaterial, 392, 107, 17, 20, u * tens, 0, u + (u * tens), v, false, 93, 123, 183, 255);
-	WGL.TextureUV(numbersUIMaterial, 410, 107, 17, 20, u * ones, 0, u + (u * ones), v, false, 93, 123, 183, 255);
+	WGL.Rect(429, 143, 4, 28, 93, 123, 183, 255);
+	WGL.Rect(438, 161, 192, 6, 45, 70, 95, 255);
+	WGL.Rect(438, 161, 192 * weapon:TankRatio(damage), 6, 78, 124, 165, 255);
+	WGL.TextureUV(numbersUIMaterial, 390, 143, 17, 26, u * tens, 0, u + (u * tens), v, false, 93, 123, 183, 255);
+	WGL.TextureUV(numbersUIMaterial, 408, 143, 17, 26, u * ones, 0, u + (u * ones), v, false, 93, 123, 183, 255);
 
 	-- Render health notification system.
-	self.HealthBarColor = Color(116, 194, 255, 255);
+	self.HealthBarColor:SetUnpacked(116, 194, 255, 255);
 	weapon:HealthNotification(health, maxHealth, self.DrawHealthNotification, self.HealthNotificationCallback, self, weapon);
 
 	-- Health bar.
-	WGL.Rect(438, 121, 192 * weapon:TankRatio(self.HealthBarLerp), 5, WGL.LerpColorEvent(self.HealthBarColor, healthBarWarningColor, health, 0.75, "decrease", state):Unpack());
+	WGL.Rect(438, 161, 192 * weapon:TankRatio(self.HealthBarLerp), 6, WGL.LerpColorEvent(self.HealthBarColor, healthBarWarningColor, health, 0.75, "decrease", state):Unpack());
 end
 
 function ThermalVisor:DrawAlertNotification(dangerZone, alpha, visorOpacity)
 	if (dangerZone) then
-		draw.SimpleText("Damage",  "Metroid Prime Visor UI Small", 157, 262, Color(255, 0, 0, alpha * visorOpacity));
+		self.AlertNotifColor:SetUnpacked(255, 0, 0, alpha * visorOpacity);
+		draw.SimpleText("Damage",  "Metroid Prime Visor UI", 146, 349, self.AlertNotifColor);
 	else
-		draw.SimpleText("Warning", "Metroid Prime Visor UI Small", 157, 262, Color(255, 174, 34, alpha * visorOpacity));
+		self.AlertNotifColor:SetUnpacked(255, 174, 34, alpha * visorOpacity);
+		draw.SimpleText("Warning", "Metroid Prime Visor UI", 141, 349, self.AlertNotifColor);
 	end
 end
 
@@ -128,24 +135,28 @@ function ThermalVisor:DrawAlert(weapon, visorOpacity)
 	local baseAlpha  = 255 * visorOpacity;
 
 	-- Render alert icon.
-	WGL.TextureRot(alertMaterial, 233, 306, 74, 50, 1.1225, 93, 123, 183, baseAlpha);
+	WGL.TextureRot(alertMaterial, 233, 408, 74, 66, 1.3, 93, 123, 183, baseAlpha);
 
 	-- Render alert ratio.
-	if (alertRatio > 0) then draw.SimpleText(math.Round(10 - (alertRatio * 10), 1), "Metroid Prime Visor UI Small", 295 + 86 * alertRatio, 272 - 112 * alertRatio, Color(45, 70, 95, baseAlpha), TEXT_ALIGN_RIGHT); end
+	self.AlertRatioColor.a = baseAlpha;
+	if (alertRatio > 0) then draw.SimpleText(math.Round(10 - (alertRatio * 10), 1), "Metroid Prime Visor UI", 290 + 86 * alertRatio, 365 - 149 * alertRatio, self.AlertRatioColor, TEXT_ALIGN_RIGHT); end
 
 	-- Render alert bar.
-	WGL.TextureRot(arrowMaterial, 319 + 86 * alertRatio, 293 - 112 * alertRatio, 18, 20, -128.5, 93, 123, 183, baseAlpha);
-	WGL.RectRotOrigin(330, 302, 5, 143, 217.5, 31, 43, 57, baseAlpha);
-	WGL.RectRotOrigin(330, 302, 5, 143 * alertRatio, 217.5, 116, 194, 255, baseAlpha);
+	WGL.TextureRot(arrowMaterial, 318 + 86 * alertRatio, 394 - 152 * alertRatio, 18, 18, -120, 93, 123, 183, baseAlpha);
+	WGL.RectRotOrigin(330, 402, 5, 175, 209.9, 31, 43, 57, baseAlpha);
+	WGL.RectRotOrigin(330, 402, 5, 175 * alertRatio, 209.9, 116, 194, 255, baseAlpha);
 	weapon:DangerNotification(alertRatio, 0.9, self.DrawAlertNotification, self.AlertNotificationCallback, self, visorOpacity, weapon);
 end
 
 function ThermalVisor:DrawMissileNotification(remaining, alpha, visorOpacity)
+
+	self.MissileNotifColor.a = alpha * visorOpacity;
+
 	if (remaining > 0) then
-		draw.SimpleText("Missiles", "Metroid Prime Visor UI Small", 822, 254, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_CENTER);
-		draw.SimpleText("Low",      "Metroid Prime Visor UI Small", 822, 272, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_CENTER);
+		draw.SimpleText("Missiles", "Metroid Prime Visor UI", 831, 338, self.MissileNotifColor, TEXT_ALIGN_CENTER);
+		draw.SimpleText("Low",      "Metroid Prime Visor UI", 831, 362, self.MissileNotifColor, TEXT_ALIGN_CENTER);
 	else
-		draw.SimpleText("Depleted", "Metroid Prime Visor UI Small", 785, 262, Color(255, 174, 34, alpha * visorOpacity));
+		draw.SimpleText("Depleted", "Metroid Prime Visor UI", 785, 349, self.MissileNotifColor);
 	end
 end
 
@@ -160,21 +171,27 @@ function ThermalVisor:DrawMissiles(weapon, visorOpacity)
 	local baseAlpha      = 255 * visorOpacity;
 	local missileRatio   = (missiles / math.Clamp(maxMissiles, 1, maxMissiles + 1));
 	local r, g, b, a     = 93, 123, 183, baseAlpha;
-	local fr, fg, fb, fa = WGL.LerpColorEvent(Color(45, 70, 95, baseAlpha), Color(93, 123, 183, baseAlpha), missiles, 2, "change", self.MissileLerpFont):Unpack();
+	local fr, fg, fb, fa = WGL.LerpColorEventRaw(45, 70, 95, baseAlpha, 93, 123, 183, baseAlpha, missiles, 2, "change", self.MissileLerpFont):Unpack();
 	r, g, b, fr, fg, fb  = weapon:MissileComboNotification(weapon, missiles, r, g, b, fr, fg, fb);
+	self.MissileCountColor:SetUnpacked(fr, fg, fb, fa);
 
 	-- Render missile icon.
-	WGL.TextureRot(missileMaterial, 791, 306, 74, 50, -1.1225, r, g, b, a);
+	WGL.TextureRot(missileMaterial, 791, 408, 74, 66, -1.3, r, g, b, a);
 
 	-- Render missile count.
-	draw.SimpleText(missiles, "Metroid Prime Visor UI Small", 732 - 86 * missileRatio, 272 - 112 * missileRatio, Color(fr, fg, fb, fa));
+	draw.SimpleText(missiles, "Metroid Prime Visor UI", 735 - 86 * missileRatio, 365 - 149 * missileRatio, self.MissileCountColor);
 
 	-- Render missile bar.
-	WGL.TextureRot(arrowMaterial, 705 - 86 * missileRatio, 293 - 112 * missileRatio, 18, 20, 128.5, 93, 123, 183, baseAlpha);
-	WGL.RectRotOrigin(698, 299, 5, 143, 142.5, 31, 43, 57, baseAlpha);
-	WGL.RectRotOrigin(698, 299, 5, 143 * missileRatio, 142.5, 116, 194, 255, baseAlpha);
+	WGL.TextureRot(arrowMaterial, 706 - 86 * missileRatio, 396 - 152 * missileRatio, 18, 18, 120, 93, 123, 183, baseAlpha);
+	WGL.RectRotOrigin(699, 400, 5, 175, 150, 31, 43, 57, baseAlpha);
+	WGL.RectRotOrigin(699, 400, 5, 175 * missileRatio, 150, 116, 194, 255, baseAlpha);
 	weapon:MissileNotification(missiles, maxMissiles, self.DrawMissileNotification, self.MissileNotificationCallback, self, visorOpacity, weapon);
 end
+
+local screenPos = Vector(0, 0, 0);
+local screenCenter = Vector(0, 0, 0);
+local screenCenter2 = Vector(0, 0, 0);
+local screenTarget = Vector(0, 0, 0);
 
 function ThermalVisor:DrawReticle(weapon, w, h, visorOpacity)
 
@@ -185,10 +202,9 @@ function ThermalVisor:DrawReticle(weapon, w, h, visorOpacity)
 	local cy        = h / 2;
 	self.ReticleX   = cx;
 	self.ReticleY   = cy;
-
-	-- Setup reticle screen position.
-	local screenPos = self.LastReticleVector;
-	if (locked) then screenPos = Vector(cx, cy, 0); end
+	screenCenter:SetUnpacked(cx, cy, 0);
+	screenPos:Set(self.LastReticleVector);
+	if (locked) then screenPos:Set(screenCenter); end
 
 	-- Reticle alpha, this will modulate the auto lock and charge reticle.
 	local alpha     = 255;
@@ -207,9 +223,10 @@ function ThermalVisor:DrawReticle(weapon, w, h, visorOpacity)
 	if (!validTarget && !locked) then
 
 		-- No target found, reset everything back to the center of the screen.
+		screenCenter2:SetUnpacked(cx + self.LastMouseX * 2, cy + self.LastMouseY * 2, 0);
 		lerp      = Lerp(FrameTime(), self.LastReticleLerp, 0);
 		alpha     = Lerp(FrameTime() * 10, self.LastReticleAlpha, 0);
-		screenPos = LerpVector(FrameTime() * 10, self.LastReticleVector, Vector(cx + self.LastMouseX * 2, cy + self.LastMouseY * 2, 0));
+		screenPos:Set(LerpVector(FrameTime() * 10, self.LastReticleVector, screenCenter2));
 		self.LastReticleTarget = NULL;
 	else
 
@@ -222,10 +239,10 @@ function ThermalVisor:DrawReticle(weapon, w, h, visorOpacity)
 		-- Last reticle movement is compounded every frame onto the screen position
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && validTarget) then
-			local targetPosLocal     = nextTarget:GetLockOnPosition():ToScreen();
-			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
-			alpha                    = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
-			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);
+			local targetPosLocal = nextTarget:GetLockOnPosition():ToScreen();
+			screenTarget:SetUnpacked(targetPosLocal.x, targetPosLocal.y, 0);
+			alpha = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
+			screenPos:Set(LerpVector(self.LastReticleMovement, self.LastReticleVector, screenTarget));
 			self.LastReticleMovement = Lerp(FrameTime(), self.LastReticleMovement, 1);
 		end
 	end
@@ -241,11 +258,11 @@ function ThermalVisor:DrawReticle(weapon, w, h, visorOpacity)
 	end
 
 	-- Render lock on effect.
-	WGL.TextureRot(lockOuter, 512, 300, 500 * lerp, 400 * lerp, 0, 93, 123, 183, lerpAlpha * visorOpacity);
+	WGL.TextureRot(lockOuter, 512, 400, 500 * lerp, 533 * lerp, 0, 93, 123, 183, lerpAlpha * visorOpacity);
 
 	self.LastReticleLerp      = lerp;
 	self.LastReticleAlpha     = alpha;
-	self.LastReticleVector    = screenPos;
+	self.LastReticleVector:Set(screenPos);
 	self.LastReticleLerpAlpha = lerpAlpha;
 end
 
@@ -255,58 +272,41 @@ function ThermalVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiCol
 
 		local transitionFirst = WGL.Clamp(transition + transitionStart);
 		local transitionLast  = WGL.Clamp(transition);
+		local powersuitHUD    = WGL.GetComponent(weapon, "PowerSuitHUD");
 
-		-- Offload hud rendering operations to a separate render target.
 		local w = ScrW();
 		local h = ScrH();
-		self:PushRenderTexture("rt_MPThermalVisor", 1024, 768, { ["$additive"] = 1 }, false);
-			cam.Start2D();
-
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
-
-				surface.SetAlphaMultiplier(transitionLast);
-				self:DrawReticle(weapon, w, h, visorOpacity);
-				self:DrawHealth(weapon);
-				self:DrawAlert(weapon, visorOpacity);
-				self:DrawMissiles(weapon, visorOpacity);
-				surface.SetAlphaMultiplier(1);
-
-			cam.End2D();
+		powersuitHUD:Start2DRenderContext("rt_MPFlatVisor", 1024, 1024, { ["$additive"] = 1 }, false);
+			surface.SetAlphaMultiplier(transitionLast);
+			self:DrawReticle(weapon, w, h, visorOpacity);
+			self:DrawHealth(weapon);
+			self:DrawAlert(weapon, visorOpacity);
+			self:DrawMissiles(weapon, visorOpacity);
+			surface.SetAlphaMultiplier(1);
+		cam.End2D();
 		render.PopRenderTarget();
 
-		-- Offload hud menus rendering operations to a separate render target.
-		self:PushRenderTexture("rt_MPThermalVisorMenus", 1024, 768, { ["$additive"] = 1 }, false);
-			cam.Start2D();
-
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
-
-				surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
-				local beamMenu  = WGL.GetComponent(weapon, "BeamMenu");
-				local visorMenu = WGL.GetComponent(weapon, "VisorMenu");
-				beamMenu:DrawText(beam);
-				visorMenu:DrawText(visor);
-				beamMenu:OverrideBlend(1);
-				visorMenu:OverrideBlend(1);
-				surface.SetAlphaMultiplier(1);
-
-			cam.End2D();
+		powersuitHUD:Start2DRenderContext("rt_MPVisorCurved", 1024, 768, { ["$additive"] = 1 }, false);
+			surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
+			powersuitHUD:DrawMenuTexts(weapon, beam, visor);
+			surface.SetAlphaMultiplier(1);
+		cam.End2D();
 		render.PopRenderTarget();
 
+		powersuitHUD:DrawVisorHook(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity);
 		WGL.Start3D(widescreen);
 		cam.IgnoreZ(true);
 
-			-- Render UI portion of the GUI onto the curved visor.
-			render.MaterialOverride(self:GetRenderTexture("rt_MPThermalVisor"));
-			self:DrawModel("GUI", hudPos, hudAngle);
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPFlatVisor"));
+			powersuitHUD:DrawModel("FlatContext", hudPos, hudAngle);
 			render.MaterialOverride(nil);
 
-			-- Render UI menus portion of the GUI onto the curved visor.
-			render.MaterialOverride(self:GetRenderTexture("rt_MPThermalVisorMenus"));
-			self:DrawModel("GUIMenus", hudPos, hudAngle);
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisorCurved"));
+			powersuitHUD:DrawModel("CurvedContext", hudPos, hudAngle);
+			render.MaterialOverride(nil);
+
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisor"));
+			powersuitHUD:DrawModel("FlatContext", hudPos, hudAngle);
 			render.MaterialOverride(nil);
 
 			-- Render the 3D static UI elements.
@@ -321,7 +321,7 @@ function ThermalVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiCol
 		-- Render screen reticle.
 		local fovCompensation = 1 - fovRatio;
 		surface.SetAlphaMultiplier(transitionLast);
-		WGL.TextureRot(reticleBigMaterial, ScrW() / 2 + self.LastMouseX, ScrH() / 2 + self.LastMouseY, WGL.Y(386 * fovCompensation), WGL.Y(386 * fovCompensation), 0, 93, 123, 183, 100 * visorOpacity);
+		WGL.TextureRot(reticleBigMaterial, w * 0.5 + self.LastMouseX, h * 0.5 + self.LastMouseY, WGL.Y(386 * fovCompensation), WGL.Y(386 * fovCompensation), 0, 93, 123, 183, 100 * visorOpacity);
 		WGL.TextureRot(reticleSmallMaterial, self.ReticleX, self.ReticleY, WGL.Y(228 * fovCompensation), WGL.Y(228 * fovCompensation), 0, 93, 123, 183, 100);
 		self.LastMouseX = Lerp(FrameTime() * 10, self.LastMouseX, LocalPlayer().__mp_MouseX || 0);
 		self.LastMouseY = Lerp(FrameTime() * 10, self.LastMouseY, LocalPlayer().__mp_MouseY || 0);
@@ -330,7 +330,7 @@ function ThermalVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiCol
 		-- Render static effect.
 		local randU  = math.Rand(0, 0.1);
 		local randV  = math.Rand(0, 0.5);
-		if (transition != 0) then WGL.TextureUV(static, 0, 0, ScrW(), ScrH(), 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, false, 225, 255, 255, 255); end
+		if (transition != 0) then WGL.TextureUV(static, 0, 0, w, h, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, false, 225, 255, 255, 255); end
 	end
 
 	hook.Run("MP.PostDrawThermalVisor", weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity);

@@ -5,6 +5,7 @@ MORPHBALL.TrailMaterial = Material("entities/morphball/powertrail");
 MORPHBALL.GlowMaterial  = Material("models/metroid/morphball/glow");
 MORPHBALL.GlowColor     = Color(0, 0, 0, 0);
 MORPHBALL.LastGlowColor = Color(0, 0, 0, 0);
+MORPHBALL.Center        = Vector(0, 0, 0);
 
 local chargingColor  = Color(255, 238, 131, 1);
 local innerGlowColor = Color(255, 255, 255, 1);
@@ -54,7 +55,6 @@ function MORPHBALL:Draw()
 	local frametime    = WGL.GetDeltaTime(self);
 	local pos          = self:GetPos();
 	local radius       = self.Radius;
-	local center       = pos + Vector(0, 0, radius / 2);
 	local velocity     = self:GetClientVelocity();
 	local powerSuit    = self:GetPowerSuit();
 	local morphball    = powerSuit.MorphBall;
@@ -66,9 +66,9 @@ function MORPHBALL:Draw()
 
 	-- Compute morphball glow color based on boost status.
 	if (charging) then
-		self.LastGlowColor = WGL.LerpColor(frametime * 3, self.LastGlowColor, chargingColor);
+		WGL.LerpColor(frametime * 3, self.LastGlowColor, chargingColor, self.LastGlowColor);
 	else
-		self.LastGlowColor = WGL.LerpColor(frametime * 20, self.LastGlowColor, self.GlowColor);
+		WGL.LerpColor(frametime * 20, self.LastGlowColor, self.GlowColor, self.LastGlowColor);
 	end
 
 	-- Simulate the morphball physics client-side and keep a reference to the angles and gyro sway for trail rendering.
@@ -79,8 +79,9 @@ function MORPHBALL:Draw()
 	WGL.Component(self, "Trail",  morphball, pos, angles, sway, velocity, self.TrailMaterial, radius, frametime)
 
 	-- Render dynamic lighting emanating from the morphball.
-	WGL.EmitLight(model, center, self.LastGlowColor, 1000, 200, CurTime() + 0.1, 0, true, false);
-	WGL.EmitLight(self, center, innerGlowColor, 1000, 150, CurTime() + 0.1, 0, false, true);
+	self.Center:SetUnpacked(pos[1], pos[2], pos[3] + radius * 0.5);
+	WGL.EmitLight(model, self.Center, self.LastGlowColor, 1000, 200, CurTime() + 0.1, 0, true, false);
+	WGL.EmitLight(self, self.Center, innerGlowColor, 1000, 150, CurTime() + 0.1, 0, false, true);
 
 	-- Draw inner glow.
 	render.SetMaterial(self.GlowMaterial);

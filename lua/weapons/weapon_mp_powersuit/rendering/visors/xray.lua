@@ -1,10 +1,14 @@
 
-local XRayVisor   = WGLComponent:New(POWERSUIT, "XRayVisor");
-XRayVisor.Models  = {
-	["GUI"]       = Model("models/metroid/hud/xrayvisor/v_ui_context.mdl"),
-	["GUIMenus"]  = Model("models/metroid/hud/v_ui_context.mdl"),
-	["GUINotifs"] = Model("models/metroid/hud/thermalvisor/v_ui_context.mdl"),
-	["StaticGUI"] = Model("models/metroid/hud/xrayvisor/v_staticgui.mdl")
+local XRayVisor             = WGLComponent:New(POWERSUIT, "XRayVisor");
+XRayVisor.HealthBarColor    = Color(116, 194, 255);
+XRayVisor.HealthNotifColor  = Color(255, 174, 34);
+XRayVisor.AlertNotifColor   = Color(255, 174, 34);
+XRayVisor.AlertRatioColor   = Color(45,  70,  95);
+XRayVisor.MissileNotifColor = Color(255, 174, 34);
+XRayVisor.MissileCountColor = Color(255, 255, 255);
+XRayVisor.Models            = {
+	["Context"]             = Model("models/metroid/hud/xrayvisor/v_ui_context.mdl"),
+	["StaticGUI"]           = Model("models/metroid/hud/xrayvisor/v_staticgui.mdl")
 };
 
 -- Setup UV coordinates for numbers texture lookup.
@@ -22,7 +26,6 @@ local healthBarWarningColor = Color(227, 113, 47, 255);
 
 function XRayVisor:Initialize()
 	self.MissileLerpFont     = {};
-	self.HealthBarColor      = Color(116, 194, 255, 255);
 	self.LastReticleVector   = Vector(0, 0, 0);
 	self.LastReticleMovement = 0;
 	self.LastReticleTarget   = NULL;
@@ -108,8 +111,9 @@ function XRayVisor:DrawMissiles(missiles, maxMissiles, visorOpacity)
 end
 
 function XRayVisor:DrawHealthNotification(alpha)
-	self.HealthBarColor = Color(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
-	draw.SimpleText("Energy Low", "Metroid Prime Visor UI Small", 512, 132, Color(255, 174, 34, 255 * alpha), TEXT_ALIGN_CENTER);
+	self.HealthBarColor:SetUnpacked(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
+	self.HealthNotifColor.a = 255 * alpha;
+	draw.SimpleText("Energy Low", "Metroid Prime Visor UI", 512, 176, self.HealthNotifColor, TEXT_ALIGN_CENTER);
 end
 
 function XRayVisor:HealthNotificationCallback(weapon)
@@ -118,9 +122,11 @@ end
 
 function XRayVisor:DrawAlertNotification(dangerZone, alpha, visorOpacity)
 	if (dangerZone) then
-		draw.SimpleText("Damage",  "Metroid Prime Visor UI Small", 300, 280, Color(255, 0, 0, alpha * visorOpacity));
+		self.AlertNotifColor:SetUnpacked(255, 0, 0, alpha * visorOpacity);
+		draw.SimpleText("Damage",  "Metroid Prime Visor UI", 300, 373, self.AlertNotifColor);
 	else
-		draw.SimpleText("Warning", "Metroid Prime Visor UI Small", 300, 280, Color(255, 174, 34, alpha * visorOpacity));
+		self.AlertNotifColor:SetUnpacked(255, 174, 34, alpha * visorOpacity);
+		draw.SimpleText("Warning", "Metroid Prime Visor UI", 300, 373, self.AlertNotifColor);
 	end
 end
 
@@ -129,11 +135,14 @@ function XRayVisor:AlertNotificationCallback(_, weapon)
 end
 
 function XRayVisor:DrawMissileNotification(remaining, alpha, visorOpacity)
+
+	self.MissileNotifColor:SetUnpacked(255, 174, 34, alpha * visorOpacity);
+
 	if (remaining > 0) then
-		draw.SimpleText("Missiles", "Metroid Prime Visor UI Small", 726, 268, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_RIGHT);
-		draw.SimpleText("Low",      "Metroid Prime Visor UI Small", 726, 290, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_RIGHT);
+		draw.SimpleText("Missiles", "Metroid Prime Visor UI", 726, 357, self.MissileNotifColor, TEXT_ALIGN_RIGHT);
+		draw.SimpleText("Low",      "Metroid Prime Visor UI", 726, 386, self.MissileNotifColor, TEXT_ALIGN_RIGHT);
 	else
-		draw.SimpleText("Depleted", "Metroid Prime Visor UI Small", 726, 280, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_RIGHT);
+		draw.SimpleText("Depleted", "Metroid Prime Visor UI", 726, 373, self.MissileNotifColor, TEXT_ALIGN_RIGHT);
 	end
 end
 
@@ -146,22 +155,29 @@ function XRayVisor:DrawNotifications(weapon, health, maxHealth, alertRatio, miss
 	local baseAlpha = 255 * visorOpacity;
 
 	-- Render health notification system.
-	self.HealthBarColor = Color(116, 194, 255, 255);
+	self.HealthBarColor:SetUnpacked(116, 194, 255, 255);
 	weapon:HealthNotification(health, maxHealth, self.DrawHealthNotification, self.HealthNotificationCallback, self, weapon);
 
 	-- Render alert ratio.
-	if (alertRatio > 0) then draw.SimpleText(math.Round(10 - (alertRatio * 10), 1), "Metroid Prime Visor UI Small", 160, 280, Color(45, 70, 95, baseAlpha)); end
-	WGL.TextureRot(alertMaterial, 234, 288, 46, 26, 0, 93, 123, 153, baseAlpha);
+	self.AlertRatioColor.a = baseAlpha;
+	if (alertRatio > 0) then draw.SimpleText(math.Round(10 - (alertRatio * 10), 1), "Metroid Prime Visor UI Small", 158, 375, self.AlertRatioColor); end
+	WGL.TextureRot(alertMaterial, 234, 384, 46, 34, 0, 93, 123, 153, baseAlpha);
 	weapon:DangerNotification(alertRatio, 0.9, self.DrawAlertNotification, self.AlertNotificationCallback, self, visorOpacity, weapon);
 
 	-- Render missile count.
 	local r, g, b, a     = 93, 123, 153, baseAlpha;
-	local fr, fg, fb, fa = WGL.LerpColorEvent(Color(45, 70, 95, baseAlpha), Color(93, 123, 153, baseAlpha), missiles, 2, "change", self.MissileLerpFont):Unpack();
+	local fr, fg, fb, fa = WGL.LerpColorEventRaw(45, 70, 95, baseAlpha, 93, 123, 153, baseAlpha, missiles, 2, "change", self.MissileLerpFont):Unpack();
 	r, g, b, fr, fg, fb  = weapon:MissileComboNotification(weapon, missiles, r, g, b, fr, fg, fb);
-	draw.SimpleText(missiles, "Metroid Prime Visor UI Small", 867, 280, Color(fr, fg, fb, fa), TEXT_ALIGN_RIGHT);
-	WGL.TextureRot(missileMaterial, 790, 287, 32, 22, 0, r, g, b, a);
+	self.MissileCountColor:SetUnpacked(fr, fg, fb, fa);
+	draw.SimpleText(missiles, "Metroid Prime Visor UI Small", 867, 375, self.MissileCountColor, TEXT_ALIGN_RIGHT);
+	WGL.TextureRot(missileMaterial, 790, 382, 32, 29, 0, r, g, b, a);
 	weapon:MissileNotification(missiles, maxMissiles, self.DrawMissileNotification, self.MissileNotificationCallback, self, visorOpacity, weapon);
 end
+
+local screenPos = Vector(0, 0, 0);
+local screenCenter = Vector(0, 0, 0);
+local screenCenter2 = Vector(0, 0, 0);
+local screenTarget = Vector(0, 0, 0);
 
 function XRayVisor:DrawReticle(weapon, fovRatio, visorOpacity)
 
@@ -173,10 +189,9 @@ function XRayVisor:DrawReticle(weapon, fovRatio, visorOpacity)
 	local reticleX  = cx;
 	local reticleY  = cy;
 	local lerp      = self.LastReticleLerp;
-
-	-- Setup reticle screen position.
-	local screenPos = self.LastReticleVector;
-	if (locked) then screenPos = Vector(cx, cy, 0); end
+	screenCenter:SetUnpacked(cx, cy, 0);
+	screenPos:Set(self.LastReticleVector);
+	if (locked) then screenPos:Set(screenCenter); end
 
 	-- Reticle size lerp. This will be used to animate the reticle zooming in and out.
 	if (!locked) then
@@ -188,8 +203,9 @@ function XRayVisor:DrawReticle(weapon, fovRatio, visorOpacity)
 	if (!validTarget && !locked) then
 
 		-- No target found, reset everything back to the center of the screen.
+		screenCenter2:SetUnpacked(cx + self.LastMouseX * 2, cy + self.LastMouseY * 2, 0);
 		lerp      = Lerp(FrameTime() * 10, self.LastReticleLerp, 1);
-		screenPos = LerpVector(FrameTime() * 10, self.LastReticleVector, Vector(cx + self.LastMouseX * 2, cy + self.LastMouseY * 2, 0));
+		screenPos:Set(LerpVector(FrameTime() * 10, self.LastReticleVector, screenCenter2));
 		self.LastReticleTarget = NULL;
 	else
 
@@ -203,8 +219,8 @@ function XRayVisor:DrawReticle(weapon, fovRatio, visorOpacity)
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && validTarget) then
 			local targetPosLocal     = nextTarget:GetLockOnPosition():ToScreen();
-			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
-			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);
+			screenTarget:SetUnpacked(targetPosLocal.x, targetPosLocal.y, 0);
+			screenPos:Set(LerpVector(self.LastReticleMovement, self.LastReticleVector, screenTarget));
 			self.LastReticleMovement = Lerp(FrameTime(), self.LastReticleMovement, 1);
 		end
 	end
@@ -225,7 +241,7 @@ function XRayVisor:DrawReticle(weapon, fovRatio, visorOpacity)
 	WGL.TextureRot(reticleSmallMaterial, cx, cy, WGL.Y(305 * fovCompensation) * lerp, WGL.Y(305 * fovCompensation) * lerp, LocalPlayer():EyeAngles().y, 165, 165, 195, 50 * visorOpacity);
 
 	self.LastReticleLerp   = lerp;
-	self.LastReticleVector = screenPos;
+	self.LastReticleVector:Set(screenPos);
 	self.LastMouseX        = Lerp(FrameTime() * 10, self.LastMouseX, LocalPlayer().__mp_MouseX || 0);
 	self.LastMouseY        = Lerp(FrameTime() * 10, self.LastMouseY, LocalPlayer().__mp_MouseY || 0);
 end
@@ -241,75 +257,49 @@ function XRayVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor,
 		local maxHealth       = weapon.Helmet:GetMaxEnergy() * 100 + 99;
 		local missiles        = weapon.ArmCannon:GetMissileAmmo();
 		local maxMissiles     = weapon.ArmCannon:GetMissileMaxAmmo();
+		local powersuitHUD    = WGL.GetComponent(weapon, "PowerSuitHUD");
 
-		-- Offload hud rendering operations to a separate render target.
-		self:PushRenderTexture("rt_MPXRayVisor", 1024, 64, { ["$additive"] = 1 }, false);
-			cam.Start2D();
-
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
-
-				surface.SetAlphaMultiplier(transitionLast);
-				self:DrawHealth(weapon, health, maxHealth);
-				self:DrawAlert(alertRatio, visorOpacity);
-				self:DrawMissiles(missiles, maxMissiles, visorOpacity);
-				surface.SetAlphaMultiplier(1);
-
-			cam.End2D();
+		self:Start2DRenderContext("rt_MPXRayVisor", 1024, 64, { ["$additive"] = 1 }, false);
+			surface.SetAlphaMultiplier(transitionLast);
+			self:DrawHealth(weapon, health, maxHealth);
+			self:DrawAlert(alertRatio, visorOpacity);
+			self:DrawMissiles(missiles, maxMissiles, visorOpacity);
+			surface.SetAlphaMultiplier(1);
+		cam.End2D();
 		render.PopRenderTarget();
 
-		-- Offload hud rendering operations to a separate render target.
-		self:PushRenderTexture("rt_MPXRayVisorMenus", 1024, 768, { ["$additive"] = 1 }, false);
-			cam.Start2D();
-
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
-
-				surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
-				local beamMenu  = WGL.GetComponent(weapon, "BeamMenu");
-				local visorMenu = WGL.GetComponent(weapon, "VisorMenu");
-				beamMenu:DrawText(beam);
-				visorMenu:DrawText(visor);
-				beamMenu:OverrideBlend(1);
-				visorMenu:OverrideBlend(1);
-				surface.SetAlphaMultiplier(1);
-
-			cam.End2D();
+		powersuitHUD:Start2DRenderContext("rt_MPFlatVisor", 1024, 1024, { ["$additive"] = 1 }, false);
+			surface.SetAlphaMultiplier(transitionLast);
+			self:DrawNotifications(weapon, health, maxHealth, alertRatio, missiles, maxMissiles, visorOpacity);
+			surface.SetAlphaMultiplier(1);
+		cam.End2D();
 		render.PopRenderTarget();
 
-		-- Offload hud rendering operations to a separate render target.
-		self:PushRenderTexture("rt_MPXRayVisorNotifications", 1024, 768, { ["$additive"] = 1 }, false);
-			cam.Start2D();
-
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
-
-				surface.SetAlphaMultiplier(transitionLast);
-				self:DrawNotifications(weapon, health, maxHealth, alertRatio, missiles, maxMissiles, visorOpacity);
-				surface.SetAlphaMultiplier(1);
-
-			cam.End2D();
+		powersuitHUD:Start2DRenderContext("rt_MPVisorCurved", 1024, 768, { ["$additive"] = 1 }, false);
+			surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
+			powersuitHUD:DrawMenuTexts(weapon, beam, visor);
+			surface.SetAlphaMultiplier(1);
+		cam.End2D();
 		render.PopRenderTarget();
 
+		powersuitHUD:DrawVisorHook(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity);
 		WGL.Start3D(widescreen);
 		cam.IgnoreZ(true);
 
-			-- Render UI portion of the GUI onto the curved visor.
 			render.MaterialOverride(self:GetRenderTexture("rt_MPXRayVisor"));
-			self:DrawModel("GUI", hudPos, hudAngle);
+			self:DrawModel("Context", hudPos, hudAngle);
 			render.MaterialOverride(nil);
 
-			-- Render UI menus portion of the GUI onto the curved visor.
-			render.MaterialOverride(self:GetRenderTexture("rt_MPXRayVisorMenus"));
-			self:DrawModel("GUIMenus", hudPos, hudAngle);
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPFlatVisor"));
+			powersuitHUD:DrawModel("FlatContext", hudPos, hudAngle);
 			render.MaterialOverride(nil);
 
-			-- Render UI notifications portion of the GUI onto the curved visor.
-			render.MaterialOverride(self:GetRenderTexture("rt_MPXRayVisorNotifications"));
-			self:DrawModel("GUINotifs", hudPos, hudAngle);
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisorCurved"));
+			powersuitHUD:DrawModel("CurvedContext", hudPos, hudAngle);
+			render.MaterialOverride(nil);
+
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisor"));
+			powersuitHUD:DrawModel("FlatContext", hudPos, hudAngle);
 			render.MaterialOverride(nil);
 
 			-- Render the 3D static UI elements.

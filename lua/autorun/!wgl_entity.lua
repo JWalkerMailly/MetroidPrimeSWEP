@@ -1,8 +1,11 @@
 
 WGL = WGL || {};
 
-WGL.UpVec  = Vector(0, 0, 1);
-WGL.OneVec = Vector(1, 1, 1);
+WGL.UpVec    = Vector(0, 0, 1);
+WGL.FrontVec = Vector(1, 0, 0);
+WGL.SideVec  = Vector(0, 1, 0);
+WGL.OneVec   = Vector(1, 1, 1);
+WGL.ZeroAng  = Angle(0, 0, 0);
 
 WGL.DTSlots = {
 	["String"] = 4,
@@ -99,11 +102,4 @@ function WGL.TraceCollision(ent, reset, filter, endPos, mask)
 	if (validOwner) then owner:LagCompensation(false); end
 	ent.__wgl_LastPosition = ent:GetPos();
 	return ent.__wgl_LastCollision, ent.__wgl_LastPosition, velocity;
-end
-
-function WGL.IsFirstPerson(ent)
-	local ply    = ent || LocalPlayer();
-	local eyePos = ply:EyePos();
-	local diff   = (eyePos - EyePos()):Length();
-	return diff < 50;
 end

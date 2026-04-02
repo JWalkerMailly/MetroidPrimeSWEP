@@ -91,7 +91,7 @@ function PROJECTILE:OnCollide(pos, normal, entity, phys)
 	self:SetCollisionNormal(normal);
 	if (!self.Oscillator) then
 		self:SetPos(pos);
-		self:GetPhysicsObject():SetVelocityInstantaneous(Vector(0, 0, 0));
+		self:GetPhysicsObject():SetVelocityInstantaneous(vector_origin);
 	end
 
 	-- Apply knockback force to entity.
@@ -103,7 +103,7 @@ function PROJECTILE:OnCollide(pos, normal, entity, phys)
 	if (self.BlastDamage) then self:ApplyBlastDamage(entity, pos, normal); end
 
 	-- Compute impact angle relative to absolute up for impact angle in PCF space.
-	local impactCross = normal:Angle():Forward():Cross(Vector(0, 0, -1));
+	local impactCross = normal:Angle():Forward():Cross(-WGL.UpVec);
 	local impactAngle = impactCross:AngleEx(normal);
 
 	-- Render impact effects.

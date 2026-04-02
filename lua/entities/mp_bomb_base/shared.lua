@@ -52,7 +52,7 @@ function BOMB:Initialize()
 	self:SetModel("models/effects/combineball.mdl");
 	self:SetCollisionGroup(COLLISION_GROUP_PROJECTILE);
 	self:PhysicsInitSphere(self.Radius, "default");
-	self:SetCollisionBounds(Vector(0, 0, 0), Vector(0, 0, 0));
+	self:SetCollisionBounds(vector_origin, vector_origin);
 	self:SetNotSolid(true);
 	self:DrawShadow(false);
 	self:PhysWake();

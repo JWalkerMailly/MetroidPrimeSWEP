@@ -6,6 +6,9 @@ local shell  = WGL.ClientsideModel("models/metroid/effects/supermissile_ball.mdl
 local trail1 = WGL.ClientsideModel("models/metroid/effects/supermissile_ball.mdl");
 local trail2 = WGL.ClientsideModel("models/metroid/effects/supermissile_ball.mdl");
 
+local ang1 = Angle(0, 180, 0);
+local ang2 = Angle(0, 76, 0);
+
 function PROJECTILE:Draw()
 
 	-- Failsafe.
@@ -17,7 +20,7 @@ function PROJECTILE:Draw()
 	render.Model({
 		model = core:GetModel(),
 		pos   = self:GetPos(),
-		angle = Angle(0, 180, 0)
+		angle = ang1
 	}, core);
 	render.SetBlend(1);
 	render.SetColorModulation(1, 1, 1);
@@ -28,7 +31,7 @@ function PROJECTILE:Draw()
 	render.Model({
 		model = shell:GetModel(),
 		pos   = self:GetPos(),
-		angle = Angle(0, 76, 0)
+		angle = ang2
 	}, shell);
 	render.SetBlend(1);
 	render.SetColorModulation(1, 1, 1);
@@ -40,7 +43,7 @@ function PROJECTILE:Draw()
 		render.Model({
 			model = trail1:GetModel(),
 			pos   = self:GetPos() - self:GetAngles():Forward() * 15,
-			angle = Angle(0, 180, 0)
+			angle = ang1
 		}, trail1);
 		render.SetBlend(1);
 		render.SetColorModulation(1, 1, 1);
@@ -53,7 +56,7 @@ function PROJECTILE:Draw()
 		render.Model({
 			model = trail2:GetModel(),
 			pos   = self:GetPos() - self:GetAngles():Forward() * 30,
-			angle = Angle(0, 180, 0)
+			angle = ang1
 		}, trail2);
 		render.SetBlend(1);
 		render.SetColorModulation(1, 1, 1);

@@ -6,16 +6,26 @@ function WGL.SetColor(color, value)
 	return color;
 end
 
-function WGL.LerpColor(t, from, to)
-	return Color(
-		Lerp(t, from.r, to.r),
-		Lerp(t, from.g, to.g),
-		Lerp(t, from.b, to.b),
-		Lerp(t, from.a || 255, to.a || 255)
-	);
+function WGL.LerpColorRaw(t, r1, g1, b1, a1, r2, g2, b2, a2, out)
+
+	local r = Lerp(t, r1, r2);
+	local g = Lerp(t, g1, g2);
+	local b = Lerp(t, b1, b2);
+	local a = Lerp(t, a1 || 255, a2 || 255);
+
+	if (out) then
+		out:SetUnpacked(r, g, b, a);
+		return out;
+	end
+
+	return Color(r, g, b, a);
 end
 
-function WGL.LerpColorEvent(base, change, value, rate, event, state, callback)
+function WGL.LerpColor(t, from, to, out)
+	return WGL.LerpColorRaw(t, from.r, from.g, from.b, from.a, to.r, to.g, to.b, to.a, out);
+end
+
+function WGL.LerpColorEventRaw(r1, g1, b1, a1, r2, g2, b2, a2, value, rate, event, state, callback)
 
 	if (state.previous == nil) then
 		state.fraction = 1;
@@ -50,5 +60,11 @@ function WGL.LerpColorEvent(base, change, value, rate, event, state, callback)
 		callback(state.event, state.fraction);
 	end
 
-	return WGL.LerpColor(state.fraction, change, base);
+	state.color = WGL.LerpColorRaw(state.fraction, r2, g2, b2, a2, r1, g1, b1, a1, state.color);
+
+	return state.color;
+end
+
+function WGL.LerpColorEvent(base, change, value, rate, event, state, callback)
+	return WGL.LerpColorEventRaw(base.r, base.g, base.b, base.a, change.r, change.g, change.b, change.a, value, rate, event, state, callback);
 end

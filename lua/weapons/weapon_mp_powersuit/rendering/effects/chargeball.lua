@@ -6,6 +6,8 @@ ChargeBall.Models = {
 	["Glow"] = { Model("models/metroid/effects/chargeglow.mdl"), RENDERGROUP_VIEWMODEL }
 }
 
+local randAxis = Vector(0, 1, -1);
+
 function ChargeBall:Draw(pos, ang, ratio, color)
 
 	-- Setup rendering matrix.
@@ -13,7 +15,7 @@ function ChargeBall:Draw(pos, ang, ratio, color)
 	modelMatrix:Rotate(ang);
 
 	-- Apply random rotation similar to the original game.
-	self.Angle:RotateAroundAxis(Vector(0, 1, -1), 25 * FrameTime() / math.pow(math.ease.InBounce(ratio + 0.01), 4));
+	self.Angle:RotateAroundAxis(randAxis, 25 * FrameTime() / math.pow(math.ease.InBounce(ratio + 0.01), 4));
 	modelMatrix:Rotate(self.Angle);
 
 	-- Render charge ball angles using rendering matrix.

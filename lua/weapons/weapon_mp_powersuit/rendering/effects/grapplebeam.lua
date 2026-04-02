@@ -6,6 +6,7 @@ GrappleBeam.FarResolution  = 40;
 GrappleBeam.NearResolution = 16;
 GrappleBeam.Beam           = Material("particles/grapplebeam/beam");
 GrappleBeam.Glow           = Material("particles/grapplebeam/glow");
+GrappleBeam.RenderData     = {};
 
 local grappleClawColor = Color(255, 255, 255, 15);
 local grapplBlueColor  = Color(0, 0, 255, 255);
@@ -18,7 +19,7 @@ function GrappleBeam:Draw(weapon)
 	local owner = weapon:GetOwner();
 	local grappleStartPos;
 	local localPlayer  = LocalPlayer();
-	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && WGL.IsFirstPerson(localPlayer);
+	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && !localPlayer:ShouldDrawLocalPlayer();
 	if (isLocal) then
 		local eyeAngles = EyeAngles();
 		grappleStartPos = EyePos() - eyeAngles:Up() * 30 - eyeAngles:Right() * 30;
@@ -58,7 +59,6 @@ function GrappleBeam:Draw(weapon)
 	local time   = CurTime();
 	local sway   = time * self.Sway;
 	local period = self.Period;
-	local data   = {};
 	render.SetMaterial(self.Beam);
 	for i = 0, grappleResolution do
 
@@ -70,7 +70,7 @@ function GrappleBeam:Draw(weapon)
 			startSway    = sway + period * startRatio;
 			startSwayVec = grappleRight * math.sin(startSway) * grappleBeamSway + grappleUp * math.cos(startSway) * grappleBeamHalfSway;
 		else
-			startRatio, startPos, startSway, startSwayVec = unpack(data[i]);
+			startRatio, startPos, startSway, startSwayVec = unpack(self.RenderData[i]);
 		end
 
 		-- Compute end position of current beam segment.
@@ -78,13 +78,22 @@ function GrappleBeam:Draw(weapon)
 		local endPos         = Lerp(endRatio, grappleStartPos, grappleEndPos);
 		local endSway        = sway + period * endRatio;
 		local endSwayVec     = grappleRight * math.sin(endSway) * grappleBeamSway + grappleUp * math.cos(endSway) * grappleBeamHalfSway;
-		table.insert(data, i + 1, { endRatio, endPos, endSway, endSwayVec });
+
+		-- Overwrite old data to alleviate GC.
+		if (self.RenderData[i + 1]) then
+			self.RenderData[i + 1][1] = endRatio;
+			self.RenderData[i + 1][2] = endPos;
+			self.RenderData[i + 1][3] = endSway;
+			self.RenderData[i + 1][4] = endSwayVec;
+		else
+			self.RenderData[i + 1] = { endRatio, endPos, endSway, endSwayVec };
+		end
 
 		-- Render grapple beam segment.
-		grapplBlueColor.a    = math.random(0, 225);
-		local randomTexStart = math.Rand(0, 0.25);
-		local randomTexEnd   = math.Rand(0.75, 1);
-		local segmentColor   = WGL.LerpColor(startRatio, color_white, grapplBlueColor);
-		render.DrawBeam(startPos + startSwayVec, endPos + endSwayVec, 6 + math.Rand(0, 6), randomTexStart, randomTexEnd, segmentColor);
+		grapplBlueColor.a         = math.random(0, 225);
+		local randomTexStart      = math.Rand(0, 0.25);
+		local randomTexEnd        = math.Rand(0.75, 1);
+		self.RenderData[i + 1][5] = WGL.LerpColor(startRatio, color_white, grapplBlueColor, self.RenderData[i + 1][5]);
+		render.DrawBeam(startPos + startSwayVec, endPos + endSwayVec, 6 + math.Rand(0, 6), randomTexStart, randomTexEnd, self.RenderData[i + 1][5]);
 	end
 end

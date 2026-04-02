@@ -26,21 +26,22 @@ function WGL.CatmullRom:Clear()
 	self.WayRights = {};
 end
 
-local function Slice(data, first, last, offset)
+local function Keep(data, steps)
+	for i = #data, steps, -1 do
+		if i == steps then return end
+		data[i] = nil
+	end
+end
 
-	local sliced = {};
-	for i = first, last do sliced[i - offset] = data[i]; end
-	return sliced;
+local function Discard(data, steps)
+	for i = steps + 1, #data + steps do
+		data[i - steps] = data[i]
+	end
 end
 
 function WGL.CatmullRom:GetNodes()
-
-	local nodes         = self.Nodes;
-	local wayPoints     = self.WayPoints;
-	local nodesUnpacked = Slice(nodes, 1, #nodes, 0);
-	nodesUnpacked[#nodes + 1] = wayPoints[#wayPoints - 1];
-
-	return nodesUnpacked;
+	local wayPoints = self.WayPoints;
+	return self.Nodes, wayPoints[#wayPoints - 1];
 end
 
 function WGL.CatmullRom:MoveLastSegment(waypoint, control, right, alpha)
@@ -49,24 +50,26 @@ function WGL.CatmullRom:MoveLastSegment(waypoint, control, right, alpha)
 	local upsCount       = #self.Ups - steps;
 	local wayPointsCount = #self.WayPoints - 2;
 
-	self.Ups       = Slice(self.Ups,       1, upsCount,       0);
-	self.Nodes     = Slice(self.Nodes,     1, upsCount,       0);
-	self.WayPoints = Slice(self.WayPoints, 1, wayPointsCount, 0);
-	self.WayRights = Slice(self.WayRights, 1, wayPointsCount, 0);
+	Keep(self.Ups,       upsCount);
+	Keep(self.Nodes,     upsCount);
+	Keep(self.WayPoints, wayPointsCount);
+	Keep(self.WayRights, wayPointsCount);
 	self:AddWayPoint(waypoint, right, alpha);
 	self:AddWayPoint(control, right, alpha);
 end
 
-function WGL.CatmullRom:Interpolate(i, steps, knot0, knot1, knot2, knot3)
+function WGL.CatmullRom:Interpolate(i, steps, knot0, knot1, knot2, knot3, out)
 
-	local u     = i / steps;
-	local point = Vector(0, 0, 0);
-	point       = point + (u * u * u * (-knot0 + 3 * knot1 - 3 * knot2 + knot3) / 2);
-	point       = point + (u * u * (2 * knot0 - 5 * knot1 + 4 * knot2 - knot3) / 2);
-	point       = point + (u * (-knot0 + knot2) / 2);
-	point       = point + knot1;
+	out = out || Vector(0, 0, 0);
+	out:Zero();
 
-	return point;
+	local u = i / steps;
+	out:Add(u * u * u * (-knot0 + 3 * knot1 - 3 * knot2 + knot3) / 2);
+	out:Add(u * u * (2 * knot0 - 5 * knot1 + 4 * knot2 - knot3) / 2);
+	out:Add(u * (-knot0 + knot2) / 2);
+	out:Add(knot1);
+
+	return out;
 end
 
 function WGL.CatmullRom:CentripetalInterpolate(i, steps, knot0, knot1, knot2, knot3, alpha)
@@ -151,23 +154,9 @@ function WGL.CatmullRom:RemoveFirstWayPoint()
 	table.remove(self.WayPoints, 1);
 	table.remove(self.WayRights, 1);
 
-	local ups   = self.Ups;
-	local nodes = self.Nodes;
 	local steps = self.Steps;
-	self.Ups    = Slice(ups, steps, #ups, steps);
-	self.Nodes  = Slice(nodes, steps, #nodes, steps);
-end
-
-function WGL.CatmullRom:RemoveLastWayPoint()
-
-	table.remove(self.WayPoints, #self.WayPoints);
-	table.remove(self.WayRights, #self.WayRights);
-
-	local ups   = self.Ups;
-	local nodes = self.Nodes;
-	local steps = self.Steps;
-	self.Ups    = Slice(ups, #ups - steps, #ups, steps);
-	self.Nodes  = Slice(nodes, #nodes - steps, #nodes, steps);
+	Discard(self.Ups, steps);
+	Discard(self.Nodes, steps);
 end
 
 setmetatable(WGL.CatmullRom, {__call = WGL.CatmullRom.New });

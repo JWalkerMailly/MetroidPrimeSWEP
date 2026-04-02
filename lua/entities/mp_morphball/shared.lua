@@ -25,6 +25,9 @@ function MORPHBALL:SetupDataTables()
 	self:NetworkVar("Float",  0, "BombJumpTime");
 end
 
+-- Caching.
+MORPHBALL.VehiclePos = Vector(0, 0, 0);
+
 function MORPHBALL:Think()
 
 	-- Failsafe for weapon drops.
@@ -36,7 +39,11 @@ function MORPHBALL:Think()
 	-- Always set the vehicle's position to match the morphball, both on client and server.
 	-- We can't parent the vehicle to the morphball or it would constantly roll around.
 	local vehicle = self:GetNWEntity("Vehicle");
-	if (IsValid(vehicle)) then vehicle:SetPos(self:GetPos() - Vector(0, 0, self.Radius)); end
+	if (IsValid(vehicle)) then
+		local pos = self:GetPos();
+		self.VehiclePos:SetUnpacked(pos[1], pos[2], pos[3] - self.Radius);
+		vehicle:SetPos(self.VehiclePos);
+	end
 
 	if (SERVER) then
 

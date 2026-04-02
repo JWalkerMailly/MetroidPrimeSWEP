@@ -838,6 +838,43 @@ end);
 </details>
 
 <details>
+<summary><img src="readme/client.png"/> <code>Boolean</code> <code>MP.DrawVisor(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity)</code></summary>
+
+###### Description
+> This is a 2D context ready to use hook to render onto all visors. Already handles HUD lag, widescreen support and screen scaling out of the box. Draws to the *rt_MPVisor* render target behind the scenes.
+###### Arguments
+> <code>1. Entity</code> <code>**weapon**</code> Power Suit weapon reference.
+
+> <code>2. Table</code> <code>**beam**</code> Current beam config table.
+
+> <code>3. Table</code> <code>**visor**</code> Current visor config table.
+
+> <code>4. Vector</code> <code>**hudPos**</code> Position used to render 3D Combat Visor UI.
+
+> <code>5. Angle</code> <code>**hudAngle**</code> Angle used to render 3D Combat Visor UI.
+
+> <code>6. Vector</code> <code>**guiPos**</code> Position used to render the static elements of the 3D Combat Visor.
+
+> <code>7. Color</code> <code>**guiColor**</code> Color used to render the static elements of the 3D Combat Visor.
+
+> <code>8. Number</code> <code>**fovRatio**</code> FOV ratio used for positioning of 3D elements.
+
+> <code>9. Number</code> <code>**transition**</code> Transition interpolator. This is used to fade visors into each other upon switching.
+
+> <code>10. Number</code> <code>**transitionStart**</code> Transition start, indicates if fading in or out.
+
+> <code>11. Boolean</code> <code>**widescreen**</code> Boolean used to stretch 3D elements for wide screens.
+
+> <code>12. Number</code> <code>**visorOpacity**</code> Visor opacity, set by the command *mp_options_visoropacity*.
+###### Example
+```lua
+hook.Add("MP.DrawVisor", "DEBUG.DrawVisor", function(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity)
+end);
+```
+---
+</details>
+
+<details>
 <summary><img src="readme/client.png"/> <code>Boolean</code> <code>MP.PreDrawCombatVisor(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity)</code></summary>
 
 ###### Description
@@ -1087,24 +1124,26 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 </details>
 
 <details>
-<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetXRayHot(hot)</code></summary>
+<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetXRayHot(hot, invalidate)</code></summary>
 
 ###### Description
 > Marks an entity as *hot* on the X-Ray Visor. Hot entities appear solid white. Please note that an entity cannot be both hot and cold.
 ###### Arguments
 > <code>1. Boolean</code> <code>**hot**</code> True if hot, False if normal.
+> <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Hot*. False on failure.
 ---
 </details>
 
 <details>
-<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetXRayCold(cold)</code></summary>
+<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetXRayCold(cold, invalidate)</code></summary>
 
 ###### Description
 > Marks an entity as *cold* on the X-Ray Visor. Cold entities are invisible. Please note that an entity cannot be both hot and cold. A cold entity cannot be locked on.
 ###### Arguments
 > <code>1. Boolean</code> <code>**cold**</code> True if cold, False if normal.
+> <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Cold*. False on failure.
 ---
@@ -1131,24 +1170,26 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 </details>
 
 <details>
-<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetThermalHot(hot)</code></summary>
+<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetThermalHot(hot, invalidate)</code></summary>
 
 ###### Description
 > Marks an entity as *hot* on the Thermal Visor. Hot entities appear red.
 ###### Arguments
 > <code>1. Boolean</code> <code>**hot**</code> True if hot, False if normal.
+> <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Hot*. False on failure.
 ---
 </details>
 
 <details>
-<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetThermalCold(cold)</code></summary>
+<summary><img src="readme/server.png"/> <code>Boolean</code> <code>_entity:SetThermalCold(cold, invalidate)</code></summary>
 
 ###### Description
 > Marks an entity as *cold* on the Thermal Visor. Cold entities are invisible. A cold entity cannot be locked on.
 ###### Arguments
 > <code>1. Boolean</code> <code>**cold**</code> True if cold, False if normal.
+> <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Cold*. False on failure.
 ---
@@ -1224,6 +1265,16 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 > Defines the entity's lock-on attachment.
 ###### Arguments
 > <code>1. String</code> <code>**name**</code> The name of the attachment to use for lock-on.
+---
+</details>
+
+<details>
+<summary><img src="readme/server.png"/> <code>_entity:AddToMaterialSwapCache(invalidate)</code></summary>
+
+###### Description
+> Adds an entity to the material swap cache for visor compatibility. You shouldn't use this function unless your entity is failing to be recognized by the system.
+###### Arguments
+> <code>1. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ---
 </details>
 

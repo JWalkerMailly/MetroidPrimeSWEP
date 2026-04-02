@@ -1,11 +1,20 @@
 
 include("shared.lua");
 
-PROJECTILE.RenderData       = {};
 PROJECTILE.RenderFPS        = 1 / 60;
 PROJECTILE.Resolution       = 64;
 PROJECTILE.SplineStep       = 4;
 PROJECTILE.SplineResolution = 16;
+PROJECTILE.RenderData       = {
+	firstperson = {
+		data = {},
+		nextUpdate = nil
+	},
+	thirdperson = {
+		data = {},
+		nextUpdate = nil
+	}
+};
 
 -- Wave buster rendering resources.
 local core       = Material("particles/wavebeam/bustercore");
@@ -18,11 +27,12 @@ local coreColors = {
 	Color(255, 0, 0)
 }
 
-function PROJECTILE:UpdateRenderData(muzzle, up, right, endPos)
+function PROJECTILE:UpdateRenderData(container, muzzle, up, right, endPos)
 
 	-- Wait for next render update.
 	local time = CurTime();
 	local resolution = self.Resolution;
+	if (!GetConVar("wgl_enable_dynamiclighting"):GetBool() && time < (container.nextUpdate || 0)) then return time, resolution, container.data; end
 
 	-- Prepare spline date for bezier spline computations.
 	local waveTime          = 4000 * FrameTime();
@@ -40,28 +50,38 @@ function PROJECTILE:UpdateRenderData(muzzle, up, right, endPos)
 	local coreColor = coreColors[randomColor];
 
 	-- Compute bezier spline at defined FPS.
-	local time25    = time * 25;
-	self.RenderData = {};
+	local time25 = time * 25;
 	for i = 0,resolution do
 		local t         = i / resolution;
 		local wave      = math.cos((time + t) * waveTime) / 2 + 0.5;
 		local pos       = WGL.Bezier2(t, muzzle, muzzle + pseudoRandomUp + pseudoRandomRight, endPos + pseudoRandomEnd, endPos);
 		local swirlTime = i / 1.5 - time25;
 		local swirlPos  = right * math.cos(swirlTime) * 5 + up * math.sin(swirlTime) * 5;
-		table.insert(self.RenderData, i + 1, { t, wave, pos, swirlPos, coreColor });
+
+		-- Overwrite old data to alleviate GC.
+		if (container.data[i + 1]) then
+			container.data[i + 1][1] = t;
+			container.data[i + 1][2] = wave;
+			container.data[i + 1][3] = pos;
+			container.data[i + 1][4] = swirlPos;
+			container.data[i + 1][5] = coreColor;
+		else
+			container.data[i + 1] = { t, wave, pos, swirlPos, coreColor };
+		end
 	end
 
 	-- Raise next update flag.
-	return time, resolution, self.RenderData;
+	container.nextUpdate = time + math.max(self.RenderFPS, FrameTime());
+	return time, resolution, container.data;
 end
 
-function PROJECTILE:DrawBeam(muzzle, ang, endPos)
+function PROJECTILE:DrawBeam(container, muzzle, ang, endPos)
 
 	local up               = ang:Up();
 	local right            = ang:Right();
 	local splineStep       = self.SplineStep;
 	local splineResolution = self.SplineResolution;
-	local time, resolution, renderData = self:UpdateRenderData(muzzle, up, right, endPos);
+	local time, resolution, renderData = self:UpdateRenderData(container, muzzle, up, right, endPos);
 
 	-- Render inner part of the spline. We also store the computed data 
 	-- for faster lookup when rendering the outer part of the spline.
@@ -118,18 +138,17 @@ function PROJECTILE:Draw()
 	local ang          = nil;
 	local muzzle       = nil;
 	local localPlayer  = LocalPlayer();
-	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && WGL.IsFirstPerson(localPlayer);
+	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && !localPlayer:ShouldDrawLocalPlayer();
 	if (isLocal) then
 		local fov      = owner:GetFOV();
 		local fovRatio = 1 - (75 / fov) + 1;
 		muzzle, ang    = WGL.GetViewModelAttachmentPos(1, weapon.ViewModelFOV, fov, false, owner, true);
 		muzzle         = muzzle - ang:Forward() * fovRatio;
 		endPos         = WGL.ToViewModelProjection(endPos, weapon.ViewModelFOV, fov, false, owner, true);
+		WGL.ViewModelProjection(!isLocal, self.DrawBeam, self, self.RenderData.firstperson, muzzle, ang, endPos);
 	else
 		ang    = owner:EyeAngles();
 		muzzle = weapon:GetAttachment(1).Pos;
+		WGL.ViewModelProjection(!isLocal, self.DrawBeam, self, self.RenderData.thirdperson, muzzle, ang, endPos);
 	end
-
-	-- Render beam effect.
-	WGL.ViewModelProjection(!isLocal, self.DrawBeam, self, muzzle, ang, endPos);
 end

@@ -21,10 +21,10 @@ end
 function MorphBallTrail:DrawMesh(trail, pos, angles, material, size, uvOffset, uvScroll, length)
 
 	-- Trail nodes setup.
-	local nodes      = trail:GetNodes();
-	local nodesCount = #nodes;
-	local ups        = trail.Ups;
-	local up         = ups[1] * size;
+	local nodes, last = trail:GetNodes();
+	local nodesCount  = #nodes + 1;
+	local ups         = trail.Ups;
+	local up          = ups[1] * size;
 
 	-- Draw trail mesh.
 	render.SetMaterial(material);
@@ -42,6 +42,7 @@ function MorphBallTrail:DrawMesh(trail, pos, angles, material, size, uvOffset, u
 		-- We extend the lower and upper bounds in opposing directions in order to get the banking
 		-- effect without using too much math intensive operations.
 		local curNode = nodes[i];
+		if (i > nodesCount - 1) then curNode = last end
 		if (i > 1) then up = ups[i - 1] * size; end
 
 		mesh.Position(pos + curNode + up);
@@ -55,10 +56,13 @@ function MorphBallTrail:DrawMesh(trail, pos, angles, material, size, uvOffset, u
 	mesh.End();
 end
 
+MorphBallTrail.TrailPos = Vector(0, 0, 0);
+
 function MorphBallTrail:Draw(state, pos, angles, sway, velocity, material, radius, frametime)
 
-	local size     = radius - 1.5;
-	local angVel   = velocity:Length() / size;
+	local size   = radius - 1.5;
+	local angVel = velocity:Length() / size;
+	self.TrailPos[3] = size;
 
 	-- Reinitialize trail and avoid rendering under a certain angular velocity.
 	if (angVel < 5) then
@@ -75,8 +79,7 @@ function MorphBallTrail:Draw(state, pos, angles, sway, velocity, material, radiu
 
 	-- 3D trail setup.
 	local trail    = self.Trail;
-	local trailPos = Vector(0, 0, size);
-	local center   = pos - trailPos;
+	local center   = pos - self.TrailPos;
 	local waypoint = self.Trail.WayPoints[1];
 	local length   = WGL.Clamp(pos:DistToSqr(waypoint) / 6000);
 
@@ -121,11 +124,11 @@ function MorphBallTrail:Draw(state, pos, angles, sway, velocity, material, radiu
 	-- Render 3D mesh for the regular trail.
 	local lengthSway = length * sway;
 	trail:MoveLastSegment(center, center, bank);
-	self:DrawMesh(trail, trailPos, angles, material, size, 0.5, uvScroll, lengthSway * self.LastTrailRatio);
+	self:DrawMesh(trail, self.TrailPos, angles, material, size, 0.5, uvScroll, lengthSway * self.LastTrailRatio);
 
 	-- Only render the boost mesh if the ratio is big enough, this is mainly for optimization purposes.
 	if (self.LastBoostRatio > 0.1) then
-		self:DrawMesh(trail, trailPos, angles, self.BoostMaterial, size, 0.5, uvScroll, lengthSway * self.LastBoostRatio);
+		self:DrawMesh(trail, self.TrailPos, angles, self.BoostMaterial, size, 0.5, uvScroll, lengthSway * self.LastBoostRatio);
 	end
 
 	-- Save current trail length for interpolation.

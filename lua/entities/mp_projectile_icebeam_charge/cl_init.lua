@@ -3,6 +3,8 @@ include("shared.lua");
 
 local shell = WGL.ClientsideModel("models/metroid/effects/supermissile_ball.mdl");
 
+local ang = Angle(90, 76, 0);
+
 function PROJECTILE:Draw()
 
 	shell:SetModelScale(9);
@@ -11,7 +13,7 @@ function PROJECTILE:Draw()
 	render.Model({
 		model = shell:GetModel(),
 		pos   = self:GetPos(),
-		angle = Angle(90, 76, 0)
+		angle = ang
 	}, shell);
 	render.SetBlend(1);
 	render.SetColorModulation(1, 1, 1);

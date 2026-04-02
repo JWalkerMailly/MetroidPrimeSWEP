@@ -42,6 +42,8 @@ function POWERSUIT:HandleTargetInvalidation(movement)
 	if (isInvalidated) then self.Helmet:Reset(); end
 end
 
+POWERSUIT.AirVelocity = Vector(0, 0, 0);
+
 function POWERSUIT:HandleAirMovement(ply, movement)
 
 	local powersuit = self.PowerSuit;
@@ -54,46 +56,48 @@ function POWERSUIT:HandleAirMovement(ply, movement)
 
 	-- Setup movement variables.
 	powersuit:Dashing(false);
-	local inForward  = movement:KeyDown(IN_FORWARD);
-	local inBack     = movement:KeyDown(IN_BACK);
-	local inRight    = movement:KeyDown(IN_MOVERIGHT);
-	local inLeft     = movement:KeyDown(IN_MOVELEFT);
-	local angles     = movement:GetMoveAngles();
-	local moveAngles = Angle(0, angles[2], angles[3]);
-	local speed      = math.min(ply:GetWalkSpeed(), powersuit.Constants.Movement.WalkSpeed);
-	local velocity   = movement:GetVelocity();
-	local lockDash   = visor.AllowLockDash || GetConVar("mp_cheats_scandashing"):GetBool();
-	local dash       = powersuit.Constants.Dash;
+	local inForward   = movement:KeyDown(IN_FORWARD);
+	local inBack      = movement:KeyDown(IN_BACK);
+	local inRight     = movement:KeyDown(IN_MOVERIGHT);
+	local inLeft      = movement:KeyDown(IN_MOVELEFT);
+	local angles      = movement:GetMoveAngles();
+	local moveAngles  = Angle(0, angles[2], angles[3]);
+	local moveForward = moveAngles:Forward();
+	local moveRight   = moveAngles:Right();
+	local speed       = math.min(ply:GetWalkSpeed(), powersuit.Constants.Movement.WalkSpeed);
+	local velocity    = movement:GetVelocity();
+	local lockDash    = visor.AllowLockDash || GetConVar("mp_cheats_scandashing"):GetBool();
+	local dash        = powersuit.Constants.Dash;
 
 	if (!ply:OnGround()) then
 
 		-- Prepare movement velocities.
-		local airVelocity = Vector(0, 0, velocity[3]);
+		self.AirVelocity:SetUnpacked(0, 0, velocity[3]);
 
 		-- Prepare override vector to allow air movement.
-		if (inForward) then airVelocity = airVelocity + moveAngles:Forward() *  speed; end
-		if (inBack)    then airVelocity = airVelocity + moveAngles:Forward() * -speed; end
-		if (inRight)   then airVelocity = airVelocity + moveAngles:Right()   *  speed; end
-		if (inLeft)    then airVelocity = airVelocity + moveAngles:Right()   * -speed; end
+		if (inForward) then self.AirVelocity:Add(moveForward *  speed); end
+		if (inBack)    then self.AirVelocity:Add(moveForward * -speed); end
+		if (inRight)   then self.AirVelocity:Add(moveRight   *  speed); end
+		if (inLeft)    then self.AirVelocity:Add(moveRight   * -speed); end
 
 		-- Handle dashing midair.
 		if (lockDash && movement:KeyPressed(IN_JUMP) && movement:KeyDown(IN_SPEED) && locked) then
 			if (inRight || inLeft) then powersuit:Dashing(true); powersuit:Moving(true); end
-			if (inRight && powersuit:IsDashing()) then velocity = moveAngles:Right() *  dash.Speed + moveAngles:Forward() * dash.AirSpeed; end
-			if (inLeft && powersuit:IsDashing())  then velocity = moveAngles:Right() * -dash.Speed + moveAngles:Forward() * dash.AirSpeed; end
+			if (inRight && powersuit:IsDashing()) then velocity = moveRight *  dash.Speed + moveForward * dash.AirSpeed; end
+			if (inLeft && powersuit:IsDashing())  then velocity = moveRight * -dash.Speed + moveForward * dash.AirSpeed; end
 		end
 
 		-- Conserve initial velocity if it was greater than our newly computed one.
-		if (velocity:LengthSqr() > airVelocity:LengthSqr() && powersuit:WasMoving()) then airVelocity = velocity; end
+		if (velocity:LengthSqr() > self.AirVelocity:LengthSqr() && powersuit:WasMoving()) then self.AirVelocity:Set(velocity); end
 		if (powersuit:IsDashing()) then movement:SetVelocity(velocity)
-		else movement:SetVelocity(airVelocity); end
+		else movement:SetVelocity(self.AirVelocity); end
 	else
 
 		-- Handle dashing from ground.
 		if (lockDash && movement:KeyPressed(IN_JUMP) && movement:KeyDown(IN_SPEED) && locked) then
 			if (inRight || inLeft) then powersuit:Dashing(true); end
-			if (inRight && powersuit:IsDashing()) then velocity = moveAngles:Right() *  dash.Speed + moveAngles:Forward() * dash.GroundSpeed; end
-			if (inLeft && powersuit:IsDashing())  then velocity = moveAngles:Right() * -dash.Speed + moveAngles:Forward() * dash.GroundSpeed; end
+			if (inRight && powersuit:IsDashing()) then velocity = moveRight *  dash.Speed + moveForward * dash.GroundSpeed; end
+			if (inLeft && powersuit:IsDashing())  then velocity = moveRight * -dash.Speed + moveForward * dash.GroundSpeed; end
 		end
 
 		if (powersuit:IsDashing()) then movement:SetVelocity(velocity); end
@@ -105,6 +109,8 @@ function POWERSUIT:HandleAirMovement(ply, movement)
 	-- Raise event.
 	if (powersuit:IsDashing()) then hook.Run("MP.OnDash", ply, self); end
 end
+
+POWERSUIT.VerticalVelocity = Vector(0, 0, 0);
 
 function POWERSUIT:HandleSpaceJump(ply, movement)
 
@@ -119,7 +125,8 @@ function POWERSUIT:HandleSpaceJump(ply, movement)
 	-- If we are dashing, conserve linear velocity and override vertical velocity.
 	local velocity = movement:GetVelocity();
 	local spaceJump = powersuit.Constants.SpaceJump;
-	movement:SetVelocity(Vector(velocity[1], velocity[2], !powersuit:IsDashing() && spaceJump.Power || spaceJump.Dash));
+	self.VerticalVelocity:SetUnpacked(velocity[1], velocity[2], !powersuit:IsDashing() && spaceJump.Power || spaceJump.Dash);
+	movement:SetVelocity(self.VerticalVelocity);
 	powersuit:SetJumpTime(CurTime());
 	powersuit:AddJumpCount(1);
 
@@ -188,10 +195,11 @@ function POWERSUIT:HandleGrapple(ply, movement)
 	-- Setup swing variables.
 	if (!self.PowerSuit:GetSwingStart()) then
 
+		anchorAng.p = 0;
 		self.PowerSuit:SetSwingLastPos(ownerPos);
 		self.PowerSuit:SetSwingStartPos(ownerPos);
 		self.PowerSuit:SetSwingStartTime(CurTime());
-		self.PowerSuit:SetSwingStartAngle(Angle(0, anchorAng[2], anchorAng[3]));
+		self.PowerSuit:SetSwingStartAngle(anchorAng);
 		self.PowerSuit:SetSwingViewAngle(movement:GetAngles());
 		self.PowerSuit:SetJumpCount(2);
 		self.PowerSuit:Grappling(true);
@@ -294,9 +302,11 @@ function POWERSUIT:HandleMorphBall(ply, movement)
 
 		-- Create morphball vehicle.
 		local morphball = ents.Create(self.MorphBallVehicle);
+		local pos = ply:GetPos();
+		pos[3] = pos[3] + morphball.Radius;
 		morphball:SetOwner(ply);
 		morphball:SetPowerSuit(self);
-		morphball:SetPos(ply:GetPos() + Vector(0, 0, morphball.Radius));
+		morphball:SetPos(pos);
 		morphball:Spawn();
 		self:SetMorphBall(morphball);
 		self.MorphBall:Reset();
