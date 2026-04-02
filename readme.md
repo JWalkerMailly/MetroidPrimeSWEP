@@ -1130,6 +1130,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 > Marks an entity as *hot* on the X-Ray Visor. Hot entities appear solid white. Please note that an entity cannot be both hot and cold.
 ###### Arguments
 > <code>1. Boolean</code> <code>**hot**</code> True if hot, False if normal.
+
 > <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Hot*. False on failure.
@@ -1143,6 +1144,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 > Marks an entity as *cold* on the X-Ray Visor. Cold entities are invisible. Please note that an entity cannot be both hot and cold. A cold entity cannot be locked on.
 ###### Arguments
 > <code>1. Boolean</code> <code>**cold**</code> True if cold, False if normal.
+
 > <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Cold*. False on failure.
@@ -1176,6 +1178,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 > Marks an entity as *hot* on the Thermal Visor. Hot entities appear red.
 ###### Arguments
 > <code>1. Boolean</code> <code>**hot**</code> True if hot, False if normal.
+
 > <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Hot*. False on failure.
@@ -1189,6 +1192,7 @@ List of all accessible API endpoints to facilitate addon integrations. To view t
 > Marks an entity as *cold* on the Thermal Visor. Cold entities are invisible. A cold entity cannot be locked on.
 ###### Arguments
 > <code>1. Boolean</code> <code>**cold**</code> True if cold, False if normal.
+
 > <code>2. Boolean</code> <code>**invalidate**</code> If true, will force the visor to update its material override now.
 ###### Returns
 > <code>1. Boolean</code> *Cold*. False on failure.
