@@ -418,7 +418,7 @@ if (CLIENT) then
 		if (!IsValid(ent)) then return; end
 
 		if (net.ReadBool()) then
-			ent.__mp_VisorInvalidateOverride = true
+			ent.__mp_VisorInvalidateOverride = true;
 		end
 
 		ent.__mp_VisorNextOverride = CurTime() + 1;
