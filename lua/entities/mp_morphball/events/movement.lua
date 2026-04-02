@@ -64,6 +64,7 @@ function MORPHBALL:GetDirectionalInput(owner)
 	if (keyBack)    then self.Direction:Sub(moveForward); end
 	if (keyRight)   then self.Direction:Add(moveRight); end
 	if (keyLeft)    then self.Direction:Sub(moveRight); end
+	self.Direction:Normalize();
 
 	return self.Direction;
 end
