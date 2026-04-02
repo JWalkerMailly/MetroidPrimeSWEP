@@ -228,13 +228,19 @@ function PROJECTILE:Shoot(shootdata, degrees, parent, fullCharge)
 	return self:ShootCallback(shootdata, degrees, parent, fullCharge);
 end
 
+PROJECTILE.Oscillation = Vector(0, 0, 0);
+
 function PROJECTILE:Oscillate()
 
 	-- Define oscillation wave function according to oscillator parameters.
 	local wave        = math.sin((CurTime() - self.SpawnTime) * self:GetOscillationSpeed() + self.OscillationDegree);
 	local oscillator  = (wave + self.OscillationDomain) / (1.0 + self.OscillationDomain);
-	local oscillation = self.RollRelativeUp * oscillator * self.OscillationFactor;
-	self:SetPos(self.RollRelativeOffset + oscillation);
+
+	self.Oscillation:Set(self.RollRelativeUp);
+	self.Oscillation:Mul(oscillator);
+	self.Oscillation:Mul(self.OscillationFactor);
+	self.Oscillation:Add(self.RollRelativeOffset);
+	self:SetPos(self.Oscillation);
 
 	return true;
 end
