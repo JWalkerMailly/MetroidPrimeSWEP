@@ -13,6 +13,7 @@ CreateConVar("mp_cheats_autosave",         "0", { FCVAR_SERVER_CAN_EXECUTE, FCVA
 CreateConVar("mp_cheats_damagetakenscale", "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 1, 10);
 CreateConVar("mp_cheats_damagegivenscale", "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 1, 10);
 CreateConVar("mp_cheats_scandashing",      "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 0, 1);
+CreateConVar("mp_cheats_infiniteammo",     "0", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 0, 1);
 
 if (CLIENT) then
 	CreateClientConVar("mp_options_viewmodelfov",   "62", true, false);

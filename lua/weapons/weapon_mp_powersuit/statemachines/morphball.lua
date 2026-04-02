@@ -300,7 +300,7 @@ function POWERSUIT.MorphBall:UsePowerBombAmmo(amount)
 	local current = self:GetPowerBombAmmo();
 	if (self:GetPowerBombMaxAmmo() <= 0 || current < amount) then return false; end
 
-	self.Weapon:SetPowerBombAmmo(current - amount);
+	self:AddPowerBombAmmo(-amount);
 	return true;
 end
 
@@ -332,6 +332,13 @@ function POWERSUIT.MorphBall:AddPowerBombAmmo(amount)
 end
 
 function POWERSUIT.MorphBall:SetPowerBombAmmo(amount)
+
+	local infinite = GetConVar("mp_cheats_infiniteammo"):GetBool();
+
+	if (infinite && amount < self:GetPowerBombAmmo()) then
+		return -1;
+	end
+
 	local max = self:GetPowerBombMaxAmmo();
 	local ammo = math.Clamp(amount, 0, max);
 	self.Weapon:SetPowerBombAmmo(ammo);

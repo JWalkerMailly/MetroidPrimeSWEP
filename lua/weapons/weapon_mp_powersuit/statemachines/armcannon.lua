@@ -513,7 +513,7 @@ function POWERSUIT.ArmCannon:UseMissileAmmo(amount)
 	local current = self:GetMissileAmmo();
 	if (current < amount) then return false; end
 
-	self.Weapon:SetMissileAmmo(current - amount);
+	self:AddAmmo("Missile", -amount);
 	return true;
 end
 
@@ -650,6 +650,13 @@ function POWERSUIT.ArmCannon:AddAmmo(type, amount)
 end
 
 function POWERSUIT.ArmCannon:SetAmmo(type, amount)
+
+	local infinite = GetConVar("mp_cheats_infiniteammo"):GetBool();
+
+	if (infinite && amount < self:GetAmmo(type)) then
+		return -1;
+	end
+
 	local max = self:GetMaxAmmo(type);
 	local ammo = math.Clamp(amount, 0, max);
 	self.Weapon["Set" .. type .. "Ammo"](self.Weapon, ammo);

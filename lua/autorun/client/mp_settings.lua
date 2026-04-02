@@ -110,6 +110,9 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
 		panel:NumSlider("#mp.settings.options.game.damagetaken.text", "mp_cheats_damagetakenscale", 1, 10, 0);
 		panel:ControlHelp("#mp.settings.options.game.damagetaken.help");
+
+		panel:CheckBox("#mp.settings.options.game.infiniteammo.text", "mp_cheats_infiniteammo");
+		panel:ControlHelp("#mp.settings.options.game.infiniteammo.help");
 	end);
 
 	-- Create State options menu.
