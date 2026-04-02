@@ -108,13 +108,13 @@ function POWERSUIT:ShouldResetView(ply)
 	return shouldReset;
 end
 
-local randomSway = Angle(0, 0, 0);
+POWERSUIT.RandomSway = Angle(0, 0, 0);
 
 function POWERSUIT:GetRandomViewAngle(maxPitch, maxYaw, pitchMod, yawMod, speed, container, maxDuration, maxWait)
 
 	-- Calculate random modulation for sway effect.
-	randomSway.p = WGL.Modulation(pitchMod, speed) * maxPitch;
-	randomSway.y = WGL.Modulation(yawMod, speed) * maxYaw;
+	self.RandomSway.p = WGL.Modulation(pitchMod, speed) * maxPitch;
+	self.RandomSway.y = WGL.Modulation(yawMod, speed) * maxYaw;
 
 	if (CurTime() > container.Time) then
 
@@ -129,7 +129,7 @@ function POWERSUIT:GetRandomViewAngle(maxPitch, maxYaw, pitchMod, yawMod, speed,
 	-- Lerp between our random angle and the default angle (0, 0, 0) based on the current lerp factor.
 	if (CurTime() < container.Time) then container.Lerp = Lerp(FrameTime() * self.ViewResetSpeed, container.Lerp, 0);
 	else container.Lerp = Lerp(FrameTime() * 0.75, container.Lerp, 1); end
-	return Lerp(container.Lerp, WGL.ZeroAng, randomSway);
+	return Lerp(container.Lerp, WGL.ZeroAng, self.RandomSway);
 end
 
 function POWERSUIT:LockView(ply)
@@ -170,8 +170,8 @@ function POWERSUIT:GetViewModelRollPos(deg, angle)
 	return angle:Right() * right - angle:Up() * up;
 end
 
-local walkBob = Vector(0, 0, 0);
-local viewmodelAngle = Angle(0, 0, 0);
+POWERSUIT.WalkBob = Vector(0, 0, 0);
+POWERSUIT.ViewmodelAngle = Angle(0, 0, 0);
 
 function POWERSUIT:GetViewModelPosition(pos, angle)
 
@@ -186,10 +186,10 @@ function POWERSUIT:GetViewModelPosition(pos, angle)
 	-- Compute final viewmodel angle based on sway and breathing.
 	local owner = self:GetOwner();
 	self.LastViewModelSway = self:GetRandomViewAngle(5, 7.5, 11, 8, 4, self.ViewModelSway, 12, 24);
-	viewmodelAngle:SetUnpacked(math.ease.InOutSine(math.sin(CurTime() * 1.2)) / 2, 0, 0);
-	viewmodelAngle:Add(self:LockView(owner) || angle);
-	viewmodelAngle:Add(self.LastViewSway);
-	viewmodelAngle:Add(self.LastViewModelSway);
+	self.ViewmodelAngle:SetUnpacked(math.ease.InOutSine(math.sin(CurTime() * 1.2)) / 2, 0, 0);
+	self.ViewmodelAngle:Add(self:LockView(owner) || angle);
+	self.ViewmodelAngle:Add(self.LastViewSway);
+	self.ViewmodelAngle:Add(self.LastViewModelSway);
 
 	-- Get newest beam roll and decide if we should start rolling the viewmodel.
 	local beamRoll = self.ArmCannon:GetBeamRoll();
@@ -215,13 +215,13 @@ function POWERSUIT:GetViewModelPosition(pos, angle)
 	end
 
 	-- Compute viewmodel bob.
-	walkBob:SetUnpacked(0, 0, self:GetWalkBob() * 4);
-	local weaponBob = LerpVector(FrameTime() * 17.422, self.LastBobPos || vector_origin, angle:Right() * self:GetWalkBob(0.5) * 3 + walkBob);
+	self.WalkBob:SetUnpacked(0, 0, self:GetWalkBob() * 4);
+	local weaponBob = LerpVector(FrameTime() * 17.422, self.LastBobPos || vector_origin, angle:Right() * self:GetWalkBob(0.5) * 3 + self.WalkBob);
 	self.LastBobPos = weaponBob;
 
 	-- Apply final roll and compute viewmodel position in local projection space.
-	viewmodelAngle.r = self.LastViewModelRoll;
-	return pos + self:GetViewModelRollPos(self.LastViewModelRoll, angle) + self.LastBobPos, viewmodelAngle;
+	self.ViewmodelAngle.r = self.LastViewModelRoll;
+	return pos + self:GetViewModelRollPos(self.LastViewModelRoll, angle) + self.LastBobPos, self.ViewmodelAngle;
 end
 
 function POWERSUIT:DrawViewModelEffects(vm, ply)
