@@ -37,6 +37,18 @@ if (CLIENT) then
 	CreateClientConVar("mp_controls_selector3",     "90", true, true);
 	CreateClientConVar("mp_controls_selector4",     "89", true, true);
 	concommand.Add("mp_options_playermodel_get", function(ply) gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=2701609725"); end);
+
+	local function updateControls()
+		local weapon = LocalPlayer():GetPowerSuit();
+		if (IsValid(weapon)) then weapon:LoadControls(); end
+	end
+
+	cvars.AddChangeCallback("mp_controls_gesture",       updateControls);
+	cvars.AddChangeCallback("mp_controls_selectorlayer", updateControls);
+	cvars.AddChangeCallback("mp_controls_selector1",     updateControls);
+	cvars.AddChangeCallback("mp_controls_selector2",     updateControls);
+	cvars.AddChangeCallback("mp_controls_selector3",     updateControls);
+	cvars.AddChangeCallback("mp_controls_selector4",     updateControls);
 end
 
 -- ----------------------------------------------
