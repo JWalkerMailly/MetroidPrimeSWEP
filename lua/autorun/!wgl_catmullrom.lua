@@ -101,8 +101,8 @@ function WGL.CatmullRom:AddWayPoint(wayPoint, wayRight, alpha)
 	local wayPoints     = self.WayPoints;
 	local wayRights     = self.WayRights;
 	local wayCount      = #wayPoints + 1;
-	wayPoints[wayCount] = wayPoint;
-	wayRights[wayCount] = wayRight;
+	wayPoints[wayCount] = Vector(wayPoint);
+	wayRights[wayCount] = Vector(wayRight);
 	if (#wayPoints < 4) then return; end
 
 	-- Define current spline parameters.
