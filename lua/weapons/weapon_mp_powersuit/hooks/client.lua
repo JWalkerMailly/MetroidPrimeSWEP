@@ -135,6 +135,10 @@ local noiseOut = Material("huds/noise2");
 local vignette = Material("huds/vignette");
 hook.Add("PostDrawHUD", "POWERSUIT.DeathScreenRender", function()
 
+	local w = ScrW();
+	local h = ScrH();
+	local t = CurTime();
+
 	-- Do nothing if death screen is not requested. Death time will only be
 	-- valid if the player was using the powersuit upon the moment of death.
 	local ply = LocalPlayer();
@@ -143,33 +147,36 @@ hook.Add("PostDrawHUD", "POWERSUIT.DeathScreenRender", function()
 	if (!deathScreen || !deathTime) then return; end
 
 	-- Texture size animations.
-	local verticalFadeOut    = math.ease.InOutCubic(1 - WGL.Clamp((CurTime() - (deathTime + 0.4)) / 0.4));
-	local verticalFadeSize   = math.Clamp(ScrH() * verticalFadeOut, ScrH() * 0.03, ScrH());
-	local horizontalFadeOut  = 1 - WGL.Clamp((CurTime() - (deathTime + 0.95)) / 0.5);
-	local horizontalFadeSize = math.Clamp(ScrW() * horizontalFadeOut, ScrH() * 0.03, ScrW());
+	local verticalFadeOut    = math.ease.InOutCubic(1 - WGL.Clamp((t - (deathTime + 0.4)) / 0.4));
+	local verticalFadeSize   = math.Clamp(h * verticalFadeOut, h * 0.03, h);
+	local horizontalFadeOut  = 1 - WGL.Clamp((t - (deathTime + 0.95)) / 0.5);
+	local horizontalFadeSize = math.Clamp(w * horizontalFadeOut, h * 0.03, w);
 
 	-- Texture fade animations.
-	local alphaFade      = (1 - WGL.Clamp(CurTime() - (deathTime + 1.4)));
-	local noiseFadeIn    = 255 * (WGL.Clamp((CurTime() - deathTime) / 0.15));
-	local whiteFadeIn    = 200 * (WGL.Clamp(CurTime()  - (deathTime + 0.5)));
-	local whiteFadeOut   = 100 * (1 - WGL.Clamp((CurTime()  - deathTime) / 0.4)) + 50 * alphaFade;
-	local vignetteFadeIn = 255 * (WGL.Clamp((CurTime() - (deathTime + 0.3)) / 0.3));
-	local noiseFadeOut   = 255 * (WGL.Clamp((CurTime() - (deathTime + 0.55)) / 0.2));
+	local alphaFade      = (1 - WGL.Clamp(t - (deathTime + 1.4)));
+	local noiseFadeIn    = 255 * (WGL.Clamp((t - deathTime) / 0.15));
+	local whiteFadeIn    = 200 * (WGL.Clamp(t  - (deathTime + 0.5)));
+	local whiteFadeOut   = 100 * (1 - WGL.Clamp((t  - deathTime) / 0.4)) + 50 * alphaFade;
+	local vignetteFadeIn = 255 * (WGL.Clamp((t - (deathTime + 0.3)) / 0.3));
+	local noiseFadeOut   = 255 * (WGL.Clamp((t - (deathTime + 0.55)) / 0.2));
 	local screenFadeOut  = 255 * alphaFade;
 
 	-- Render death screen.
-	local halfW = ScrW() / 2
-	local halfH = ScrH() / 2;
+	local halfW = w * 0.5;
+	local halfH = h * 0.5;
 	local randU = math.Rand(0, 0.1);
 	local randV = math.Rand(0, 0.5);
 	local _, death = GetDeathScreen();
-	WGL.Rect(-1, -1, ScrW() + 2, ScrH() + 2, 0, 0, 0, 255);
+	WGL.Rect(-1, -1, w + 2, h + 2, 0, 0, 0, 255);
 	WGL.TextureRot(death,    halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, screenFadeOut, screenFadeOut, screenFadeOut, screenFadeOut);
 	WGL.TextureRot(white,    halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, whiteFadeOut, whiteFadeOut, whiteFadeOut, whiteFadeOut);
-	WGL.TextureUV(noiseIn,   halfW, halfH, horizontalFadeSize, verticalFadeSize, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, noiseFadeIn, noiseFadeIn, noiseFadeIn, noiseFadeIn * alphaFade);
-	WGL.TextureUV(noiseOut,  halfW, halfH, horizontalFadeSize, verticalFadeSize, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, 255, 255, 255, noiseFadeOut * alphaFade);
+	WGL.TextureUV(noiseIn,   halfW, halfH, horizontalFadeSize - 2, verticalFadeSize - 2, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, noiseFadeIn, noiseFadeIn, noiseFadeIn, noiseFadeIn * alphaFade);
+	WGL.TextureUV(noiseOut,  halfW, halfH, horizontalFadeSize - 2, verticalFadeSize - 2, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, 255, 255, 255, noiseFadeOut * alphaFade);
 	WGL.TextureRot(white,    halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, whiteFadeIn, whiteFadeIn, whiteFadeIn, screenFadeOut);
-	WGL.TextureRot(vignette, halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, 255, 255, 255, vignetteFadeIn);
+
+	if (screenFadeOut != 0) then
+		WGL.TextureRot(vignette, halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, 255, 255, 255, vignetteFadeIn);
+	end
 end);
 
 -- ------------
@@ -236,6 +243,8 @@ POWERSUIT.Hooks["CalcView"] = function(weapon, ply, viewPos, angles, fov)
 	end
 end
 
+local downPitch = Angle(10, 0, 0);
+
 POWERSUIT.Hooks["CalcVehicleView"] = function (weapon, vehicle, ply, view)
 
 	-- Wait for morphball to be fully initialized before processing this hook.
@@ -269,10 +278,11 @@ POWERSUIT.Hooks["CalcVehicleView"] = function (weapon, vehicle, ply, view)
 		mask         = MASK_PLAYERSOLID_BRUSHONLY
 	});
 
+	view.angles:Add(downPitch);
 	ply.__mp_FOVTransition = morphball:GetOnGround() && Lerp(FrameTime() * 2, ply.__mp_FOVTransition || view.fov, fov) || ply.__mp_FOVTransition;
 	local finalView  = {
 		origin       = upTrace.HitPos;
-		angles       = view.angles + Angle(10, 0, 0);
+		angles       = view.angles,
 		fov          = ply.__mp_FOVTransition,
 		drawviewer   = false;
 	};

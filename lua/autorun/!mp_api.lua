@@ -13,6 +13,7 @@ CreateConVar("mp_cheats_autosave",         "0", { FCVAR_SERVER_CAN_EXECUTE, FCVA
 CreateConVar("mp_cheats_damagetakenscale", "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 1, 10);
 CreateConVar("mp_cheats_damagegivenscale", "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 1, 10);
 CreateConVar("mp_cheats_scandashing",      "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 0, 1);
+CreateConVar("mp_cheats_infiniteammo",     "0", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 0, 1);
 
 if (CLIENT) then
 	CreateClientConVar("mp_options_viewmodelfov",   "62", true, false);
@@ -36,6 +37,18 @@ if (CLIENT) then
 	CreateClientConVar("mp_controls_selector3",     "90", true, true);
 	CreateClientConVar("mp_controls_selector4",     "89", true, true);
 	concommand.Add("mp_options_playermodel_get", function(ply) gui.OpenURL("https://steamcommunity.com/sharedfiles/filedetails/?id=2701609725"); end);
+
+	local function updateControls()
+		local weapon = LocalPlayer():GetPowerSuit();
+		if (IsValid(weapon)) then weapon:LoadControls(); end
+	end
+
+	cvars.AddChangeCallback("mp_controls_gesture",       updateControls);
+	cvars.AddChangeCallback("mp_controls_selectorlayer", updateControls);
+	cvars.AddChangeCallback("mp_controls_selector1",     updateControls);
+	cvars.AddChangeCallback("mp_controls_selector2",     updateControls);
+	cvars.AddChangeCallback("mp_controls_selector3",     updateControls);
+	cvars.AddChangeCallback("mp_controls_selector4",     updateControls);
 end
 
 -- ----------------------------------------------
@@ -413,8 +426,17 @@ end
 
 if (CLIENT) then
 	net.Receive("MP.AddEntityToMaterialSwapCache", function()
-		local ent = net.ReadEntity()
+
+		local ent = net.ReadEntity();
 		if (!IsValid(ent)) then return; end
+
+		if (net.ReadBool()) then
+			ent.__mp_VisorInvalidateOverride = true;
+		end
+
+		ent.__mp_VisorNextOverride = CurTime() + 1;
+		ent.__mp_VisorAlphaOverride = net.ReadInt(9);
+
 		game.MetroidPrimeMaterialSwaps[tostring(ent:EntIndex())] = ent;
 	end);
 end
@@ -623,42 +645,37 @@ function _player:EnablePowerSuitVisor(index, enable)
 	return true;
 end
 
-function _entity:AddToMaterialSwapCache()
+function _entity:AddToMaterialSwapCache(invalidate)
 	net.Start("MP.AddEntityToMaterialSwapCache");
 		net.WriteEntity(self);
+		net.WriteBool(invalidate);
+		net.WriteInt(self:GetColor().a, 9);
 	net.Broadcast();
 end
 
-function _entity:SetXRayHot(hot)
+local function setVisorRules(entity, name, value, invalidate)
 
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.XRayVisorHot", hot);
-	self:AddToMaterialSwapCache();
-	return hot;
+	if (!IsValid(entity)) then return false; end
+	entity:SetNWBool(name, value);
+	entity:AddToMaterialSwapCache(invalidate);
+
+	return value;
 end
 
-function _entity:SetXRayCold(cold)
-
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.XRayVisorCold", cold);
-	self:AddToMaterialSwapCache();
-	return cold;
+function _entity:SetXRayHot(hot, invalidate)
+	return setVisorRules(self, "MP.XRayVisorHot", hot, invalidate);
 end
 
-function _entity:SetThermalHot(hot)
-
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.ThermalVisorHot", hot);
-	self:AddToMaterialSwapCache();
-	return hot;
+function _entity:SetXRayCold(cold, invalidate)
+	return setVisorRules(self, "MP.XRayVisorCold", cold, invalidate);
 end
 
-function _entity:SetThermalCold(cold)
+function _entity:SetThermalHot(hot, invalidate)
+	return setVisorRules(self, "MP.ThermalVisorHot", hot, invalidate);
+end
 
-	if (!IsValid(self)) then return false; end
-	self:SetNWBool("MP.ThermalVisorCold", cold);
-	self:AddToMaterialSwapCache();
-	return cold;
+function _entity:SetThermalCold(cold, invalidate)
+	return setVisorRules(self, "MP.ThermalVisorCold", cold, invalidate);
 end
 
 -- lua_run print(Entity(1):EnableMorphBallBombs(false));

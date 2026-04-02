@@ -1,5 +1,6 @@
 
 local Helmet      = WGLComponent:New(POWERSUIT, "Helmet");
+Helmet.HelmetBob  = Vector(0, 0, 0);
 Helmet.LastBobPos = 0;
 Helmet.Models     = { ["Helmet"] = Model("models/metroid/helmet/v_helmet.mdl") };
 
@@ -9,12 +10,14 @@ function Helmet:Draw(weapon, visor, pos, angle, blend, widescreen)
 	cam.IgnoreZ(true);
 
 		-- Helmet bob is used as smoothing when transitioning from walking to not walking.
-		local helmetBob = Lerp(FrameTime() * 17.422, self.LastBobPos, weapon:GetWalkBob());
-		self.LastBobPos = helmetBob;
+		local bob = Lerp(FrameTime() * 17.422, self.LastBobPos, weapon:GetWalkBob());
+		self.HelmetBob:SetUnpacked(0, 0, bob);
+		self.HelmetBob:Add(pos);
+		self.LastBobPos = bob;
 
 		-- Render helmet from modelcache.
 		render.SetBlend(blend);
-		self:DrawModel("Helmet", pos + Vector(0, 0, helmetBob), angle);
+		self:DrawModel("Helmet", self.HelmetBob, angle);
 		render.SetBlend(1);
 
 	cam.End3D();

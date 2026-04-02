@@ -1,9 +1,15 @@
 
-local CombatVisor  = WGLComponent:New(POWERSUIT, "CombatVisor");
-CombatVisor.Models = {
-	["GUI"]        = Model("models/metroid/hud/v_ui_context.mdl"),
-	["Orbit"]      = Model("models/metroid/hud/v_orbit.mdl"),
-	["StaticGUI"]  = Model("models/metroid/hud/combatvisor/v_staticgui.mdl")
+local CombatVisor             = WGLComponent:New(POWERSUIT, "CombatVisor");
+CombatVisor.HealthBarColor    = Color(116, 194, 255);
+CombatVisor.HealthNotifColor  = Color(255, 174, 34);
+CombatVisor.AlertIconColor    = Color(93,  123, 153);
+CombatVisor.AlertNotifColor   = Color(255, 174, 34);
+CombatVisor.MissileNotifColor = Color(255, 174, 34);
+CombatVisor.ChargeColor       = Color(93,  123, 153);
+CombatVisor.ChargeTickColor   = Color(45,  70,  95);
+CombatVisor.Models            = {
+	["StaticGUI"]             = Model("models/metroid/hud/combatvisor/v_staticgui.mdl"),
+	["Orbit"]                 = Model("models/metroid/hud/v_orbit.mdl")
 };
 
 -- Setup UV coordinates for numbers texture lookup.
@@ -27,6 +33,10 @@ local lockChargeTick      = Material("huds/combat/charge_tick");
 local lockMissile         = Material("huds/combat/lock_missile");
 
 local healthBarWarningColor = Color(227, 113, 47, 255);
+local unchargedColor        = Color(93,  123, 153);
+local chargedColor          = Color(116, 194, 255);
+local unchargeTickColor     = Color(45,  70,  95);
+local chargedTickColor      = Color(100, 130, 160);
 
 function CombatVisor:Initialize()
 	self.MissileLerpFont      = {};
@@ -41,8 +51,9 @@ function CombatVisor:Initialize()
 end
 
 function CombatVisor:DrawHealthNotification(alpha)
-	self.HealthBarColor = Color(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
-	draw.SimpleText("Energy Low", "Metroid Prime Visor UI Bold", 512, 50, Color(255, 174, 34, 255 * alpha), TEXT_ALIGN_CENTER);
+	self.HealthBarColor:SetUnpacked(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
+	self.HealthNotifColor.a = 255 * alpha;
+	draw.SimpleText("Energy Low", "Metroid Prime Visor UI Bold", 512, 50, self.HealthNotifColor, TEXT_ALIGN_CENTER);
 end
 
 function CombatVisor:HealthNotificationCallback(weapon)
@@ -108,7 +119,7 @@ function CombatVisor:DrawHealth(weapon)
 	WGL.TextureUV(numbersUIMaterial, 383, 23, 20, 23, u * ones, 0, u + (u * ones), v, false, 93, 123, 153, 255);
 
 	-- Render health notification system.
-	self.HealthBarColor = Color(116, 194, 255, 255);
+	self.HealthBarColor:SetUnpacked(116, 194, 255, 255);
 	weapon:HealthNotification(health, maxHealth, self.DrawHealthNotification, self.HealthNotificationCallback, self, weapon);
 
 	-- Health bar.
@@ -117,9 +128,11 @@ end
 
 function CombatVisor:DrawAlertNotification(dangerZone, alpha, barOffset, visorOpacity)
 	if (dangerZone) then
-		draw.SimpleText("Damage",  "Metroid Prime Visor UI", 205, 128 + barOffset, Color(255, 0, 0, alpha * visorOpacity));
+		self.AlertNotifColor:SetUnpacked(255, 0, 0, alpha * visorOpacity);
+		draw.SimpleText("Damage",  "Metroid Prime Visor UI", 205, 128 + barOffset, self.AlertNotifColor);
 	else
-		draw.SimpleText("Warning", "Metroid Prime Visor UI", 205, 128 + barOffset, Color(255, 174, 34, alpha * visorOpacity));
+		self.AlertNotifColor:SetUnpacked(255, 174, 34, alpha * visorOpacity);
+		draw.SimpleText("Warning", "Metroid Prime Visor UI", 205, 128 + barOffset, self.AlertNotifColor);
 	end
 end
 
@@ -133,11 +146,12 @@ function CombatVisor:DrawAlert(weapon, visorOpacity)
 	local alertRatio = weapon:GetDangerRatio();
 	local baseAlpha  = 255 * visorOpacity;
 	local barOffset  = (143 - math.floor(143 * alertRatio));
-	local baseColor  = Color(93, 123, 153, baseAlpha);
-	if (alertRatio > 0.9) then baseColor = Color(227, 113, 47, baseAlpha); end
+	if (alertRatio > 0.9) then self.AlertIconColor:SetUnpacked(227, 113, 47, baseAlpha);
+	else self.AlertIconColor:SetUnpacked(93, 123, 153, baseAlpha); end
 
 	-- Handle alert increase/decrease indicators.
-	local r, g, b, a = WGL.LerpColorEvent(baseColor, Color(116, 194, 255, baseAlpha), alertRatio, 2, "change", state, function(event, fraction)
+	local c = self.AlertIconColor;
+	local r, g, b, a = WGL.LerpColorEventRaw(c.r, c.g, c.b, c.a, 116, 194, 255, baseAlpha, alertRatio, 2, "change", state, function(event, fraction)
 		if (event == "increase") then WGL.TextureRot(arrowNoticeMaterial, 180, 107 + barOffset, 32, 10, 0, 93, 123, 153,   Lerp(fraction, baseAlpha, 0)); end
 		if (event == "decrease") then WGL.TextureRot(arrowNoticeMaterial, 180, 169 + barOffset, 32, 10, 180, 93, 123, 153, Lerp(fraction, baseAlpha, 0)); end
 	end):Unpack();
@@ -155,11 +169,14 @@ function CombatVisor:DrawAlert(weapon, visorOpacity)
 end
 
 function CombatVisor:DrawMissileNotification(remaining, alpha, barOffset, visorOpacity)
+
+	self.MissileNotifColor.a = alpha * visorOpacity;
+
 	if (remaining > 0) then
-		draw.SimpleText("Missiles", "Metroid Prime Visor UI", 780, 116 + barOffset, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_RIGHT);
-		draw.SimpleText("Low",      "Metroid Prime Visor UI", 780, 136 + barOffset, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_RIGHT);
+		draw.SimpleText("Missiles", "Metroid Prime Visor UI", 780, 116 + barOffset, self.MissileNotifColor, TEXT_ALIGN_RIGHT);
+		draw.SimpleText("Low",      "Metroid Prime Visor UI", 780, 136 + barOffset, self.MissileNotifColor, TEXT_ALIGN_RIGHT);
 	else
-		draw.SimpleText("Depleted", "Metroid Prime Visor UI", 780, 126 + barOffset, Color(255, 174, 34, alpha * visorOpacity), TEXT_ALIGN_RIGHT);
+		draw.SimpleText("Depleted", "Metroid Prime Visor UI", 780, 126 + barOffset, self.MissileNotifColor, TEXT_ALIGN_RIGHT);
 	end
 end
 
@@ -179,10 +196,10 @@ function CombatVisor:DrawMissiles(weapon, visorOpacity)
 	local tens         = math.floor(missiles % 100 / 10);
 	local ones         = math.floor(missiles % 100 - (tens * 10));
 	local fontPos      = 130 + barOffset;
-	local r, g, b, a   = WGL.LerpColorEvent(Color(93, 123, 153, baseAlpha), Color(116, 194, 255, baseAlpha), missiles, 2, "change", state):Unpack();
+	local r, g, b, a   = WGL.LerpColorEventRaw(93, 123, 153, baseAlpha, 116, 194, 255, baseAlpha, missiles, 2, "change", state):Unpack();
 
 	-- Render missile increase/decrease indicators.
-	local fr, fg, fb, fa = WGL.LerpColorEvent(Color(45, 70, 95, baseAlpha),   Color(93, 123, 153, baseAlpha),  missiles, 2, "change", self.MissileLerpFont, function(event, fraction)
+	local fr, fg, fb, fa = WGL.LerpColorEventRaw(45, 70, 95, baseAlpha, 93, 123, 153, baseAlpha, missiles, 2, "change", self.MissileLerpFont, function(event, fraction)
 		if (event == "increase") then WGL.TextureRot(arrowNoticeMaterial, 842, 107 + barOffset, 32, 10, 0, 93, 123, 153,   Lerp(fraction, baseAlpha, 0)); end
 		if (event == "decrease") then WGL.TextureRot(arrowNoticeMaterial, 842, 169 + barOffset, 32, 10, 180, 93, 123, 153, Lerp(fraction, baseAlpha, 0)); end
 	end):Unpack();
@@ -231,26 +248,25 @@ end
 function CombatVisor:DrawRadar(visorOpacity)
 
 	-- Offload radar rendering to a new texture.
-	self:PushRenderTexture("rt_MPRadar", 64, 64, { ["$additive"] = 1 }, false);
-		cam.Start2D();
+	self:Start2DRenderContext("rt_MPRadar", 64, 64, { ["$additive"] = 1 }, false);
 
-			-- Draw radar.
-			render.ClearDepth();
-			render.Clear(0, 0, 0, 0);
-			render.SetColorModulation(1, 1, 1);
-			WGL.Texture(radarMaterial, 0, 0, 64, 64, 93, 123, 153, 255 * visorOpacity);
+		WGL.Texture(radarMaterial, 0, 0, 64, 64, 93, 123, 153, 255 * visorOpacity);
 
-			-- Draw radar targets.
-			local npcs = ents.FindByClass("*npc*");
-			for k,_v in player.Iterator() do self:DrawRadarTarget(_v, visorOpacity); end
-			for k,_v in ipairs(npcs)      do self:DrawRadarTarget(_v, visorOpacity); end
+		-- Draw radar targets.
+		local npcs = ents.FindByClass("*npc*");
+		for k,_v in player.Iterator() do self:DrawRadarTarget(_v, visorOpacity); end
+		for k,_v in ipairs(npcs)      do self:DrawRadarTarget(_v, visorOpacity); end
 
-		cam.End2D();
+	cam.End2D();
 	render.PopRenderTarget();
 
 	-- Render radar.
 	WGL.Texture(self:GetRenderTexture("rt_MPRadar"), 145, 45, 90, 65, 93, 123, 153, 255);
 end
+
+local screenPos = Vector(0, 0, 0);
+local screenCenter = Vector(0, 0, 0);
+local screenTarget = Vector(0, 0, 0);
 
 function CombatVisor:DrawReticle(weapon, target, validTarget, locked, fovRatio)
 
@@ -262,8 +278,9 @@ function CombatVisor:DrawReticle(weapon, target, validTarget, locked, fovRatio)
 	local cy         = ScrH() / 2;
 	local reticleX   = cx;
 	local reticleY   = cy;
-	local screenPos  = self.LastReticleVector;
-	if (locked) then screenPos = Vector(cx, cy, 0); end
+	screenCenter:SetUnpacked(cx, cy, 0);
+	screenPos:Set(self.LastReticleVector);
+	if (locked) then screenPos:Set(screenCenter); end
 
 	-- Reticle alpha, this will modulate the auto lock and charge reticle.
 	local alpha      = 255;
@@ -285,7 +302,7 @@ function CombatVisor:DrawReticle(weapon, target, validTarget, locked, fovRatio)
 		-- No target found, reset everything back to the center of the screen.
 		lerp      = Lerp(FrameTime(), self.LastReticleLerp, 0);
 		alpha     = Lerp(FrameTime() * 10, self.LastReticleAlpha, 0);
-		screenPos = LerpVector(FrameTime() * 10, self.LastReticleVector, Vector(cx, cy, 0));
+		screenPos:Set(LerpVector(FrameTime() * 10, self.LastReticleVector, screenCenter));
 		self.LastReticleTarget = NULL;
 	else
 
@@ -298,10 +315,10 @@ function CombatVisor:DrawReticle(weapon, target, validTarget, locked, fovRatio)
 		-- Last reticle movement is compounded every frame onto the screen position
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && validTarget) then
-			local targetPosLocal     = target:GetLockOnPosition():ToScreen();
-			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
-			alpha                    = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
-			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);
+			local targetPosLocal = target:GetLockOnPosition():ToScreen();
+			screenTarget:SetUnpacked(targetPosLocal.x, targetPosLocal.y, 0);
+			alpha = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
+			screenPos:Set(LerpVector(self.LastReticleMovement, self.LastReticleVector, screenTarget));
 			self.LastReticleMovement = Lerp(FrameTime(), self.LastReticleMovement, 1);
 		end
 	end
@@ -322,26 +339,28 @@ function CombatVisor:DrawReticle(weapon, target, validTarget, locked, fovRatio)
 	if (beamOpen) then missile = Lerp(FrameTime() * 5, self.LastBeamOpenLerp, 1);
 	else missile = Lerp(FrameTime() * 5, self.LastBeamOpenLerp, 0); end
 
-	-- Render reticle.
 	local fovCompensation = 1 - fovRatio;
+	local chargeColor = WGL.LerpColor(chargeFull, unchargedColor, chargedColor, self.ChargeColor);
+
+	-- Render reticle.
 	WGL.TextureRot(reticleMaterial, screenPos[1], screenPos[2], WGL.Y(162 * fovCompensation), WGL.Y(162 * fovCompensation), CurTime() * 100, 45, 70, 95, alpha);
 	WGL.TextureRot(lockOuter,   reticleX, reticleY, WGL.Y(256 * fovCompensation) * lerp, WGL.Y(256 * fovCompensation) * lerp, CurTime() * 125, 93, 123, 153, lerpAlpha);
 	WGL.TextureRot(lockInner,   reticleX, reticleY, WGL.Y(256 * fovCompensation) * lerp, WGL.Y(256 * fovCompensation) * lerp, CurTime() * -125, 116, 194, 255, lerpAlpha);
-	WGL.TextureRot(lockCharge,  reticleX, reticleY, WGL.Y(290 * fovCompensation) * lerp, WGL.Y(290 * fovCompensation) * lerp, 0, WGL.LerpColor(chargeFull, Color(93, 123, 153, lerpAlpha), Color(116, 194, 255, lerpAlpha)):Unpack());
+	WGL.TextureRot(lockCharge,  reticleX, reticleY, WGL.Y(290 * fovCompensation) * lerp, WGL.Y(290 * fovCompensation) * lerp, 0, chargeColor.r, chargeColor.g, chargeColor.b, lerpAlpha);
 	WGL.TextureRot(lockMissile, reticleX, reticleY, WGL.Y(330 * fovCompensation) * lerp * missile, WGL.Y(330 * fovCompensation) * lerp * missile, 0, 255, 160, 0, lerpAlpha);
 	WGL.TextureRot(lockMissile, reticleX, reticleY, WGL.Y(330 * fovCompensation) * lerp * missile, WGL.Y(330 * fovCompensation) * lerp * missile, 90, 255, 160, 0, lerpAlpha);
 
 	-- Render reticle charge ticks.
-	local r, g, b, a = WGL.LerpColor(chargeFull, Color(45, 70, 95, lerpAlpha), Color(100, 130, 160, lerpAlpha)):Unpack()
-	local tickSize   = WGL.Y(290 * fovCompensation) * lerp;
+	local r, g, b = WGL.LerpColor(chargeFull, unchargeTickColor, chargedTickColor, self.ChargeTickColor):Unpack()
+	local tickSize = WGL.Y(290 * fovCompensation) * lerp;
 	for i = 1, chargeTick do
-		WGL.TextureRot(lockChargeTick, reticleX, reticleY, tickSize, tickSize, (i - 1) * 9, r, g, b, a);
+		WGL.TextureRot(lockChargeTick, reticleX, reticleY, tickSize, tickSize, (i - 1) * 9, r, g, b, lerpAlpha);
 	end
 
 	self.LastReticleLerp      = lerp;
 	self.LastReticleAlpha     = alpha;
 	self.LastBeamOpenLerp     = missile;
-	self.LastReticleVector    = screenPos;
+	self.LastReticleVector:Set(screenPos);
 	self.LastReticleLerpAlpha = lerpAlpha;
 end
 
@@ -351,41 +370,35 @@ function CombatVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColo
 
 		local transitionFirst = WGL.Clamp(transition + transitionStart);
 		local transitionLast  = WGL.Clamp(transition);
+		local powersuitHUD    = WGL.GetComponent(weapon, "PowerSuitHUD");
 		local target, validTarget, locked = weapon.Helmet:GetTarget(IN_SPEED);
 
-		-- Offload hud rendering operations to a separate render target.
-		self:PushRenderTexture("rt_MPCombatVisor", 1024, 768, { ["$additive"] = 1 }, false);
-			cam.Start2D();
+		powersuitHUD:Start2DRenderContext("rt_MPVisorCurved", 1024, 768, { ["$additive"] = 1 }, false);
 
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
+			surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
+			powersuitHUD:DrawMenuTexts(weapon, beam, visor);
+			surface.SetAlphaMultiplier(1);
 
-				surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
-				local beamMenu  = WGL.GetComponent(weapon, "BeamMenu");
-				local visorMenu = WGL.GetComponent(weapon, "VisorMenu");
-				beamMenu:DrawText(beam);
-				visorMenu:DrawText(visor);
-				beamMenu:OverrideBlend(1);
-				visorMenu:OverrideBlend(1);
-				surface.SetAlphaMultiplier(1);
+			surface.SetAlphaMultiplier(transitionLast);
+			self:DrawRadar(visorOpacity);
+			self:DrawHealth(weapon);
+			self:DrawAlert(weapon, visorOpacity);
+			self:DrawMissiles(weapon, visorOpacity);
+			surface.SetAlphaMultiplier(1);
 
-				surface.SetAlphaMultiplier(transitionLast);
-				self:DrawRadar(visorOpacity);
-				self:DrawHealth(weapon);
-				self:DrawAlert(weapon, visorOpacity);
-				self:DrawMissiles(weapon, visorOpacity);
-				surface.SetAlphaMultiplier(1);
-
-			cam.End2D();
+		cam.End2D();
 		render.PopRenderTarget();
 
+		powersuitHUD:DrawVisorHook(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity);
 		WGL.Start3D(widescreen);
 		cam.IgnoreZ(true);
 
-			-- Render UI portion of the GUI onto the curved visor.
-			render.MaterialOverride(self:GetRenderTexture("rt_MPCombatVisor"));
-			self:DrawModel("GUI", hudPos, hudAngle);
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisorCurved"));
+			powersuitHUD:DrawModel("CurvedContext", hudPos, hudAngle);
+			render.MaterialOverride(nil);
+
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisor"));
+			powersuitHUD:DrawModel("FlatContext", hudPos, hudAngle);
 			render.MaterialOverride(nil);
 
 			-- Render the 3D static UI elements.
@@ -393,7 +406,7 @@ function CombatVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColo
 			render.SetBlend(transition * visorOpacity);
 			if (!locked) then
 				local aimTrace = util.TraceLine({ start = EyePos(), endpos = EyePos() + EyeAngles():Forward() * 300, filter = LocalPlayer(), mask = MASK_VISIBLE });
-				self:DrawModel("Orbit", aimTrace.HitPos, Angle(0, 0, 0), 3);
+				self:DrawModel("Orbit", aimTrace.HitPos, WGL.ZeroAng, 3);
 			end
 			self:DrawModel("StaticGUI", guiPos, hudAngle);
 			render.SetBlend(1);

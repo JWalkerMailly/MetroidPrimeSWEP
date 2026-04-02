@@ -1,6 +1,7 @@
 
 include("shared.lua");
 
+PROJECTILE.RenderData = {};
 PROJECTILE.Resolution = 16;
 
 -- Flamethrower rendering resources.
@@ -19,17 +20,27 @@ function PROJECTILE:DrawBeam(points)
 	if (!self.SpawnTime) then return; end
 
 	-- Render flamethrower effect.
-	local data       = {};
 	local time       = CurTime();
 	local resolution = self.Resolution;
 	render.SetMaterial(core);
 	render.StartBeam(resolution + 1);
 	for i = 0,resolution do
+
 		local t      = i / resolution;
 		local pos    = WGL.Bezier(t, points);
 		local width  = (1 - t / 2);
 		innerColor.a = 255 * (1 - t);
-		table.insert(data, i + 1, { t, width, pos, innerColor.a });
+
+		-- Overwrite old data to alleviate GC.
+		if (self.RenderData[i + 1]) then
+			self.RenderData[i + 1][1] = t;
+			self.RenderData[i + 1][2] = width;
+			self.RenderData[i + 1][3] = pos;
+			self.RenderData[i + 1][4] = innerColor.a;
+		else
+			self.RenderData[i + 1] = { t, width, pos, innerColor.a, Color(255, 255, 255, 255) };
+		end
+
 		render.AddBeam(pos, 5.5 * width, t, innerColor);
 	end
 	render.EndBeam();
@@ -39,7 +50,7 @@ function PROJECTILE:DrawBeam(points)
 	render.SetMaterial(inner);
 	render.StartBeam(resolution + 1);
 	for i = 0,resolution do
-		local splineData = data[i + 1];
+		local splineData = self.RenderData[i + 1];
 		outerColor.a     = splineData[4];
 		render.AddBeam(splineData[3], 2 * splineData[2], timeDiv10, outerColor);
 	end
@@ -51,8 +62,9 @@ function PROJECTILE:DrawBeam(points)
 		local loop = ((CurTime() + (i / resolution) * 1.5) % 1.5) / 1.5;
 		local pos  = WGL.Bezier(loop, points);
 		local size = 16 * loop * math.Rand(0.75 + loop, 2.5) + 6;
+		self.RenderData[i + 1][5].a = (1 - loop) * 255 * fadeIn * math.Rand(0.2, 1);
 		render.SetMaterial(fire[math.random(1, 2)]);
-		render.DrawSprite(pos, size, size, Color(255, 255, 255, (1 - loop) * 255 * fadeIn * math.Rand(0.2, 1)));
+		render.DrawSprite(pos, size, size, self.RenderData[i + 1][5]);
 	end
 end
 
@@ -71,7 +83,7 @@ function PROJECTILE:Draw()
 	local ang          = nil
 	local muzzle       = nil;
 	local localPlayer  = LocalPlayer();
-	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && WGL.IsFirstPerson(localPlayer);
+	local isLocal      = localPlayer == owner && weapon.IsFirstPerson && !localPlayer:ShouldDrawLocalPlayer();
 	if (isLocal) then
 		local fov      = owner:GetFOV();
 		local fovRatio = 1 - (75 / fov) + 1;

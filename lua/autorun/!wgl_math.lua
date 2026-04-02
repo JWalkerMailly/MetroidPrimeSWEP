@@ -19,17 +19,21 @@ function WGL.GetDeltaTime(entity)
 	return frametime;
 end
 
-function WGL.ClampAngle(angle, target, yaw, pitch, roll, delta)
+local function clampAxis(a, t, limit, delta)
+	local clamped = t + math.Clamp(math.AngleDifference(a, t), -limit, limit);
+	return clamped + math.AngleDifference(a, clamped) * delta;
+end
 
-	-- Make a copy of the original angle to avoid modifying it.
-	local result = Angle(angle[1], angle[2], angle[3]);
-	if (math.AngleDifference(angle[1], target[1]) > pitch) then result[1] = target[1] + pitch; end
-	if (math.AngleDifference(angle[2], target[2]) > yaw)   then result[2] = target[2] + yaw;   end
-	if (math.AngleDifference(angle[3], target[3]) > roll)  then result[3] = target[3] + roll;  end
-	if (math.AngleDifference(target[1], angle[1]) > pitch) then result[1] = target[1] - pitch; end
-	if (math.AngleDifference(target[2], angle[2]) > yaw)   then result[2] = target[2] - yaw;   end
-	if (math.AngleDifference(target[3], angle[3]) > roll)  then result[3] = target[3] - roll;  end
-	return LerpAngle(delta || 1, result, angle);
+function WGL.ClampAngle(angle, target, yaw, pitch, roll, delta, out)
+
+	out = out || Angle();
+	delta = delta || 1;
+
+	out.p = clampAxis(angle.p, target.p, pitch, delta);
+	out.y = clampAxis(angle.y, target.y, yaw,   delta);
+	out.r = clampAxis(angle.r, target.r, roll,  delta);
+
+	return out;
 end
 
 function WGL.DelayedLerp(value, rate, delay, state, reset)

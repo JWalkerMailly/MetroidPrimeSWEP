@@ -1,8 +1,10 @@
 
-local MorphBallHUD     = WGLComponent:New(POWERSUIT, "MorphBallHUD");
-MorphBallHUD.BlackBars = 0;
-MorphBallHUD.Numbers   = Material("huds/numbers.png");
-MorphBallHUD.Bombs     = Material("huds/morphball/bomb.png");
+local MorphBallHUD            = WGLComponent:New(POWERSUIT, "MorphBallHUD");
+MorphBallHUD.HealthBarColor   = Color(106, 165, 213);
+MorphBallHUD.HealthNotifColor = Color(255, 174, 34);
+MorphBallHUD.BlackBars        = 0;
+MorphBallHUD.Numbers          = Material("huds/numbers.png");
+MorphBallHUD.Bombs            = Material("huds/morphball/bomb.png");
 
 -- Setup UV coordinates for numbers texture lookup.
 local u = 20 / 340;
@@ -31,8 +33,9 @@ function MorphBallHUD:DrawBlackBars(height, helmOpacity)
 end
 
 function MorphBallHUD:DrawHealthNotification(alpha)
-	self.HealthBarColor = Color(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
-	draw.SimpleText("Energy Low", "Metroid Prime Visor UI Bold", 512, 28, Color(255, 174, 34, 255 * alpha), TEXT_ALIGN_CENTER);
+	self.HealthBarColor:SetUnpacked(255, 174 + 40 * alpha, 34 + 40 * alpha, 255);
+	self.HealthNotifColor.a = 255 * alpha;
+	draw.SimpleText("Energy Low", "Metroid Prime Visor UI Bold", 512, 28, self.HealthNotifColor, TEXT_ALIGN_CENTER);
 end
 
 function MorphBallHUD:HealthNotificationCallback(weapon)
@@ -94,7 +97,7 @@ function MorphBallHUD:DrawHealth(weapon)
 	WGL.TextureUV(self.Numbers, 86, 22, 22, 28, u * ones, 0, u + (u * ones), v, false, 106, 165, 213, 255);
 
 	-- Render health notification system.
-	self.HealthBarColor = Color(106, 165, 213, 255);
+	self.HealthBarColor:SetUnpacked(106, 165, 213, 255);
 	weapon:HealthNotification(health, maxHealth, self.DrawHealthNotification, self.HealthNotificationCallback, self, weapon);
 
 	-- Health bar.
@@ -159,17 +162,10 @@ function MorphBallHUD:Draw(weapon)
 		if (self:HandleBlackBars(morphballValid) <= 0) then return; end
 
 		-- Offload hud rendering operations to a separate render target.
-		self:PushRenderTexture("rt_MPMorphBallHUD", 1024, 128, { ["$additive"] = "1" }, false);
-			cam.Start2D();
-
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
-
-				self:DrawHealth(weapon);
-				self:DrawBombs(morphball, morphballValid);
-
-			cam.End2D();
+		self:Start2DRenderContext("rt_MPMorphBallHUD", 1024, 128, { ["$additive"] = "1" }, false);
+			self:DrawHealth(weapon);
+			self:DrawBombs(morphball, morphballValid);
+		cam.End2D();
 		render.PopRenderTarget();
 
 		-- Finally, render the morphball hud correctly scaled to the user's resolution.

@@ -6,105 +6,123 @@ MorphBall.GyroLerpRate  = 300;
 MorphBall.GyroThreshold = 150;
 MorphBall.Models        = { ["MorphBall"] = Model("models/metroid/morphball/powersuit.mdl") };
 
+MorphBall.Position        = Vector(0, 0, 0);
+MorphBall.SurfaceNormal   = Vector(0, 0, 0);
+MorphBall.SurfaceVelocity = Vector(0, 0, 0);
+MorphBall.VelocityRight   = Vector(0, 0, 0);
+MorphBall.VelocityLeft    = Vector(0, 0, 0);
+MorphBall.VelocityPlane   = Angle(0, 0, 0);
+MorphBall.GyroOrientation = Angle(0, 0, 0);
+MorphBall.CameraAngle2D   = Angle(0, 0, 0);
+MorphBall.Normal2D        = Angle(0, 0, 0);
+
 function MorphBall:Draw(morphball, owner, pos, velocity, radius, spider, frametime)
 
+	local onGround      = morphball:GetOnGround();
+	local surfaceParent = morphball:GetSurfaceParent();
+	local velocityAngle = velocity:Angle();
+
+	self.Position:SetUnpacked(pos[1], pos[2], 0);
+
 	-- Setup velocity data for simulation.
-	local onGround        = morphball:GetOnGround();
-	local surfaceNormal   = morphball:GetSurfaceNormal();
-	local surfaceParent   = morphball:GetSurfaceParent();
-	local surfaceVelocity = velocity - morphball:GetSurfaceVelocity();
-	local position        = Vector(pos[1], pos[2], 0);
-	local velocityAngle   = velocity:Angle();
-	local velocityPlane   = Angle(0, velocityAngle[2], velocityAngle[3]);
-	local velocityRight   = velocityPlane:Right();
+	self.VelocityPlane:SetUnpacked(0, velocityAngle[2], velocityAngle[3]);
+	self.VelocityRight:Set(self.VelocityPlane:Right());
+	self.VelocityLeft:Set(self.VelocityRight);
+	self.VelocityLeft:Mul(-1);
+
+	self.SurfaceNormal:Set(morphball:GetSurfaceNormal());
+	self.SurfaceVelocity:Set(velocity);
+	self.SurfaceVelocity:Sub(morphball:GetSurfaceVelocity());
 
 	if (self.LastOrientation == nil) then
-		local viewAng            = owner:EyeAngles();
-		self.LastPosition        = position;
-		self.LastOrientation     = Angle(0, viewAng[2], viewAng[3]);
-		self.LastRollInfluence   = 0;
+
+		local viewAng = owner:EyeAngles();
+
+		self.LastPosition = Vector(self.Position);
+		self.LastOrientation = Angle(0, viewAng[2], viewAng[3]);
+		self.LastVelocityPlane = self.VelocityPlane:Forward();
+		self.LastSpiderVelocity = Vector(self.SurfaceVelocity);
+
+		self.LastRollInfluence = 0;
 		self.LastAngularRotation = 0;
-		self.LastSpiderVelocity  = surfaceVelocity;
 		self.RotationAccumulator = 0;
-		self.VelocityPlane       = velocityPlane:Forward();
 	end
 
 	if (spider) then
-		velocityPlane = self.LastSpiderVelocity:AngleEx(surfaceNormal):Forward();
-		velocityRight = velocityPlane:Cross(surfaceNormal);
+		self.VelocityPlane:Set(self.LastSpiderVelocity:AngleEx(self.SurfaceNormal));
+		self.VelocityRight:Set(self.VelocityPlane:Forward():Cross(self.SurfaceNormal));
 	end
 
 	-- Update spider velocity delta on current surface.
-	if (surfaceVelocity:LengthSqr() > 2500) then
-		self.LastSpiderVelocity = surfaceVelocity;
+	if (self.SurfaceVelocity:LengthSqr() > 2500) then
+		self.LastSpiderVelocity:Set(self.SurfaceVelocity);
 	end
 
 	-- Switch to the parent's local space system for displacement calculations.
 	if (spider) then
-		if (IsValid(surfaceParent)) then position = surfaceParent:WorldToLocal(pos);
-		else position = pos; end
+		if (IsValid(surfaceParent)) then self.Position:Set(surfaceParent:WorldToLocal(pos));
+		else self.Position:Set(pos); end
 	end
 
 	-- Compute angular displacement.
-	local displacement    = (position - self.LastPosition):Length();
+	local displacement = self.Position:Distance(self.LastPosition);
 	local angularRotation = (displacement / radius) * 48;
-	local angularSpeed    = displacement / frametime;
-	self.LastPosition     = position;
+	local angularSpeed = displacement / frametime;
+	self.LastPosition:Set(self.Position);
 
 	-- Angular displacement is only available when touching the ground, otherwise, decelerate.
 	if (!spider && !onGround) then angularRotation = Lerp(frametime, self.LastAngularRotation, 0); end
 
 	-- Apply angular displacement and keep a reference for gyroscopic precession.
 	self.RotationAccumulator = self.RotationAccumulator + angularRotation;
-	self.LastOrientation:RotateAroundAxis(velocityRight, -angularRotation);
+	self.LastOrientation:RotateAroundAxis(self.VelocityRight, -angularRotation);
 	if (angularRotation > 0) then self.LastAngularRotation = angularRotation; end
 
 	-- Prepare left and right gyro velocity vectors in order to determine the best orientation bias.
-	local gyroRight     = velocityRight;
-	local gyroLeft      = gyroRight * -1;
-	local gyroRightBias = self.LastOrientation:Right():Dot(gyroRight);
-	local gyroLeftBias  = self.LastOrientation:Right():Dot(gyroLeft);
-	local gyroBias      = gyroLeft;
-
-	-- Determine the best vector to bias towards, this way the right vector is never influenced by forward velocity direction.
-	if (gyroRightBias < gyroLeftBias) then gyroBias = gyroRight; end
+	local lastRight = self.LastOrientation:Right();
+	local gyroRightBias = lastRight:Dot(self.VelocityRight);
+	local gyroLeftBias = lastRight:Dot(self.VelocityLeft);
+	local gyroBias = gyroRightBias < gyroLeftBias && self.VelocityRight || self.VelocityLeft;
 
 	-- Spider computations end here, return result to save on cpu time.
 	if (spider) then
 
 		-- Match gyro angular displacement based on accumulator to the spiderball.
-		local gyro = gyroBias:Cross(surfaceNormal):AngleEx(surfaceNormal);
-		gyro:RotateAroundAxis(velocityRight, -self.RotationAccumulator);
+		local gyro = gyroBias:Cross(self.SurfaceNormal):AngleEx(self.SurfaceNormal);
+		gyro:RotateAroundAxis(self.VelocityRight, -self.RotationAccumulator);
 		self:DrawModel("MorphBall", pos, gyro, 0.9);
-		self.LastOrientation = gyro;
+		self.LastOrientation:Set(gyro);
 		return gyro, 0;
 	end
 
 	-- Match gyro angular displacement based on accumulator to the morphball.
 	local gyro = gyroBias:Cross(WGL.UpVec):Angle();
-	gyro:RotateAroundAxis(velocityRight, -self.RotationAccumulator);
+	gyro:RotateAroundAxis(self.VelocityRight, -self.RotationAccumulator);
 
 	-- Begin lerping our current orientation towards the absolute gyroscopic angles. We only bias while on ground.
-	local gyroOrientation = Angle(self.LastOrientation[1], self.LastOrientation[2], self.LastOrientation[3]);
+	self.GyroOrientation:Set(self.LastOrientation);
 	if (angularSpeed > self.GyroThreshold && onGround) then
-		gyroOrientation = LerpAngle(displacement / self.GyroLerpRate * math.abs(gyroRightBias * 2.0), self.LastOrientation, gyro);
-		self.VelocityPlane = velocityPlane:Forward();
+		self.GyroOrientation:Set(LerpAngle(displacement / self.GyroLerpRate * math.abs(gyroRightBias * 2.0), self.LastOrientation, gyro));
+		self.LastVelocityPlane:Set(self.VelocityPlane:Forward());
 	end
 
 	-- Setup camera angles in order to correctly inluence gyro roll.
-	local cameraAngle   = (pos - morphball:GetVehicleViewPos()):Angle();
-	local cameraAngle2D = Angle(0, cameraAngle[2], cameraAngle[3]);
-	local cameraRight   = cameraAngle2D:Right():GetNormalized();
-	local cameraForward = cameraAngle2D:Forward():GetNormalized();
+	self.Position:Sub(morphball:GetVehicleViewPos());
+
+	local cameraAngle = self.Position:Angle();
+	self.CameraAngle2D:SetUnpacked(0, cameraAngle[2], cameraAngle[3]);
+
+	local cameraRight   = self.CameraAngle2D:Right();
+	local cameraForward = self.CameraAngle2D:Forward();
 
 	-- Setup velocity ratios on a 2D plane to influence the total roll to be applied.
-	local velocityRatioRight   = cameraRight:Dot(self.VelocityPlane);
-	local velocityRatioForward = cameraForward:Dot(self.VelocityPlane);
+	local velocityRatioRight   = cameraRight:Dot(self.LastVelocityPlane);
+	local velocityRatioForward = cameraForward:Dot(self.LastVelocityPlane);
 
 	-- Apply roll influence to gyro based on forward velocity and sideward velocity. The faster we move
 	-- forward, the more roll is required on the gyro in order to move correctly sideward.
-	local gyroRollInfluence     = 0;
-	local gyroVelocityInfluence = (self.VelocityPlane * angularSpeed * velocityRatioForward):Length();
+	local gyroRollInfluence = 0;
+	local gyroVelocityInfluence = (self.LastVelocityPlane * angularSpeed * velocityRatioForward):Length();
 	if (gyroVelocityInfluence > self.GyroThreshold) then gyroRollInfluence = velocityRatioRight * self.GyroMaxBank; end
 
 	-- Determine amount of roll to be applied from surface normal, this is only used to bank the morphball.
@@ -112,24 +130,25 @@ function MorphBall:Draw(morphball, owner, pos, velocity, radius, spider, frameti
 	if (onGround) then
 
 		-- Prepare forward bias, if we are rolling straight into the slope, do not bank the morphball.
-		local surfaceBias    = velocityRight:Dot(surfaceNormal);
-		local surfaceAngBias = velocityPlane:Up():Dot(surfaceNormal);
-		local normalAngle    = surfaceNormal:Angle();
-		local normal2D       = Angle(0, normalAngle.y, normalAngle.r);
-		local forwardBias    = 1.0 - math.abs(normal2D:Forward():Dot(velocityPlane:Forward()));
-		surfaceBank          = (360 - surfaceAngBias * 360) * math.Clamp(surfaceBias / math.abs(surfaceBias), -1, 1) * forwardBias;
+		local surfaceBias = self.VelocityRight:Dot(self.SurfaceNormal);
+		local surfaceAngBias = self.VelocityPlane:Up():Dot(self.SurfaceNormal);
+
+		local normalAngle = self.SurfaceNormal:Angle();
+		self.Normal2D:SetUnpacked(0, normalAngle.y, normalAngle.r);
+
+		local forwardBias = 1.0 - math.abs(self.Normal2D:Forward():Dot(self.VelocityPlane:Forward()));
+		surfaceBank = (360 - surfaceAngBias * 360) * math.Clamp(surfaceBias / math.abs(surfaceBias), -1, 1) * forwardBias;
+
+		self.LastRollInfluence = Lerp(displacement / self.GyroBankRate, self.LastRollInfluence, gyroRollInfluence + surfaceBank);
 	end
 
-	-- Apply relative roll, The roll will not be saved in order to keep angle computations relative to morphball.
-	local rollInfluence = Lerp(displacement / self.GyroBankRate, self.LastRollInfluence, gyroRollInfluence + surfaceBank);
-	local angles = Angle(gyroOrientation[1], gyroOrientation[2], gyroOrientation[3]);
-	angles:RotateAroundAxis(self.VelocityPlane, rollInfluence);
+	-- Apply relative roll and rotation.
+	self.LastOrientation:Set(self.GyroOrientation);
+	self.GyroOrientation:RotateAroundAxis(self.LastVelocityPlane, self.LastRollInfluence);
 
 	-- Render morphball physics simulation.
-	self:DrawModel("MorphBall", pos, angles, 0.9);
-	self.LastRollInfluence = rollInfluence;
-	self.LastOrientation = gyroOrientation;
+	self:DrawModel("MorphBall", pos, self.GyroOrientation, 0.9);
 
 	-- Output simulation data for component reuse.
-	return angles, math.abs(gyroOrientation:Right():Dot(gyroBias));
+	return self.GyroOrientation, math.abs(self.LastOrientation:Right():Dot(gyroBias));
 end

@@ -6,6 +6,7 @@ VisorMenu.Blend      = 1;
 VisorMenu.Transition = 1;
 VisorMenu.TextAlpha  = 0;
 VisorMenu.TextTime   = CurTime();
+VisorMenu.TextColor  = Color(104, 157, 185);
 VisorMenu.Models = {
 	["Visor1"] = POWERSUIT.Visors[1].ModelName,
 	["Visor2"] = POWERSUIT.Visors[2].ModelName,
@@ -30,7 +31,8 @@ function VisorMenu:DrawText(visorData)
 	end
 
 	if (visorData == nil || CurTime() <= self.TextTime) then return; end
-	local finished = WGL.AnimatedText(visorData.DisplayName, "Metroid Prime Visor UI", 250, 380, Color(104, 157, 185, self.TextAlpha * self.Blend), TEXT_ALIGN_LEFT, self.TextTime, 0.035);
+	self.TextColor.a = self.TextAlpha * self.Blend;
+	local finished = WGL.AnimatedText(visorData.DisplayName, "Metroid Prime Visor UI", 250, 380, self.TextColor, TEXT_ALIGN_LEFT, self.TextTime, 0.035);
 	if (!finished) then self.TextAlpha = 255;
 	else self.TextAlpha = Lerp(FrameTime() * 3, self.TextAlpha, 0); end
 end

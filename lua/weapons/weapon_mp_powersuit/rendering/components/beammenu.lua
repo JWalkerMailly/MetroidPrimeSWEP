@@ -6,6 +6,7 @@ BeamMenu.Blend      = 1;
 BeamMenu.Transition = 1;
 BeamMenu.TextAlpha  = 0;
 BeamMenu.TextTime   = CurTime();
+BeamMenu.TextColor  = Color(104, 157, 185);
 BeamMenu.Models = {
 	["Beam1"]  = POWERSUIT.Beams[1].ModelName,
 	["Beam2"]  = POWERSUIT.Beams[2].ModelName,
@@ -30,7 +31,8 @@ function BeamMenu:DrawText(beamData)
 	end
 
 	if (beamData == nil || CurTime() <= self.TextTime) then return; end
-	local finished = WGL.AnimatedText(beamData.DisplayName, "Metroid Prime Visor UI", beamData.DisplayPos, 380, Color(104, 157, 185, self.TextAlpha * self.Blend), TEXT_ALIGN_LEFT, self.TextTime, 0.035);
+	self.TextColor.a = self.TextAlpha * self.Blend;
+	local finished = WGL.AnimatedText(beamData.DisplayName, "Metroid Prime Visor UI", beamData.DisplayPos, 380, self.TextColor, TEXT_ALIGN_LEFT, self.TextTime, 0.035);
 	if (!finished) then self.TextAlpha = 255;
 	else self.TextAlpha = Lerp(FrameTime() * 3, self.TextAlpha, 0); end
 end

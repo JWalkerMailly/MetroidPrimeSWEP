@@ -1,7 +1,6 @@
 
 local ScanVisor   = WGLComponent:New(POWERSUIT, "ScanVisor");
 ScanVisor.Models  = {
-	["GUI"]       = Model("models/metroid/hud/v_ui_context.mdl"),
 	["StaticGUI"] = Model("models/metroid/hud/scanvisor/v_staticgui.mdl")
 };
 
@@ -200,34 +199,29 @@ end
 function ScanVisor:DrawInfoPane(weapon, x)
 
 	-- Render text to a fixed size render target in order to be compatible with all resolutions.
-	self:PushRenderTexture("rt_MPScanDescription", 512, 256, { ["$additive"] = 1, ["$vertexalpha"] = 1, ["$vertexcolor"] = 1 }, false);
-		cam.Start2D();
+	self:Start2DRenderContext("rt_MPScanDescription", 512, 256, { ["$additive"] = 1, ["$vertexalpha"] = 1, ["$vertexcolor"] = 1 }, false);
 
-			render.ClearDepth();
-			render.Clear(0, 0, 0, 0);
-			render.SetColorModulation(1, 1, 1);
+		if (self.LogBookText != nil) then
 
-			if (self.LogBookText != nil) then
-
-				-- Begin iterating paragraphs when pressing secondary attack.
-				local paragraphs = #self.LogBookText;
-				if (self.ScanComplete && LocalPlayer():KeyPressed(IN_ATTACK2) && self.CurrentParagraph != paragraphs) then
-					self.CurrentParagraph = self.CurrentParagraph + 1;
-					WSL.PlaySoundPatch(weapon.Visors, "scan_paragraph");
-				end
-
-				-- Render paragraph lines.
-				WGL.Paragraph(self.LogBookText[self.CurrentParagraph], "Metroid Prime LogBook", 0, 0, 30, paragraphTextColor);
-
-				-- Render end of log book and next paragraph icons.
-				if (paragraphs <= 1 || self.CurrentParagraph == paragraphs) then
-					WGL.Texture(endParagraphMaterial,  228, 140, 39, 42, 136, 214, 255, 255);
-				else
-					WGL.Texture(nextParagraphMaterial, 228, 140, 39, 40, 136, 214, 255, 255);
-				end
+			-- Begin iterating paragraphs when pressing secondary attack.
+			local paragraphs = #self.LogBookText;
+			if (self.ScanComplete && LocalPlayer():KeyPressed(IN_ATTACK2) && self.CurrentParagraph != paragraphs) then
+				self.CurrentParagraph = self.CurrentParagraph + 1;
+				WSL.PlaySoundPatch(weapon.Visors, "scan_paragraph");
 			end
 
-		cam.End2D();
+			-- Render paragraph lines.
+			WGL.Paragraph(self.LogBookText[self.CurrentParagraph], "Metroid Prime LogBook", 0, 0, 30, paragraphTextColor);
+
+			-- Render end of log book and next paragraph icons.
+			if (paragraphs <= 1 || self.CurrentParagraph == paragraphs) then
+				WGL.Texture(endParagraphMaterial,  228, 140, 39, 42, 136, 214, 255, 255);
+			else
+				WGL.Texture(nextParagraphMaterial, 228, 140, 39, 40, 136, 214, 255, 255);
+			end
+		end
+
+	cam.End2D();
 	render.PopRenderTarget();
 
 	-- Draw description area.
@@ -236,6 +230,10 @@ function ScanVisor:DrawInfoPane(weapon, x)
 	WGL.Texture(descriptionMaterial, x - descriptionWidth / 2, descriptionWidth, descriptionWidth, WGL.Y(256),     150, 150, 150, self.LastLogLerp * 255);
 end
 
+local screenPos = Vector(0, 0, 0);
+local screenCenter = Vector(0, 0, 0);
+local screenTarget = Vector(0, 0, 0);
+
 function ScanVisor:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV)
 
 	-- Reticle screen positioning.
@@ -243,8 +241,9 @@ function ScanVisor:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV)
 	local h         = ScrH();
 	local cx        = w / 2;
 	local cy        = h / 2;
-	local screenPos = self.LastReticleVector;
-	if (nextTargetValid) then screenPos = Vector(cx, cy, 0); end
+	screenCenter:SetUnpacked(cx, cy, 0);
+	screenPos:Set(self.LastReticleVector);
+	if (nextTargetValid) then screenPos:Set(screenCenter); end
 
 	-- Reticle alpha, this will modulate the auto lock and charge reticle.
 	local alpha     = 255;
@@ -265,7 +264,7 @@ function ScanVisor:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV)
 		-- No target found, reset everything back to the center of the screen.
 		lerp      = Lerp(FrameTime(), self.LastReticleLerp, 100);
 		alpha     = Lerp(FrameTime() * 10, self.LastReticleAlpha, 0);
-		screenPos = LerpVector(FrameTime() * 10, self.LastReticleVector, Vector(cx, cy, 0));
+		screenPos:Set(LerpVector(FrameTime() * 10, self.LastReticleVector, screenCenter));
 		self.LastReticleTarget = NULL;
 	else
 
@@ -278,10 +277,10 @@ function ScanVisor:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV)
 		-- Last reticle movement is compounded every frame onto the screen position
 		-- interpolation giving the snapping effect to each target.
 		if (self.LastReticleMovement < 1 && nextTargetValid) then
-			local targetPosLocal     = WGL.ToScreenFOV2(nextTarget:GetLockOnPosition());
-			local targetPosVector    = Vector(targetPosLocal.x, targetPosLocal.y, 0);
-			alpha                    = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
-			screenPos                = LerpVector(self.LastReticleMovement, self.LastReticleVector, targetPosVector);
+			local targetPosLocal = WGL.ToScreenFOV2(nextTarget:GetLockOnPosition());
+			screenTarget:SetUnpacked(targetPosLocal.x, targetPosLocal.y, 0);
+			alpha = Lerp(FrameTime() * 10, self.LastReticleAlpha, 255);
+			screenPos:Set(LerpVector(self.LastReticleMovement, self.LastReticleVector, screenTarget));
 			self.LastReticleMovement = Lerp(FrameTime() / 2, self.LastReticleMovement, 1);
 		end
 	end
@@ -302,7 +301,7 @@ function ScanVisor:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV)
 	if (nextTargetValid) then alpha = math.abs((lerpAlpha / 255) - 1) * 255; end
 	self.LastReticleLerp      = lerp;
 	self.LastReticleAlpha     = alpha;
-	self.LastReticleVector    = screenPos;
+	self.LastReticleVector:Set(screenPos);
 	self.LastReticleLerpAlpha = lerpAlpha;
 end
 
@@ -314,30 +313,26 @@ function ScanVisor:DrawReticle(weapon, nextTarget, nextTargetValid, w, h, transi
 	local scrH2   = scrH / 2;
 	local viewFOV = WGL.GetViewFOV(LocalPlayer():GetFOV(), scrW, scrH);
 	local scanFOV = viewFOV - (viewFOV * 0.15 * transition);
-	self:PushRenderTexture("rt_MPScanReticle", scrW, scrH, { ["$translucent"] = 1, ["$vertexalpha"] = 1, ["$vertexcolor"] = 1 }, true);
-		cam.Start2D();
+	self:Start2DRenderContext("rt_MPScanReticle", scrW, scrH, { ["$translucent"] = 1, ["$vertexalpha"] = 1, ["$vertexcolor"] = 1 }, true);
 
-			render.ClearDepth();
-			render.Clear(0, 0, 0, 0);
-			render.SetColorModulation(1, 1, 1);
+		-- Draw world into texture for UV effects.
+		-- Raise flag to also render scan points during render view pass.
+		weapon.RenderScanPoints = true;
+		render.RenderView({
+			origin = EyePos(),
+			angles = EyeAngles(),
+			x = 0, y = 0,
+			w = scrW, h = scrH,
+			fov = scanFOV,
+			drawviewmodel = false
+		});
+		weapon.RenderScanPoints = false;
 
-			-- Draw world into texture for UV effects.
-			-- Raise flag to also render scan points during render view pass.
-			weapon.RenderScanPoints = true;
-			render.RenderView({
-				origin = EyePos(),
-				angles = EyeAngles(),
-				x = 0, y = 0,
-				w = scrW, h = scrH,
-				fov = scanFOV,
-				drawviewmodel = false
-			});
-			weapon.RenderScanPoints = false;
+		-- Render scan crosshair and finish with postprocessing.
+		self:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV);
+		hook.Call("RenderScreenspaceEffects");
 
-			-- Render scan crosshair and finish with postprocessing.
-			self:DrawCrosshair(nextTarget, nextTargetValid, scanFOV, viewFOV);
-			hook.Call("RenderScreenspaceEffects");
-		cam.End2D();
+	cam.End2D();
 	render.PopRenderTarget();
 
 	-- Dim the whole scene.
@@ -401,45 +396,31 @@ function ScanVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor,
 
 		local transitionFirst = WGL.Clamp(transition + transitionStart);
 		local transitionLast  = WGL.Clamp(transition);
+		local powersuitHUD    = WGL.GetComponent(weapon, "PowerSuitHUD");
 
-		local nextTarget, nextTargetValid = self:HandleScanning(weapon, transitionLast);
-		local reticleWidth  = WGL.Y(583) - WGL.Y(263) * self.LastScanLerp;
-		local reticleHeight = WGL.Y(212) + WGL.Y(80)  * self.LastScanLerp;
+		powersuitHUD:Start2DRenderContext("rt_MPVisorCurved", 1024, 768, { ["$additive"] = 1 }, false);
 
-		surface.SetAlphaMultiplier(self.ReticleLerp);
-		self:DrawReticle(weapon, nextTarget, nextTargetValid, reticleWidth, reticleHeight, self.ReticleLerp, transitionLast, widescreen);
-		surface.SetAlphaMultiplier(1);
+			surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
+			powersuitHUD:DrawMenuTexts(weapon, beam, visor, self.LastMenuLerp);
+			surface.SetAlphaMultiplier(1);
 
-		-- Offload hud rendering operations to a separate render target.
-		self:PushRenderTexture("rt_MPScanVisor", 1024, 768, { ["$additive"] = 1 }, false);
-			cam.Start2D();
+			surface.SetAlphaMultiplier(transitionLast);
+			WGL.GetComponent(weapon, "CombatVisor"):DrawHealth(weapon);
+			surface.SetAlphaMultiplier(1);
 
-				render.ClearDepth();
-				render.Clear(0, 0, 0, 0);
-				render.SetColorModulation(1, 1, 1);
-
-				surface.SetAlphaMultiplier(transitionFirst * visorOpacity);
-				local beamMenu  = WGL.GetComponent(weapon, "BeamMenu");
-				local visorMenu = WGL.GetComponent(weapon, "VisorMenu");
-				beamMenu:DrawText(beam);
-				visorMenu:DrawText(visor);
-				beamMenu:OverrideBlend(self.LastMenuLerp);
-				visorMenu:OverrideBlend(self.LastMenuLerp);
-				surface.SetAlphaMultiplier(1);
-
-				surface.SetAlphaMultiplier(transitionLast);
-				WGL.GetComponent(weapon, "CombatVisor"):DrawHealth(weapon);
-				surface.SetAlphaMultiplier(1);
-
-			cam.End2D();
+		cam.End2D();
 		render.PopRenderTarget();
 
+		powersuitHUD:DrawVisorHook(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity);
 		WGL.Start3D(widescreen);
 		cam.IgnoreZ(true);
 
-			-- Render UI portion of the hud onto the curved visor.
-			render.MaterialOverride(self:GetRenderTexture("rt_MPScanVisor"));
-			self:DrawModel("GUI", hudPos, hudAngle);
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisorCurved"));
+			powersuitHUD:DrawModel("CurvedContext", hudPos, hudAngle);
+			render.MaterialOverride(nil);
+
+			render.MaterialOverride(powersuitHUD:GetRenderTexture("rt_MPVisor"));
+			powersuitHUD:DrawModel("FlatContext", hudPos, hudAngle);
 			render.MaterialOverride(nil);
 
 			-- Render the 3D static UI elements.
@@ -450,6 +431,14 @@ function ScanVisor:Draw(weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor,
 			render.SetColorModulation(1, 1, 1);
 
 		cam.End3D();
+
+		local nextTarget, nextTargetValid = self:HandleScanning(weapon, transitionLast);
+		local reticleWidth  = WGL.Y(583) - WGL.Y(263) * self.LastScanLerp;
+		local reticleHeight = WGL.Y(212) + WGL.Y(80)  * self.LastScanLerp;
+
+		surface.SetAlphaMultiplier(self.ReticleLerp);
+		self:DrawReticle(weapon, nextTarget, nextTargetValid, reticleWidth, reticleHeight, self.ReticleLerp, transitionLast, widescreen);
+		surface.SetAlphaMultiplier(1);
 	end
 
 	hook.Run("MP.PostDrawScanVisor", weapon, beam, visor, hudPos, hudAngle, guiPos, guiColor, fovRatio, transition, transitionStart, widescreen, visorOpacity);

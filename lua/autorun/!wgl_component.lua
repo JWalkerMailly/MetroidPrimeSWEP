@@ -95,6 +95,15 @@ function WGLComponent:PushRenderTexture(name, w, h, options, dynamic)
 	render.PushRenderTarget(WGL.GetRenderTexture(self, name, w, h, options, dynamic));
 end
 
+function WGLComponent:Start2DRenderContext(name, w, h, options, dynamic)
+
+	self:PushRenderTexture(name, w, h, options, dynamic);
+	cam.Start2D();
+	render.ClearDepth();
+	render.Clear(0, 0, 0, 0);
+	render.SetColorModulation(1, 1, 1);
+end
+
 function WGLComponent:CleanupModels()
 
 	-- Cleanup all clientside models for the given component.

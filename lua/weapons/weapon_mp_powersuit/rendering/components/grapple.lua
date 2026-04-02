@@ -18,16 +18,16 @@ function GrapplePoints:Draw(weapon)
 			-- Add client side UI variables onto the entity for anchor rendering.
 			if (y.GrappleUISize == nil) then
 				y.GrappleUISize  = 52;
-				y.GrappleUIColor = grappleUIColor;
+				y.GrappleUIColor = grappleUIColor:Copy();
 			end
 
 			-- Handle anchor size and color according to current target.
 			if (y == target && !lockedOn) then
 				y.GrappleUISize  = Lerp(FrameTime() * 1.5, y.GrappleUISize, 86);
-				y.GrappleUIColor = WGL.LerpColor(FrameTime(), y.GrappleUIColor, grappleLockColor);
+				WGL.LerpColor(FrameTime(), y.GrappleUIColor, grappleLockColor, y.GrappleUIColor);
 			else
 				y.GrappleUISize  = Lerp(FrameTime(), y.GrappleUISize, 48);
-				y.GrappleUIColor = WGL.LerpColor(FrameTime(), y.GrappleUIColor, grappleUIColor);
+				WGL.LerpColor(FrameTime(), y.GrappleUIColor, grappleUIColor, y.GrappleUIColor);
 			end
 
 			-- Render grapple anchor sprite.
@@ -36,9 +36,8 @@ function GrapplePoints:Draw(weapon)
 			local forward  = dir:GetNormalized();
 			local distance = dir:Length() / weapon.PowerSuit.Constants.Grapple.MaxDistance;
 			local size     = math.Clamp(y.GrappleUISize * distance, 0, 86);
-			local color    = y.GrappleUIColor;
 			render.SetMaterial(self.Anchor);
-			render.DrawSprite(pos + forward * size, size, size, color);
+			render.DrawSprite(pos + forward * size, size, size, y.GrappleUIColor);
 		end
 	end
 end

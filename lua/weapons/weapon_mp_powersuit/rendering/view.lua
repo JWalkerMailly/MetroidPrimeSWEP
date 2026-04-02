@@ -27,25 +27,43 @@ function POWERSUIT:SetMaterialOverrides(entity, override)
 	end
 end
 
+function POWERSUIT:ResetMaterialOverrides(entity)
+
+	local color = entity:GetColor();
+	color.a = entity.__mp_VisorAlphaOverride || color.a;
+	entity:SetColor(color);
+
+	entity:SetSubMaterial();
+	entity:SetMaterial(nil);
+	entity.__mp_VisorOverride = false;
+	entity.__mp_VisorNextOverride = nil;
+	entity.__mp_VisorInvalidateOverride = false;
+end
+
 function POWERSUIT:HandleMaterialOverrides(visor)
 
 	for k,v in pairs(game.MetroidPrimeMaterialSwaps) do
 
 		if (!IsValid(v)) then continue; end
+		if (CurTime() < (v.__mp_VisorNextOverride || CurTime()) && !v.__mp_VisorInvalidateOverride) then return; end
 
 		-- Apply material swap to valid entities.
 		local override = visor.MaterialFilter(v);
 		if (override) then
+
+			-- Ensure visibility.
+			v:SetColor(color_white);
+
 			self:SetMaterialOverrides(v, override);
 			v.__mp_VisorOverride = true;
+			v.__mp_VisorNextOverride = CurTime() + 1;
+			v.__mp_VisorInvalidateOverride = false;
 			continue;
 		end
 
 		-- Entity visor rules changed, reset material.
 		if (v.__mp_VisorOverride) then
-			v:SetSubMaterial();
-			v:SetMaterial(nil);
-			v.__mp_VisorOverride = false;
+			self:ResetMaterialOverrides(v);
 		end
 	end
 
@@ -66,9 +84,7 @@ function POWERSUIT:CleanupMaterialOverrides()
 		if (!v.__mp_VisorOverride) then continue; end
 
 		-- Fallback to default texture.
-		v:SetSubMaterial();
-		v:SetMaterial(nil);
-		v.__mp_VisorOverride = false;
+		self:ResetMaterialOverrides(v);
 	end
 
 	self.CleanupMaterials = false;
@@ -82,22 +98,23 @@ function POWERSUIT:ShouldResetView(ply)
 	-- If we are moving, or our view is moving, or we are attacking, the view should reset.
 	local mouseAction   = ply:KeyDown(IN_ATTACK) || ply:KeyDown(IN_ATTACK2);
 	local movement      = ply:GetVelocity():LengthSqr() > 2500 || ply:KeyDown(IN_SPEED);
-	local cursorPos     = Vector(input.GetCursorPos(), 0);
-	local mouseMovement = cursorPos != self.LastCursorPos;
+
+	local x, y          = LocalPlayer().__mp_MouseX, LocalPlayer().__mp_MouseX
+	local mouseMovement = x != 0 || y != 0;
 	local shouldReset   = mouseAction || movement || mouseMovement;
 
 	-- Snap back to center angle during player input.
 	self.ViewResetSpeed = shouldReset && 50 || 0.5;
-	self.LastCursorPos  = cursorPos;
 	return shouldReset;
 end
+
+POWERSUIT.RandomSway = Angle(0, 0, 0);
 
 function POWERSUIT:GetRandomViewAngle(maxPitch, maxYaw, pitchMod, yawMod, speed, container, maxDuration, maxWait)
 
 	-- Calculate random modulation for sway effect.
-	local randomSway = Angle(0, 0, 0);
-	randomSway.p = WGL.Modulation(pitchMod, speed) * maxPitch;
-	randomSway.y = WGL.Modulation(yawMod, speed) * maxYaw;
+	self.RandomSway.p = WGL.Modulation(pitchMod, speed) * maxPitch;
+	self.RandomSway.y = WGL.Modulation(yawMod, speed) * maxYaw;
 
 	if (CurTime() > container.Time) then
 
@@ -112,7 +129,7 @@ function POWERSUIT:GetRandomViewAngle(maxPitch, maxYaw, pitchMod, yawMod, speed,
 	-- Lerp between our random angle and the default angle (0, 0, 0) based on the current lerp factor.
 	if (CurTime() < container.Time) then container.Lerp = Lerp(FrameTime() * self.ViewResetSpeed, container.Lerp, 0);
 	else container.Lerp = Lerp(FrameTime() * 0.75, container.Lerp, 1); end
-	return Lerp(container.Lerp, Angle(0, 0, 0), randomSway);
+	return Lerp(container.Lerp, WGL.ZeroAng, self.RandomSway);
 end
 
 function POWERSUIT:LockView(ply)
@@ -153,6 +170,9 @@ function POWERSUIT:GetViewModelRollPos(deg, angle)
 	return angle:Right() * right - angle:Up() * up;
 end
 
+POWERSUIT.WalkBob = Vector(0, 0, 0);
+POWERSUIT.ViewmodelAngle = Angle(0, 0, 0);
+
 function POWERSUIT:GetViewModelPosition(pos, angle)
 
 	if (self:ShouldResetView(self:GetOwner())) then
@@ -164,11 +184,12 @@ function POWERSUIT:GetViewModelPosition(pos, angle)
 	self.ViewModelFOV = GetConVar("mp_options_viewmodelfov"):GetInt();
 
 	-- Compute final viewmodel angle based on sway and breathing.
-	local breathing        = Angle(math.ease.InOutSine(math.sin(CurTime() * 1.2)) / 2, 0, 0);
+	local owner = self:GetOwner();
 	self.LastViewModelSway = self:GetRandomViewAngle(5, 7.5, 11, 8, 4, self.ViewModelSway, 12, 24);
-
-	local owner            = self:GetOwner();
-	local finalAngle       = (self:LockView(owner) || angle) + breathing + self.LastViewSway + self.LastViewModelSway;
+	self.ViewmodelAngle:SetUnpacked(math.ease.InOutSine(math.sin(CurTime() * 1.2)) / 2, 0, 0);
+	self.ViewmodelAngle:Add(self:LockView(owner) || angle);
+	self.ViewmodelAngle:Add(self.LastViewSway);
+	self.ViewmodelAngle:Add(self.LastViewModelSway);
 
 	-- Get newest beam roll and decide if we should start rolling the viewmodel.
 	local beamRoll = self.ArmCannon:GetBeamRoll();
@@ -194,12 +215,13 @@ function POWERSUIT:GetViewModelPosition(pos, angle)
 	end
 
 	-- Compute viewmodel bob.
-	local weaponBob = LerpVector(FrameTime() * 17.422, self.LastBobPos || Vector(0, 0, 0), angle:Right() * self:GetWalkBob(0.5) * 3 + Vector(0, 0, self:GetWalkBob() * 4));
+	self.WalkBob:SetUnpacked(0, 0, self:GetWalkBob() * 4);
+	local weaponBob = LerpVector(FrameTime() * 17.422, self.LastBobPos || vector_origin, angle:Right() * self:GetWalkBob(0.5) * 3 + self.WalkBob);
 	self.LastBobPos = weaponBob;
 
 	-- Apply final roll and compute viewmodel position in local projection space.
-	finalAngle.r = self.LastViewModelRoll;
-	return pos + self:GetViewModelRollPos(self.LastViewModelRoll, angle) + self.LastBobPos, finalAngle;
+	self.ViewmodelAngle.r = self.LastViewModelRoll;
+	return pos + self:GetViewModelRollPos(self.LastViewModelRoll, angle) + self.LastBobPos, self.ViewmodelAngle;
 end
 
 function POWERSUIT:DrawViewModelEffects(vm, ply)
@@ -219,8 +241,8 @@ function POWERSUIT:DrawViewModelEffects(vm, ply)
 		end
 
 		-- Render 3D charge ball on end muzzle.
-		if (ratio > 0.1 || combo) then
-			if (beamData.ChargeBallColor) then WGL.Component(self, "ChargeBall", muzzle, ang, ratio, beamData.ChargeBallColor); end
+		if ((ratio > 0.1 || combo) && beamData.ChargeBallColor) then
+			WGL.Component(self, "ChargeBall", muzzle, ang, ratio, beamData.ChargeBallColor);
 		end
 
 		-- Emit light during charge or during looping combo.
