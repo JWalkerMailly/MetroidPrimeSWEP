@@ -170,10 +170,13 @@ hook.Add("PostDrawHUD", "POWERSUIT.DeathScreenRender", function()
 	WGL.Rect(-1, -1, w + 2, h + 2, 0, 0, 0, 255);
 	WGL.TextureRot(death,    halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, screenFadeOut, screenFadeOut, screenFadeOut, screenFadeOut);
 	WGL.TextureRot(white,    halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, whiteFadeOut, whiteFadeOut, whiteFadeOut, whiteFadeOut);
-	WGL.TextureUV(noiseIn,   halfW, halfH, horizontalFadeSize, verticalFadeSize, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, noiseFadeIn, noiseFadeIn, noiseFadeIn, noiseFadeIn * alphaFade);
-	WGL.TextureUV(noiseOut,  halfW, halfH, horizontalFadeSize, verticalFadeSize, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, 255, 255, 255, noiseFadeOut * alphaFade);
+	WGL.TextureUV(noiseIn,   halfW, halfH, horizontalFadeSize - 2, verticalFadeSize - 2, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, noiseFadeIn, noiseFadeIn, noiseFadeIn, noiseFadeIn * alphaFade);
+	WGL.TextureUV(noiseOut,  halfW, halfH, horizontalFadeSize - 2, verticalFadeSize - 2, 0 + randU, 0 + randV, 0.9 + randU, 0.5 + randV, true, 255, 255, 255, noiseFadeOut * alphaFade);
 	WGL.TextureRot(white,    halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, whiteFadeIn, whiteFadeIn, whiteFadeIn, screenFadeOut);
-	WGL.TextureRot(vignette, halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, 255, 255, 255, vignetteFadeIn);
+
+	if (screenFadeOut != 0) then
+		WGL.TextureRot(vignette, halfW, halfH, horizontalFadeSize, verticalFadeSize, 0, 255, 255, 255, vignetteFadeIn);
+	end
 end);
 
 -- ------------
