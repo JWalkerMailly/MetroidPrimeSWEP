@@ -14,7 +14,6 @@ MorphBall.VelocityLeft    = Vector(0, 0, 0);
 MorphBall.VelocityPlane   = Angle(0, 0, 0);
 MorphBall.GyroOrientation = Angle(0, 0, 0);
 MorphBall.CameraAngle2D   = Angle(0, 0, 0);
-MorphBall.Normal2D        = Angle(0, 0, 0);
 
 function MorphBall:Draw(morphball, owner, pos, velocity, radius, spider, frametime)
 
@@ -125,21 +124,9 @@ function MorphBall:Draw(morphball, owner, pos, velocity, radius, spider, frameti
 	local gyroVelocityInfluence = (self.LastVelocityPlane * angularSpeed * velocityRatioForward):Length();
 	if (gyroVelocityInfluence > self.GyroThreshold) then gyroRollInfluence = velocityRatioRight * self.GyroMaxBank; end
 
-	-- Determine amount of roll to be applied from surface normal, this is only used to bank the morphball.
-	local surfaceBank = 0;
+	-- Determine amount of roll to be applied, this is only used to bank the morphball.
 	if (onGround) then
-
-		-- Prepare forward bias, if we are rolling straight into the slope, do not bank the morphball.
-		local surfaceBias = self.VelocityRight:Dot(self.SurfaceNormal);
-		local surfaceAngBias = self.VelocityPlane:Up():Dot(self.SurfaceNormal);
-
-		local normalAngle = self.SurfaceNormal:Angle();
-		self.Normal2D:SetUnpacked(0, normalAngle.y, normalAngle.r);
-
-		local forwardBias = 1.0 - math.abs(self.Normal2D:Forward():Dot(self.VelocityPlane:Forward()));
-		surfaceBank = (360 - surfaceAngBias * 360) * math.Clamp(surfaceBias / math.abs(surfaceBias), -1, 1) * forwardBias;
-
-		self.LastRollInfluence = Lerp(displacement / self.GyroBankRate, self.LastRollInfluence, gyroRollInfluence + surfaceBank);
+		self.LastRollInfluence = Lerp(displacement / self.GyroBankRate, self.LastRollInfluence, gyroRollInfluence);
 	end
 
 	-- Apply relative roll and rotation.
