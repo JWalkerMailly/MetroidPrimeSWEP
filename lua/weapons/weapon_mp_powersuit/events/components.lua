@@ -11,7 +11,7 @@ end
 
 function POWERSUIT:GetSuit()
 	local suitID = self.PowerSuit:GetSuit();
-	return self.Suits[suitID], suitID;
+	return self.Suits.Variant[suitID], suitID;
 end
 
 function POWERSUIT:SetBeamModel(viewModel, beamData)

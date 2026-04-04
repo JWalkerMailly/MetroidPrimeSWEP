@@ -1,5 +1,6 @@
 
 local MorphBall         = WGLComponent:New(MORPHBALL, "MorphBall");
+MorphBall.ModelScale    = 0.9;
 MorphBall.GyroMaxBank   = 45;
 MorphBall.GyroBankRate  = 50;
 MorphBall.GyroLerpRate  = 300;
@@ -134,7 +135,7 @@ function MorphBall:Draw(morphball, owner, pos, velocity, radius, spider, frameti
 	self.GyroOrientation:RotateAroundAxis(self.LastVelocityPlane, self.LastRollInfluence);
 
 	-- Render morphball physics simulation.
-	self:DrawModel("MorphBall", pos, self.GyroOrientation, 0.9);
+	self:DrawModel("MorphBall", pos, self.GyroOrientation, self.ModelScale);
 
 	-- Output simulation data for component reuse.
 	return self.GyroOrientation, math.abs(self.LastOrientation:Right():Dot(gyroBias));
