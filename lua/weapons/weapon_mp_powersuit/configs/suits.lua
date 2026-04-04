@@ -12,7 +12,7 @@ game.MetroidPrimeSuitVariants["Prime"][1] = {
 	DamageScale     = 1,
 
 	MorphBall = {
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Glow        = Color(255, 255, 255),
 		Color       = Color(255, 125, 0, 0.5),
 		Group       = 0,
@@ -24,7 +24,7 @@ game.MetroidPrimeSuitVariants["Prime"][1] = {
 
 	SpiderBall = {
 		Model       = false,
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(255, 125, 0, 0.5),
 		Group       = 0,
 		Glass       = 2,
@@ -46,7 +46,7 @@ game.MetroidPrimeSuitVariants["Prime"][2] = {
 	DamageScale     = 0.9,
 
 	MorphBall = {
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Glow        = Color(255, 255, 255),
 		Color       = Color(75, 225, 255, 0.5),
 		Group       = 0,
@@ -58,7 +58,7 @@ game.MetroidPrimeSuitVariants["Prime"][2] = {
 
 	SpiderBall = {
 		Model       = true,
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(40, 200, 40, 0.5),
 		Group       = 1,
 		Glass       = 2,
@@ -80,7 +80,7 @@ game.MetroidPrimeSuitVariants["Prime"][3] = {
 	DamageScale     = 0.8,
 
 	MorphBall = {
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Glow        = Color(255, 255, 255),
 		Color       = Color(20, 40, 255, 1),
 		Group       = 1,
@@ -92,7 +92,7 @@ game.MetroidPrimeSuitVariants["Prime"][3] = {
 
 	SpiderBall = {
 		Model       = true,
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(20, 40, 255, 1),
 		Group       = 1,
 		Glass       = 2,
@@ -114,7 +114,7 @@ game.MetroidPrimeSuitVariants["Prime"][4] = {
 	DamageScale     = 0.5,
 
 	MorphBall = {
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Glow        = Color(255, 185, 0),
 		Color       = Color(255, 65, 50, 0.5),
 		Group       = 1,
@@ -126,7 +126,7 @@ game.MetroidPrimeSuitVariants["Prime"][4] = {
 
 	SpiderBall = {
 		Model       = true,
-		WorldModel  = "models/metroid/morphball/powersuit.mdl",
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(255, 65, 50, 0.5),
 		Group       = 1,
 		Glass       = 2,

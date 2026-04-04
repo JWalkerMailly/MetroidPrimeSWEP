@@ -28,6 +28,11 @@ function MORPHBALL:HandleSuitSwap(suit, suitID, spider)
 	end
 
 	local data = (spider && suit.SpiderBall) && suit.SpiderBall || suit.MorphBall;
+	if (!util.IsValidModel(data.WorldModel)) then
+		suit = game.MetroidPrimeSuitVariants["Prime"][suitID];
+		data = (spider && suit.SpiderBall) && suit.SpiderBall || suit.MorphBall;
+	end
+
 	local model = morphball:OverrideModel("MorphBall", data.WorldModel);
 	self:SuitSwap(model, data);
 	morphball.ModelScale = data.Scale;
