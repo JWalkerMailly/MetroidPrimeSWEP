@@ -27,7 +27,10 @@ function MORPHBALL:SwapComponent(name, data, group, component)
 	return model;
 end
 
-function MORPHBALL:HandleSuitSwap(suit, suitID, spider)
+-- Caching.
+local suitValidationCache = {};
+
+function MORPHBALL:HandleSuitSwap(suit, suitID, spider, fallback)
 
 	local morphball = WGL.GetComponent(self, "MorphBall");
 	if (suitID == self.Suit && spider == self.Spider) then
@@ -35,9 +38,11 @@ function MORPHBALL:HandleSuitSwap(suit, suitID, spider)
 	end
 
 	local data = self:GetSuitSwapData(suit, spider);
-	if (!data || !data.WorldModel || !util.IsValidModel(data.WorldModel)) then
-		suit = game.MetroidPrimeSuitVariants["Prime"][suitID];
+	if (!data || !data.WorldModel || (!suitValidationCache[data.WorldModel] && !util.IsValidModel(data.WorldModel))) then
+		suit = fallback;
 		data = self:GetSuitSwapData(suit, spider);
+	else
+		suitValidationCache[data.WorldModel] = true;
 	end
 
 	local model = self:SwapComponent("MorphBall", data, nil, morphball);
@@ -71,10 +76,11 @@ function MORPHBALL:Draw()
 	local velocity     = self:GetClientVelocity();
 	local powerSuit    = self:GetPowerSuit();
 	local morphball    = powerSuit.MorphBall;
-	local suit, suitID = powerSuit:GetSuit();
-	local spider       = morphball:IsSpiderEnabled();
 	local charging     = morphball:ChargingStarted();
-	local model        = self:HandleSuitSwap(suit, suitID, spider);
+
+	local suit, suitID, fallback = powerSuit:GetSuit();
+	local spider       = morphball:IsSpiderEnabled();
+	local model        = self:HandleSuitSwap(suit, suitID, spider, fallback);
 
 	-- Compute morphball glow color based on boost status.
 	if (charging) then

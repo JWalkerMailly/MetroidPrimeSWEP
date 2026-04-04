@@ -124,7 +124,7 @@ end
 
 function POWERSUIT:LoadSuitVariant()
 	local variant = GetConVar("mp_cheats_suitvariant"):GetString();
-	if (!game.MetroidPrimeSuitVariants[variant]) then variant = "Prime"; end
+	if (!game.MetroidPrimeSuitVariants[variant]) then return; end
 	self.Suits.Variant = game.MetroidPrimeSuitVariants[variant];
 end
 

@@ -1,8 +1,8 @@
 
-game.MetroidPrimeSuitVariants["Prime"] = {};
+local primeSuitVariant = {};
 
 -- Power suit setup table.
-game.MetroidPrimeSuitVariants["Prime"][1] = {
+primeSuitVariant[1] = {
 
 	DisplayName     = "Power Suit",
 
@@ -24,7 +24,7 @@ game.MetroidPrimeSuitVariants["Prime"][1] = {
 };
 
 -- Varia suit setup table.
-game.MetroidPrimeSuitVariants["Prime"][2] = {
+primeSuitVariant[2] = {
 
 	DisplayName     = "Varia Suit",
 
@@ -57,7 +57,7 @@ game.MetroidPrimeSuitVariants["Prime"][2] = {
 };
 
 -- Gravity suit setup table.
-game.MetroidPrimeSuitVariants["Prime"][3] = {
+primeSuitVariant[3] = {
 
 	DisplayName     = "Gravity Suit",
 
@@ -79,7 +79,7 @@ game.MetroidPrimeSuitVariants["Prime"][3] = {
 };
 
 -- Phazon suit setup table.
-game.MetroidPrimeSuitVariants["Prime"][4] = {
+primeSuitVariant[4] = {
 
 	DisplayName     = "Phazon Suit",
 
@@ -104,8 +104,11 @@ game.MetroidPrimeSuitVariants["Prime"][4] = {
 	}
 };
 
+game.MetroidPrimeSuitVariants["Prime"] = primeSuitVariant;
+
 POWERSUIT.Suits = {};
-POWERSUIT.Suits.Variant = {};
+POWERSUIT.Suits.Variant = primeSuitVariant;
+POWERSUIT.Suits.VariantFallback = primeSuitVariant;
 
 -- These sounds are shared across all suits. This must be added last
 -- in order to respect the suits array indexing of 1 - 4.
