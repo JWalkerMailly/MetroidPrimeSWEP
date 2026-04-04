@@ -13,7 +13,7 @@ end);
 
 hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 
-	-- Create Visor options menu.
+	-- Create playermodel menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpCompatibility", "mpPlayerModel", "#mp.settings.compatibility.playermodel.title", "", "", function(panel)
 
 		panel:Clear();
@@ -21,6 +21,13 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:CheckBox("#mp.settings.compatibility.playermodel.text", "mp_options_playermodel");
 		panel:ControlHelp("#mp.settings.compatibility.playermodel.help");
 		panel:Button("#mp.settings.compatibility.playermodel.button", "mp_options_playermodel_get");
+
+		local combo = panel:ComboBox("#mp.settings.compatibility.suitvariant.title", "mp_cheats_suitvariant");
+		for k,v in pairs(game.MetroidPrimeSuitVariants) do
+			combo:AddChoice(k);
+		end
+
+		panel:ControlHelp("#mp.settings.compatibility.suitvariant.help");
 	end);
 
 	-- Create controls options menu.
@@ -55,7 +62,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:ControlHelp("#mp.settings.options.gestures.helper.help");
 	end);
 
-	-- Create Visor options menu.
+	-- Create visor options menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpVisor", "#mp.settings.options.visor.title", "", "", function(panel)
 
 		panel:Clear();
@@ -82,7 +89,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:ControlHelp("#mp.settings.options.visor.hudsway.help");
 	end);
 
-	-- Create Display options menu.
+	-- Create display options menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpDisplay", "#mp.settings.options.display.title", "", "", function(panel)
 
 		panel:Clear();
@@ -94,7 +101,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:ControlHelp("#mp.settings.options.display.widescreen.help");
 	end);
 
-	-- Create Game options menu.
+	-- Create game options menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpOptions", "mpGame", "#mp.settings.options.game.title", "", "", function(panel)
 
 		panel:Clear();
@@ -115,7 +122,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:ControlHelp("#mp.settings.options.game.infiniteammo.help");
 	end);
 
-	-- Create State options menu.
+	-- Create state options menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpState", "#mp.settings.options.state.title", "", "", function(panel)
 
 		panel:Clear();
@@ -130,7 +137,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		panel:ControlHelp("#mp.settings.options.state.delete.help");
 	end);
 
-	-- Create General cheats menu.
+	-- Create general cheats menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpGeneral", "#mp.settings.cheats.general.title", "", "", function(panel)
 
 		panel:Clear();
@@ -184,7 +191,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		end, "#mp.settings.cheats.general.phazonsuit.help");
 	end);
 
-	-- Create Weapons cheats menu.
+	-- Create weapons cheats menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpWeapons", "#mp.settings.cheats.weapons.title", "", "", function(panel)
 
 		panel:Clear();
@@ -234,7 +241,7 @@ hook.Add("PopulateToolMenu", "MetroidPrimeSettings", function()
 		end, "#mp.settings.cheats.weapons.flamethrower.help");
 	end);
 
-	-- Create Morph Ball cheats menu.
+	-- Create morph ball cheats menu.
 	spawnmenu.AddToolMenuOption("mpSettings", "mpCheats", "mpMorphBall", "#mp.settings.cheats.morphball.title", "", "", function(panel)
 
 		panel:Clear();
