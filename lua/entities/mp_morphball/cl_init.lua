@@ -52,8 +52,6 @@ function MORPHBALL:HandleSuitSwap(suit, suitID, spider)
 	self.Spider = spider;
 	self.TrailMaterial = data.Trail;
 
-	print("hi")
-
 	return model;
 end
 
