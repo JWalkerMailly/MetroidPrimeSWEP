@@ -16,8 +16,15 @@ function MORPHBALL:GetClientVelocity()
 	return velocityFix;
 end
 
-function MORPHBALL:SuitSwap(component, data, group)
-	WGL.SetBodyGroupSkin(component, 0, data[group || "Group"], data.Skin);
+function MORPHBALL:SwapComponent(name, data, group, component)
+
+	component = component || WGL.GetComponent(self, name);
+
+	local model = component:OverrideModel(name, data.WorldModel);
+	WGL.SetBodyGroupSkin(model, 0, data[group || "Group"], data.Skin);
+	component.ModelScale = data.Scale;
+
+	return model;
 end
 
 function MORPHBALL:HandleSuitSwap(suit, suitID, spider)
@@ -27,33 +34,25 @@ function MORPHBALL:HandleSuitSwap(suit, suitID, spider)
 		return morphball:GetModel("MorphBall");
 	end
 
-	local data = (spider && suit.SpiderBall) && suit.SpiderBall || suit.MorphBall;
-	if (!util.IsValidModel(data.WorldModel)) then
+	local data = self:GetSuitSwapData(suit, spider);
+	if (!data || !data.WorldModel || !util.IsValidModel(data.WorldModel)) then
 		suit = game.MetroidPrimeSuitVariants["Prime"][suitID];
-		data = (spider && suit.SpiderBall) && suit.SpiderBall || suit.MorphBall;
+		data = self:GetSuitSwapData(suit, spider);
 	end
 
-	local model = morphball:OverrideModel("MorphBall", data.WorldModel);
-	self:SuitSwap(model, data);
-	morphball.ModelScale = data.Scale;
-
-	local spawn = WGL.GetComponent(self, "Spawn");
-	self:SuitSwap(spawn:OverrideModel("Spawn", data.WorldModel), data);
-	spawn.ModelScale = data.Scale;
-
-	local boost = WGL.GetComponent(self, "Boost");
-	self:SuitSwap(boost:OverrideModel("Boost", data.WorldModel), data, (spider && suit.SpiderBall.Model) && "Glass" || "Group");
-	boost.ModelScale = data.Scale;
-
-	local damage = WGL.GetComponent(self, "Damage");
-	self:SuitSwap(damage:OverrideModel("Damage", data.WorldModel), data);
-	damage.ModelScale = data.Scale;
+	local model = self:SwapComponent("MorphBall", data, nil, morphball);
+	self:SwapComponent("Spawn",  data);
+	self:SwapComponent("Damage", data);
+	self:SwapComponent("Boost",  data, data.Boost && "Boost" || "Group");
 
 	WGL.SetColor(self.LastGlowColor, data.Color);
 	WGL.SetColor(self.GlowColor,     data.Color);
-	self.TrailMaterial = data.Trail;
-	self.Suit   = suitID;
+
+	self.Suit = suitID;
 	self.Spider = spider;
+	self.TrailMaterial = data.Trail;
+
+	print("hi")
 
 	return model;
 end
@@ -100,5 +99,5 @@ function MORPHBALL:Draw()
 
 	-- Draw inner glow.
 	render.SetMaterial(self.GlowMaterial);
-	render.DrawSprite(pos, 26, 26, suit.MorphBall.Glow);
+	render.DrawSprite(pos, 26, 26, (suit.MorphBall && suit.MorphBall.Glow) || color_white);
 end

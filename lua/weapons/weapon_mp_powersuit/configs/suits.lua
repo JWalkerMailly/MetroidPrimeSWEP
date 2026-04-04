@@ -6,7 +6,7 @@ game.MetroidPrimeSuitVariants["Prime"][1] = {
 
 	DisplayName     = "Power Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_powersuit_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_powersuit_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 0,
 	DamageScale     = 1,
@@ -20,18 +20,6 @@ game.MetroidPrimeSuitVariants["Prime"][1] = {
 		Trail       = Material("entities/morphball/powertrail"),
 		Effect      = "mp_morphball_powersuit",
 		Scale       = 0.9
-	},
-
-	SpiderBall = {
-		Model       = false,
-		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
-		Color       = Color(255, 125, 0, 0.5),
-		Group       = 0,
-		Glass       = 2,
-		Skin        = 0,
-		Trail       = Material("entities/morphball/powertrail"),
-		Effect      = "mp_morphball_powersuit",
-		Scale       = 0.9
 	}
 };
 
@@ -40,7 +28,7 @@ game.MetroidPrimeSuitVariants["Prime"][2] = {
 
 	DisplayName     = "Varia Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 0,
 	DamageScale     = 0.9,
@@ -57,11 +45,10 @@ game.MetroidPrimeSuitVariants["Prime"][2] = {
 	},
 
 	SpiderBall = {
-		Model       = true,
 		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(40, 200, 40, 0.5),
 		Group       = 1,
-		Glass       = 2,
+		Boost       = 2,
 		Skin        = 0,
 		Trail       = Material("entities/morphball/spidertrail"),
 		Effect      = "mp_morphball_spider",
@@ -74,28 +61,16 @@ game.MetroidPrimeSuitVariants["Prime"][3] = {
 
 	DisplayName     = "Gravity Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 1,
 	DamageScale     = 0.8,
 
-	MorphBall = {
-		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
-		Glow        = Color(255, 255, 255),
-		Color       = Color(20, 40, 255, 1),
-		Group       = 1,
-		Skin        = 1,
-		Trail       = Material("entities/morphball/gravitytrail"),
-		Effect      = "mp_morphball_gravitysuit",
-		Scale       = 0.9
-	},
-
 	SpiderBall = {
-		Model       = true,
 		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(20, 40, 255, 1),
 		Group       = 1,
-		Glass       = 2,
+		Boost       = 2,
 		Skin        = 1,
 		Trail       = Material("entities/morphball/gravitytrail"),
 		Effect      = "mp_morphball_gravitysuit",
@@ -108,28 +83,20 @@ game.MetroidPrimeSuitVariants["Prime"][4] = {
 
 	DisplayName     = "Phazon Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 2,
 	DamageScale     = 0.5,
 
 	MorphBall = {
-		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
-		Glow        = Color(255, 185, 0),
-		Color       = Color(255, 65, 50, 0.5),
-		Group       = 1,
-		Skin        = 2,
-		Trail       = Material("entities/morphball/phazontrail"),
-		Effect      = "mp_morphball_phazonsuit",
-		Scale       = 0.9
+		Glow        = Color(255, 185, 0)
 	},
 
 	SpiderBall = {
-		Model       = true,
 		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(255, 65, 50, 0.5),
 		Group       = 1,
-		Glass       = 2,
+		Boost       = 2,
 		Skin        = 2,
 		Trail       = Material("entities/morphball/phazontrail"),
 		Effect      = "mp_morphball_phazonsuit",

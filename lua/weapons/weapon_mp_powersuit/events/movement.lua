@@ -320,9 +320,12 @@ function POWERSUIT:HandleMorphBall(ply, movement)
 
 		-- Animations.
 		local suitData = self:GetSuit();
-		local morphEffect = self.MorphBall:IsSpiderEnabled() && suitData.SpiderBall.Effect || suitData.MorphBall.Effect;
+		local data = morphball:GetSuitSwapData(suitData, self.MorphBall:IsSpiderEnabled());
+		if (data.Effect) then
+			ParticleEffectAttach(data.Effect, PATTACH_ABSORIGIN_FOLLOW, morphball, 0);
+		end
+
 		sound.Play(self.Suits.Sounds["morph"], self:GetPos(), 75, 100, 1);
-		ParticleEffectAttach(morphEffect, PATTACH_ABSORIGIN_FOLLOW, morphball, 0);
 
 		-- Raise event.
 		hook.Run("MP.OnMorphBall", owner, self, morphball);

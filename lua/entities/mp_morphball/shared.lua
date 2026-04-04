@@ -25,6 +25,16 @@ function MORPHBALL:SetupDataTables()
 	self:NetworkVar("Float",  0, "BombJumpTime");
 end
 
+function MORPHBALL:GetSuitSwapData(suit, spider)
+
+	local spiderball  = suit.SpiderBall;
+	local morphball   = suit.MorphBall;
+	local useSpider   = spider && spiderball && spiderball.WorldModel;
+	local useFallback = !morphball || (morphball && !morphball.WorldModel);
+
+	return (useSpider || useFallback) && spiderball || morphball;
+end
+
 -- Caching.
 MORPHBALL.VehiclePos = Vector(0, 0, 0);
 
