@@ -1,125 +1,114 @@
 
-POWERSUIT.Suits = {};
+local primeSuitVariant = {};
 
 -- Power suit setup table.
-POWERSUIT.Suits[1] = {
+primeSuitVariant[1] = {
 
 	DisplayName     = "Power Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_powersuit_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_powersuit_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 0,
 	DamageScale     = 1,
 
 	MorphBall = {
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Glow        = Color(255, 255, 255),
 		Color       = Color(255, 125, 0, 0.5),
 		Group       = 0,
 		Skin        = 0,
 		Trail       = Material("entities/morphball/powertrail"),
-		Effect      = "mp_morphball_powersuit"
-	},
-
-	SpiderBall = {
-		Model       = false,
-		Color       = Color(255, 125, 0, 0.5),
-		Group       = 0,
-		Glass       = 2,
-		Skin        = 0,
-		Trail       = Material("entities/morphball/powertrail"),
-		Effect      = "mp_morphball_powersuit"
+		Effect      = "mp_morphball_powersuit",
+		Scale       = 0.9
 	}
 };
 
 -- Varia suit setup table.
-POWERSUIT.Suits[2] = {
+primeSuitVariant[2] = {
 
 	DisplayName     = "Varia Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 0,
 	DamageScale     = 0.9,
 
 	MorphBall = {
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Glow        = Color(255, 255, 255),
 		Color       = Color(75, 225, 255, 0.5),
 		Group       = 0,
 		Skin        = 1,
 		Trail       = Material("entities/morphball/variatrail"),
-		Effect      = "mp_morphball_variasuit"
+		Effect      = "mp_morphball_variasuit",
+		Scale       = 0.9
 	},
 
 	SpiderBall = {
-		Model       = true,
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(40, 200, 40, 0.5),
 		Group       = 1,
-		Glass       = 2,
+		Boost       = 2,
 		Skin        = 0,
 		Trail       = Material("entities/morphball/spidertrail"),
-		Effect      = "mp_morphball_spider"
+		Effect      = "mp_morphball_spider",
+		Scale       = 0.9
 	}
 };
 
 -- Gravity suit setup table.
-POWERSUIT.Suits[3] = {
+primeSuitVariant[3] = {
 
 	DisplayName     = "Gravity Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 1,
 	DamageScale     = 0.8,
 
-	MorphBall = {
-		Glow        = Color(255, 255, 255),
-		Color       = Color(20, 40, 255, 1),
-		Group       = 1,
-		Skin        = 1,
-		Trail       = Material("entities/morphball/gravitytrail"),
-		Effect      = "mp_morphball_gravitysuit"
-	},
-
 	SpiderBall = {
-		Model       = true,
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(20, 40, 255, 1),
 		Group       = 1,
-		Glass       = 2,
+		Boost       = 2,
 		Skin        = 1,
 		Trail       = Material("entities/morphball/gravitytrail"),
-		Effect      = "mp_morphball_gravitysuit"
+		Effect      = "mp_morphball_gravitysuit",
+		Scale       = 0.9
 	}
 };
 
 -- Phazon suit setup table.
-POWERSUIT.Suits[4] = {
+primeSuitVariant[4] = {
 
 	DisplayName     = "Phazon Suit",
 
-	WorldModel      = "models/impulse/metroid/samus/samus_playermodel.mdl",
+	WorldModel      = Model("models/impulse/metroid/samus/samus_playermodel.mdl"),
 	Group           = 1,
 	Skin            = 2,
 	DamageScale     = 0.5,
 
 	MorphBall = {
-		Glow        = Color(255, 185, 0),
-		Color       = Color(255, 65, 50, 0.5),
-		Group       = 1,
-		Skin        = 2,
-		Trail       = Material("entities/morphball/phazontrail"),
-		Effect      = "mp_morphball_phazonsuit"
+		Glow        = Color(255, 185, 0)
 	},
 
 	SpiderBall = {
-		Model       = true,
+		WorldModel  = Model("models/metroid/morphball/powersuit.mdl"),
 		Color       = Color(255, 65, 50, 0.5),
 		Group       = 1,
-		Glass       = 2,
+		Boost       = 2,
 		Skin        = 2,
 		Trail       = Material("entities/morphball/phazontrail"),
-		Effect      = "mp_morphball_phazonsuit"
+		Effect      = "mp_morphball_phazonsuit",
+		Scale       = 0.9
 	}
 };
+
+game.MetroidPrimeSuitVariants["Prime"] = primeSuitVariant;
+
+POWERSUIT.Suits = {};
+POWERSUIT.Suits.Variant = primeSuitVariant;
+POWERSUIT.Suits.VariantFallback = primeSuitVariant;
 
 -- These sounds are shared across all suits. This must be added last
 -- in order to respect the suits array indexing of 1 - 4.

@@ -122,6 +122,12 @@ function POWERSUIT:DeleteState(reload)
 	return true;
 end
 
+function POWERSUIT:LoadSuitVariant()
+	local variant = GetConVar("mp_cheats_suitvariant"):GetString();
+	if (!game.MetroidPrimeSuitVariants[variant]) then return; end
+	self.Suits.Variant = game.MetroidPrimeSuitVariants[variant];
+end
+
 hook.Add("PlayerInitialSpawn", "POWERSUIT.RestoreState", function(ply, transition)
 	if (transition) then ply.__mp_RestoreState = true; end
 end);

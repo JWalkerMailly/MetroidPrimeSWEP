@@ -1,6 +1,6 @@
 
 -- Ease of integration for developers.
-MetroidPrimeSWEP = true
+MetroidPrimeSWEP = true;
 
 local _player = FindMetaTable("Player");
 local _entity = FindMetaTable("Entity");
@@ -14,6 +14,7 @@ CreateConVar("mp_cheats_damagetakenscale", "1", { FCVAR_SERVER_CAN_EXECUTE, FCVA
 CreateConVar("mp_cheats_damagegivenscale", "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 1, 10);
 CreateConVar("mp_cheats_scandashing",      "1", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 0, 1);
 CreateConVar("mp_cheats_infiniteammo",     "0", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT }, nil, 0, 1);
+CreateConVar("mp_cheats_suitvariant",  "Prime", { FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED, FCVAR_ARCHIVE, FCVAR_CHEAT });
 
 if (CLIENT) then
 	CreateClientConVar("mp_options_viewmodelfov",   "62", true, false);
@@ -155,6 +156,9 @@ end
 -- ----------------------------------------------
 -- SUIT API
 -- ----------------------------------------------
+
+-- Used for model variants.
+game.MetroidPrimeSuitVariants = {};
 
 -- Prepare anchors table for compatibility.
 game.MetroidPrimeAnchors = {};

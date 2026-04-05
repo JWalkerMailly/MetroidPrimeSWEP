@@ -20,6 +20,7 @@ function POWERSUIT:Initialize()
 	WSL.InitializeSounds(self, self.Suits);
 	WSL.InitializeSounds(self, self.Beams);
 	WSL.InitializeSounds(self, self.Visors);
+	self:LoadSuitVariant();
 	self:CreateHooks();
 end
 

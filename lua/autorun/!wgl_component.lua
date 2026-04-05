@@ -64,6 +64,16 @@ function WGLComponent:GetModel(name)
 	return model;
 end
 
+function WGLComponent:OverrideModel(name, model)
+
+	self.Models[name] = model;
+
+	SafeRemoveEntity(self.ModelCache[name]);
+	self.ModelCache[name] = nil;
+
+	return self:GetModel(name);
+end
+
 function WGLComponent:DrawModel(name, pos, ang, scale, bodygroup, value, skin, frameAdvance)
 
 	-- Safely retrieve model from cache.

@@ -16,30 +16,48 @@ function MORPHBALL:GetClientVelocity()
 	return velocityFix;
 end
 
-function MORPHBALL:HandleSuitSwap(model, suit, suitID, spider)
+function MORPHBALL:SwapComponent(name, data, group, component)
 
-	-- Handle suit and spider model swaps.
-	if (suitID == self.Suit && spider == self.Spider) then return; end
-	if (spider && suit.SpiderBall.Model) then
-		WGL.SetBodyGroupSkin(model,                                               0, suit.SpiderBall.Group, suit.SpiderBall.Skin);
-		WGL.SetBodyGroupSkin(WGL.GetComponent(self, "Spawn"):GetModel("Spawn"),   0, suit.SpiderBall.Group, suit.SpiderBall.Skin);
-		WGL.SetBodyGroupSkin(WGL.GetComponent(self, "Boost"):GetModel("Boost"),   0, suit.SpiderBall.Glass, suit.SpiderBall.Skin);
-		WGL.SetBodyGroupSkin(WGL.GetComponent(self, "Damage"):GetModel("Damage"), 0, suit.SpiderBall.Group, suit.SpiderBall.Skin);
-		WGL.SetColor(self.LastGlowColor, suit.SpiderBall.Color);
-		WGL.SetColor(self.GlowColor, suit.SpiderBall.Color);
-		self.TrailMaterial = suit.SpiderBall.Trail;
-	else
-		WGL.SetBodyGroupSkin(model,                                               0, suit.MorphBall.Group, suit.MorphBall.Skin);
-		WGL.SetBodyGroupSkin(WGL.GetComponent(self, "Spawn"):GetModel("Spawn"),   0, suit.MorphBall.Group, suit.MorphBall.Skin);
-		WGL.SetBodyGroupSkin(WGL.GetComponent(self, "Boost"):GetModel("Boost"),   0, suit.MorphBall.Group, suit.MorphBall.Skin);
-		WGL.SetBodyGroupSkin(WGL.GetComponent(self, "Damage"):GetModel("Damage"), 0, suit.MorphBall.Group, suit.MorphBall.Skin);
-		WGL.SetColor(self.LastGlowColor, suit.MorphBall.Color);
-		WGL.SetColor(self.GlowColor, suit.MorphBall.Color);
-		self.TrailMaterial = suit.MorphBall.Trail;
+	component = component || WGL.GetComponent(self, name);
+
+	local model = component:OverrideModel(name, data.WorldModel);
+	WGL.SetBodyGroupSkin(model, 0, data[group || "Group"], data.Skin);
+	component.ModelScale = data.Scale;
+
+	return model;
+end
+
+-- Caching.
+local suitValidationCache = {};
+
+function MORPHBALL:HandleSuitSwap(suit, suitID, spider, fallback)
+
+	local morphball = WGL.GetComponent(self, "MorphBall");
+	if (suitID == self.Suit && spider == self.Spider) then
+		return morphball:GetModel("MorphBall");
 	end
 
-	self.Suit   = suitID;
+	local data = self:GetSuitSwapData(suit, spider);
+	if (!data || !data.WorldModel || (!suitValidationCache[data.WorldModel] && !util.IsValidModel(data.WorldModel))) then
+		suit = fallback;
+		data = self:GetSuitSwapData(suit, spider);
+	else
+		suitValidationCache[data.WorldModel] = true;
+	end
+
+	local model = self:SwapComponent("MorphBall", data, nil, morphball);
+	self:SwapComponent("Spawn",  data);
+	self:SwapComponent("Damage", data);
+	self:SwapComponent("Boost",  data, data.Boost && "Boost" || "Group");
+
+	WGL.SetColor(self.LastGlowColor, data.Color);
+	WGL.SetColor(self.GlowColor,     data.Color);
+
+	self.Suit = suitID;
 	self.Spider = spider;
+	self.TrailMaterial = data.Trail;
+
+	return model;
 end
 
 function MORPHBALL:Draw()
@@ -58,11 +76,11 @@ function MORPHBALL:Draw()
 	local velocity     = self:GetClientVelocity();
 	local powerSuit    = self:GetPowerSuit();
 	local morphball    = powerSuit.MorphBall;
-	local suit, suitID = powerSuit:GetSuit();
-	local spider       = morphball:IsSpiderEnabled();
 	local charging     = morphball:ChargingStarted();
-	local model        = WGL.GetComponent(self, "MorphBall"):GetModel("MorphBall");
-	self:HandleSuitSwap(model, suit, suitID, spider);
+
+	local suit, suitID, fallback = powerSuit:GetSuit();
+	local spider       = morphball:IsSpiderEnabled();
+	local model        = self:HandleSuitSwap(suit, suitID, spider, fallback);
 
 	-- Compute morphball glow color based on boost status.
 	if (charging) then
@@ -75,7 +93,7 @@ function MORPHBALL:Draw()
 	local angles, sway = WGL.Component(self, "MorphBall", self, owner, pos, velocity, radius, self:GetSpider(), frametime);
 	WGL.Component(self, "Spawn",  pos, angles, frametime);
 	WGL.Component(self, "Boost",  pos, angles, charging, frametime);
-	WGL.Component(self, "Damage", owner:Health(), pos, angles, 0.91);
+	WGL.Component(self, "Damage", owner:Health(), pos, angles);
 	WGL.Component(self, "Trail",  morphball, pos, angles, sway, velocity, self.TrailMaterial, radius, frametime)
 
 	-- Render dynamic lighting emanating from the morphball.
@@ -85,5 +103,5 @@ function MORPHBALL:Draw()
 
 	-- Draw inner glow.
 	render.SetMaterial(self.GlowMaterial);
-	render.DrawSprite(pos, 26, 26, suit.MorphBall.Glow);
+	render.DrawSprite(pos, 26, 26, (suit.MorphBall && suit.MorphBall.Glow) || color_white);
 end
