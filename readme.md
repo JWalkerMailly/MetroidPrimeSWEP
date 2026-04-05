@@ -339,6 +339,139 @@ _entity:SetXRayCold(bool)
 An entity cannot both be hot and cold. If so, cold takes precedence.
 </details>
 
+<details>
+<summary><strong>Adding Power Suit Variants</strong></summary>
+
+Suit variants are stored in the global `game.MetroidPrimeSuitVariants` table, grouped by name key (e.g. `"Prime"`). Each group holds an ordered array indexed `1` through `4`. This index is **mandatory and fixed** the system uses it to look up and validate suits, so the order must be respected. A complete example can be found near the bottom.
+```lua
+game.MetroidPrimeSuitVariants["VariantName"] = {}
+game.MetroidPrimeSuitVariants["VariantName"][1] = { ... } -- Slot 1: Power Suit
+game.MetroidPrimeSuitVariants["VariantName"][2] = { ... } -- Slot 2: Varia Suit
+game.MetroidPrimeSuitVariants["VariantName"][3] = { ... } -- Slot 3: Gravity Suit
+game.MetroidPrimeSuitVariants["VariantName"][4] = { ... } -- Slot 4: Phazon Suit
+```
+
+**Top-Level Fields**
+
+These fields describe the suit itself, how the Power Suit looks in third person and how it takes damage.
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `DisplayName` | `string` | Yes | Human-readable name shown in UI (e.g. `"Varia Suit"`). |
+| `WorldModel` | `Model(...)` | Yes | Path to third-person player model for this suit. |
+| `Group` | `number` | Yes | Body group index applied to world model. |
+| `Skin` | `number` | Yes | Skin index applied to world model. |
+| `DamageScale` | `number` | Yes | Damage multiplier for this suit. `1` = full damage, `0.5` = half damage. |
+| `MorphBall` | `table` | Conditional | Morph Ball appearance data. If omitted or invalid, the system falls back to its internal fallback variant. If the suit only features a Spider Ball, this table can be omitted. |
+| `SpiderBall` | `table` | Optional | Spider Ball variant data. Only needed if this suit supports Spider Ball. |
+
+**`MorphBall` Fields**
+
+The `MorphBall` sub-table controls the appearance of the Morph Ball form for this suit.
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `WorldModel` | `Model(...)` | Yes | Path to the Morph Ball model. |
+| `Group` | `number` | Yes | Body group index applied to the Morph Ball model. |
+| `Skin` | `number` | Yes | Skin index applied to the Morph Ball model. |
+| `Color` | `Color(...)` | Yes | Glow/light color emitted by the Morph Ball. The alpha channel controls intensity. |
+| `Trail` | `Material(...)` | Yes | Material used for the rolling trail effect. |
+| `Scale` | `number` | Yes | Scale of the Morph Ball model. Typically `0.9`. |
+| `Glow` | `Color(...)` | Optional | Override color for the Morph Ball's central glow sprite. |
+| `Effect` | `string` | Optional | Particle effect name played while morphing. |
+
+**`SpiderBall` Fields**
+
+The `SpiderBall` sub-table is declared separately from `MorphBall` and controls appearance when the Spider Ball upgrade is active. If omitted, the suit does not support Spider Ball visuals.
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `WorldModel` | `Model(...)` | Yes | Path to the Spider Ball model. |
+| `Group` | `number` | Yes | Body group index for the Spider Ball model. |
+| `Skin` | `number` | Yes | Skin index for the Spider Ball model. |
+| `Color` | `Color(...)` | Yes | Glow/light color while Spider Ball is active. |
+| `Trail` | `Material(...)` | Yes | Material used for the Spider Ball trail. |
+| `Scale` | `number` | Yes | Scale of the Spider Ball model. Typically `0.9`. |
+| `Boost` | `number` | Optional | Body group index used specifically for the Boost Ball animation within Spider Ball. If omitted, falls back to `Group`. |
+| `Effect` | `string` | Optional | Particle effect name played while morphing. |
+
+**Full Declaration Example**
+
+It is recommended to declare your suit variants in an autorun script. Do not start your filename with anything other than alpha characters to ensure the API is loaded before. Your autorun script must not be placed in *client*, nor *server* sub-directories.
+
+```lua
+if (!MetroidPrimeSWEP) then return; end
+
+game.MetroidPrimeSuitVariants["Fusion"] = {};
+
+-- Power suit setup table.
+game.MetroidPrimeSuitVariants["Fusion"][1] = {
+
+	DisplayName     = "Power Suit",
+
+	WorldModel      = Model("models/metroid/samus/samus_fusion_playermodel.mdl"),
+	Group           = 1,
+	Skin            = 0,
+	DamageScale     = 1,
+
+	MorphBall = {
+		WorldModel  = Model("models/metroid/samus_ball/fusion_ball.mdl"),
+		Glow        = Color(255, 255, 255),
+		Color       = Color(255, 125, 0, 0.5),
+		Group       = 0,
+		Skin        = 0,
+		Trail       = Material("entities/morphball/powertrail"),
+		Effect      = "mp_morphball_powersuit",
+		Scale       = 1.2
+	}
+};
+
+-- Varia suit setup table.
+game.MetroidPrimeSuitVariants["Fusion"][2] = {
+
+	DisplayName     = "Varia Suit",
+
+	WorldModel      = Model("models/metroid/samus/samus_fusion_playermodel.mdl"),
+	Group           = 1,
+	Skin            = 1,
+	DamageScale     = 0.9,
+
+	MorphBall = {
+		WorldModel  = Model("models/metroid/samus_ball/fusion_ball.mdl"),
+		Glow        = Color(255, 255, 255),
+		Color       = Color(75, 225, 255, 0.5),
+		Group       = 0,
+		Skin        = 1,
+		Trail       = Material("entities/morphball/variatrail"),
+		Effect      = "mp_morphball_variasuit",
+		Scale       = 1.2
+	},
+
+	SpiderBall = {
+		WorldModel  = Model("models/metroid/samus_ball/fusion_ball.mdl"),
+		Color       = Color(40, 200, 40, 0.5),
+		Group       = 0,
+		Boost       = 0,
+		Skin        = 1,
+		Trail       = Material("entities/morphball/spidertrail"),
+		Effect      = "mp_morphball_spider",
+		Scale       = 1.2
+	}
+};
+
+game.MetroidPrimeSuitVariants["Fusion"][3] = { ... };
+game.MetroidPrimeSuitVariants["Fusion"][4] = { ... };
+```
+
+**Common Mistakes**
+
+**Duplicate variant group keys**: Registering two variant groups under the same key (e.g. two tables both assigned to `"Prime"`) will cause the second to overwrite the first silently.
+
+**Invalid model paths**: `WorldModel` paths are validated at runtime via `util.IsValidModel`. If a path is invalid, `HandleSuitSwap` will automatically fall back to a guaranteed valid internal fallback suit variant declaration managed by the system. Your variant will not be used until the model path is corrected.
+
+**Omitting `MorphBall` entirely**: If a suit has no `MorphBall` table, it must have a complete `SpiderBall` table.
+</details>
+
 </br>
 
 ## Architecture Overview
