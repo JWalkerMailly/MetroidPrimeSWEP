@@ -217,7 +217,7 @@ function game.MetroidPrimeLogBook.Add(class, logbook)
 	game.MetroidPrimeLogBook.Cache[class] = logbook;
 end
 
-local ignoreCollisionGroups = {
+game.MetroidPrimeIgnoredCollisionGroups = {
 	[COLLISION_GROUP_DEBRIS]          = true,
 	[COLLISION_GROUP_DEBRIS_TRIGGER]  = true,
 	[COLLISION_GROUP_BREAKABLE_GLASS] = true,
@@ -246,7 +246,7 @@ function _entity:CanBeScanned()
 	if (!isSolid) then return false end
 
 	-- Ignore unecessary collision groups.
-	if (ignoreCollisionGroups[self:GetCollisionGroup()]) then return false; end
+	if (game.MetroidPrimeIgnoredCollisionGroups[self:GetCollisionGroup()]) then return false; end
 
 	-- Entity has to be a player, a vehicle, or a NPC.
 	local isVehicle = self:IsVehicle();

@@ -164,6 +164,25 @@ https://wiki.facepunch.com/gmod/CTakeDamageInfo:GetDamageCustom
 </details>
 
 <details>
+<summary><strong>Implementing Projectile Bounce</strong></summary>
+
+Entities can define a `ProjectileBounceWhitelist` table to control which projectile damage types are allowed to hit them. Any projectile whose damage type is not in the whitelist will bounce off the entity.
+
+**Usage**\
+In this example, only missiles and super missiles will hit the entity. All other damage types will bounce off it.
+```lua
+ENT.ProjectileBounceWhitelist = {
+	DMG_MP_SPECIAL,
+	bit.bor(DMG_MP_POWER, DMG_MP_SPECIAL)
+};
+```
+
+**Notes**
+- Each entry is an exact match, `DMG_MP_POWER` will not match `bit.bor(DMG_MP_POWER, DMG_MP_SPECIAL)` and vice versa.
+- If `ProjectileBounceWhitelist` is not defined on an entity, projectiles will never bounce off it.
+</details>
+
+<details>
 <summary><strong>Adding Threat Indicator Support</strong></summary>
 
 To add entities to the threat indication system, use the following stub in an autorun script:
