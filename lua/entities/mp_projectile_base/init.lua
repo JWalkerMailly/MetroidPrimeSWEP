@@ -92,7 +92,9 @@ function PROJECTILE:ApplyBlastDamage(entity, pos, normal)
 
 		-- Apply blast knockback.
 		local vPhys = v:GetPhysicsObject();
-		if (IsValid(vPhys)) then vPhys:ApplyForceCenter((v:GetPos() - pos + normal):GetNormalized() * self:GetBlastKnockBack()); end
+		if (IsValid(vPhys) && !game.MetroidPrimeIgnoredCollisionGroups[v:GetCollisionGroup()]) then
+			vPhys:ApplyForceCenter((v:GetPos() - pos + normal):GetNormalized() * self:GetBlastKnockBack());
+		end
 	end
 
 	debugoverlay.Sphere(pos, self:GetBlastRadius(), 1, Color(255, 0, 0, 0));
