@@ -16,12 +16,30 @@ function PROJECTILE:CanDamage(owner, entity)
 	return entity != owner && IsValid(entity) && entity:IsSolid() && entity:GetOwner() != owner;
 end
 
+function PROJECTILE:HandleBounce(normal, entity, phys)
+
+	if (!entity.ProjectileBounceWhitelist) then return; end
+
+	local bounceTarget = (self.Oscillator && self:GetParent()) || self;
+	if (!bounceTarget.RemoveOnCollide || bounceTarget.LastBounceTarget == entity) then return; end
+
+	for _, v in pairs(entity.ProjectileBounceWhitelist) do
+		if (self.DamageType == v) then return false; end
+	end
+
+	local incoming = self:GetForward();
+	local reflected = incoming - 2 * incoming:Dot(normal) * normal;
+	bounceTarget:SetAngles(reflected:Angle());
+	bounceTarget.LastBounceTarget = entity;
+	bounceTarget.HomingTarget = nil;
+
+	return true;
+end
+
 function PROJECTILE:PredictCollisions()
 
-	-- Do nothing if we collided and wait for cleanup.
 	if (self.OscillatorParent) then return; end
 
-	-- Begin collision prediction for custom projectile.
 	local collision = WGL.TraceCollision(self, false, self.CollisionFilter, self.HitScanPos, self.Mask);
 	if (self.HitScanPos) then
 		self:SetCollisionRan(true);
@@ -29,9 +47,14 @@ function PROJECTILE:PredictCollisions()
 		self:SetCollisionNormal(collision.HitNormal);
 	end
 
-	-- Collision occured, call to collision handler. Worldspawn does not have a IsValid function, must check manually for validity.
-	if (collision.Hit && collision.Entity != nil && collision.Entity != NULL && collision.Entity:IsSolid()) then
-		self:OnCollide(collision.HitPos, collision.HitNormal, collision.Entity, collision.Entity:GetPhysicsObject());
+	local entity = collision.Entity;
+	if (collision.Hit && entity != nil && entity != NULL && entity:IsSolid()) then
+
+		local phys = entity:GetPhysicsObject();
+
+		if (self:HandleBounce(collision.HitNormal, entity, phys)) then return false; end
+		self:OnCollide(collision.HitPos, collision.HitNormal, entity, phys);
+
 		return self.RemoveOnCollide;
 	end
 
@@ -119,6 +142,8 @@ function PROJECTILE:OnCollide(pos, normal, entity, phys)
 end
 
 function PROJECTILE:ApplyRotation(phys)
+
+	if (self.LastBounceTarget) then return; end
 
 	-- Apply roll animation to projectile.
 	self.LastAngles:RotateAroundAxis(self.LastAngles:Forward(), self.RotationRate * FrameTime());
