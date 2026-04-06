@@ -120,7 +120,9 @@ function BOMB:ApplyBlastDamage(pos)
 
 		-- Apply blast knockback.
 		local vPhys = v:GetPhysicsObject();
-		if (IsValid(vPhys)) then vPhys:ApplyForceCenter((v:GetPos() - pos):GetNormalized() * self.BlastKnockBack); end
+		if (IsValid(vPhys) && !game.MetroidPrimeIgnoredCollisionGroups[v:GetCollisionGroup()]) then
+			vPhys:ApplyForceCenter((v:GetPos() - pos):GetNormalized() * self.BlastKnockBack);
+		end
 	end
 
 	debugoverlay.Sphere(pos, self.BlastRadius, 1, Color(255, 0, 0, 0));
