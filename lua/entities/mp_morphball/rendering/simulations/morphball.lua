@@ -90,7 +90,7 @@ function MorphBall:Draw(morphball, owner, pos, velocity, radius, spider, frameti
 		-- Match gyro angular displacement based on accumulator to the spiderball.
 		local gyro = gyroBias:Cross(self.SurfaceNormal):AngleEx(self.SurfaceNormal);
 		gyro:RotateAroundAxis(self.VelocityRight, -self.RotationAccumulator);
-		self:DrawModel("MorphBall", pos, gyro, 0.9);
+		self:DrawModel("MorphBall", pos, gyro, self.ModelScale);
 		self.LastOrientation:Set(gyro);
 		return gyro, 0;
 	end
