@@ -23,6 +23,13 @@ function MorphBallDamage:Draw(health, pos, angles)
 		self:DrawModel("Damage", pos, angles, self.ModelScale + offset);
 		render.MaterialOverride(nil);
 		render.SetBlend(1);
+
+		if (!self.DamageSound) then
+			surface.PlaySound("entities/morphball/damage.wav")
+			self.DamageSound = true
+		end
+	else
+		self.DamageSound = false
 	end
 
 	self.LastHealth = health;

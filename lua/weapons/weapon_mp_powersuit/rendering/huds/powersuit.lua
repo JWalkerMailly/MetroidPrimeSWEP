@@ -154,9 +154,17 @@ function PowerSuitHUD:Draw(weapon, damage)
 
 	-- Handle static GUI shake and color lerp upon taking damage.
 	if (damage > 0) then
+
 		WGL.LerpColor(WGL.Clamp(damage), self.GUIColor, damageColor, self.GUIColor);
 		modulation:SetUnpacked(WGL.Modulation(9, 500) * damage, WGL.Modulation(3, 500) * damage, WGL.Modulation(11, 500) * damage);
 		self.GuiPos:Add(modulation);
+
+		if (!self.DamageSound) then
+			surface.PlaySound("samus/damage.wav");
+			self.DamageSound = true
+		end
+	else
+		self.DamageSound = false
 	end
 
 	-- Draw beam change animation before any other rendering.
