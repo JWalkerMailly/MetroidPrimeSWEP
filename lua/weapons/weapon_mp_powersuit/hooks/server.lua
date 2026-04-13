@@ -87,13 +87,17 @@ POWERSUIT.Hooks["CanExitVehicle"] = function(weapon, vehicle, ply)
 	return canExit;
 end
 
+POWERSUIT.Hooks["VehicleMove"] = function(weapon, ply)
+	ply.__mp_LocalEyeAngles = ply:LocalEyeAngles()
+end
+
 POWERSUIT.Hooks["PlayerLeaveVehicle"] = function(weapon, ply, vehicle)
 
 	local morphball = vehicle:GetOwner();
 	if (!morphball:IsMorphBall()) then return; end
 
 	-- Match the player's velocity and direction to the morphball before removing it.
-	ply:SetEyeAngles(Angle(0, ply:LocalEyeAngles()[2] - 90, 0));
+	ply:SetEyeAngles(Angle(0, ply.__mp_LocalEyeAngles[2], 0));
 	ply:SetPos(morphball:GetPos() - Vector(0, 0, 11));
 	ply:SetVelocity(morphball:GetVelocity() * 0.75);
 
